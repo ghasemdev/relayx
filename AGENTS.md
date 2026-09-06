@@ -19,7 +19,7 @@ Antigravity / `agy`**) working in the **RelayX** repository.
 
 ```
 relayx/
-├── app/
+├── relayx-android/
 │   ├── build.gradle.kts           # Module-level build configuration
 │   └── src/
 │       ├── main/
@@ -102,9 +102,9 @@ rtk git diff                      # Ultra-compact diff (changed lines only)
 rtk git add . && rtk git commit -m "feat: description"
 
 # File & Search Operations
-rtk ls app/src/main/java          # Compact tree listing
-rtk grep "pattern" app/src/       # Grouped grep output
-rtk find "*.kt" app/src/          # Find files by pattern
+rtk ls relayx-android/src/main/java          # Compact tree listing
+rtk grep "pattern" relayx-android/src/       # Grouped grep output
+rtk find "*.kt" relayx-android/src/          # Find files by pattern
 rtk read <filepath>               # Intelligent filtered file read
 
 # RTK Meta & Analytics

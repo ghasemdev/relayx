@@ -15,7 +15,7 @@ RelayX is an Android application developed with Jetpack Compose and Material 3, 
 ## Important Domains
 - `com.parsomash.relayx`
 - `ui.theme`: Compose Material 3 theme styling, typography, and color palette.
-- Feature modules and core components under `app/src/main/java/com/parsomash/relayx`.
+- Feature modules and core components under `relayx-android/src/main/java/com/parsomash/relayx`.
 
 ## Current Priorities
 - Establish robust SDD foundation and Spec Kit extensions.

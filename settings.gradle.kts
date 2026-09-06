@@ -23,4 +23,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "relayx"
-include(":app")
+include(":relayx-android")

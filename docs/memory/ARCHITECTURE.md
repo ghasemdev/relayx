@@ -7,7 +7,7 @@ RelayX is structured as a modern Android Gradle project with Jetpack Compose as 
 
 ```
 relayx/
-├── app/                           # Main application module
+├── relayx-android/                # Main application module
 │   ├── src/main/java/com/parsomash/relayx/
 │   │   ├── MainActivity.kt        # Entry point Compose Activity
 │   │   └── ui/theme/              # Compose Theme, Type, Color
@@ -23,7 +23,7 @@ relayx/
 - **Gradle Build Pipeline**: Managed via Foojay toolchains and version catalog `libs.versions.toml`.
 
 ## Boundaries
-- Code logic resides under `app/src/main/java/com/parsomash/relayx`.
+- Code logic resides under `relayx-android/src/main/java/com/parsomash/relayx`.
 - UI presentation is restricted to Jetpack Compose components.
 - Agent and workflow assets are encapsulated in `.agents/` and `.specify/`.
 
