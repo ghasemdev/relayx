@@ -1,31 +1,17 @@
 # Worklog
 
-Use concise high-value entries only.
-This is not a changelog. Do not record routine releases, version bumps, or implementation summaries.
+Last reviewed: 2026-09-07
 
-## Template
+This log captures high-level milestones and systemic architectural transitions for RelayX.
 
-### YYYY-MM-DD - Summary
+---
 
-- why this is durable
-- what future mistake it prevents
-- evidence
-- where future contributors should look
+## Milestones & Architectural History
 
-## Example
-
-### 2026-03-15 - Pagination cursor must be opaque to clients
-
-- **Why durable**: three features so far have tried to expose raw database offsets as pagination cursors, each time creating breaking changes when the underlying query changes
-- **Future mistake prevented**: next time a feature adds pagination, the implementer will know to use opaque cursors from the start
-- **Evidence**: specs 018, 024, and 031 all required pagination rework; see DECISIONS.md entry on API pagination
-- **Where to look**: `src/api/pagination.ts`, `docs/memory/DECISIONS.md`
-
-## Counter-Example (do not write entries like this)
-
-> ### 2026-03-15 - Updated pagination
->
-> - Changed pagination to use cursors
-> - Deployed to staging
-
-This is a changelog entry, not a durable lesson. It records what happened, not what was learned.
+### 2026-09-07: Architecture & Governance Ratification
+- **Objective**: Establish complete specifications, memory governance, and roadmap for RelayX SMS Relay & MCP Automation Gateway.
+- **Key Actions**:
+  - Defined system scope: Kotlin Compose Android Gateway (`relayx-android`), standalone Go Relay Server (`relayx-server`), embedded SQLite with migrations, and Model Context Protocol (MCP) server.
+  - Ratified Constitution (`.specify/memory/constitution.md`) establishing 9 core principles and table index.
+  - Formulated 6 Architecture Decision Records (`docs/memory/DECISIONS.md`) on zero-infrastructure Go binary, dual security domains, device-side filtering, event-driven MCP wait, and offline Room queuing.
+  - Configured project memory index (`docs/memory/INDEX.md`) and verified SDD readiness.

@@ -1,20 +1,21 @@
 # Memory Index
 
-This is a compact routing map for durable project memory (`docs/memory/`). Keep it short.
+This is a compact routing map for durable project memory (`docs/memory/`). Keep it concise and updated.
 
 > [!NOTE]
-> High-level project governance, constitution, and standards are stored in the **Governance Layer** at `.specify/memory/` and should be reviewed before technical planning.
+> High-level project governance and operating principles are stored in the **Governance Layer** at [`.specify/memory/constitution.md`](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/constitution.md) and must be consulted before technical planning.
 
-## Architecture
-- [ARCHITECTURE.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/ARCHITECTURE.md): Android Compose app architecture, boundaries, and Gradle layout.
-- [PROJECT_CONTEXT.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/PROJECT_CONTEXT.md): RelayX purpose, target SDKs, constraints, and priorities.
+## Durable Memory Documents
 
-## Bugs
-- [BUGS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/BUGS.md): Catalog of bug patterns, recurring issues, and regressions.
+| Document | Scope | Purpose |
+|:---|:---|:---|
+| [PROJECT_CONTEXT.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/PROJECT_CONTEXT.md) | Product & System | System actors, core constraints, domains, and priorities. |
+| [ARCHITECTURE.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/ARCHITECTURE.md) | Technical Design | Component layout, Go server package design, SQLite schema, REST API, and MCP tools. |
+| [DECISIONS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/DECISIONS.md) | ADRs | Architectural decision records (ADR-001 through ADR-006). |
+| [BUGS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/BUGS.md) | Quality & Security | Known regression traps, doze mode risks, sensitive data leaks, and race conditions. |
+| [WORKLOG.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/WORKLOG.md) | Milestones | Record of major technical migrations and roadmap checkpoints. |
+| [roadmap.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/roadmap.md) | Execution Plan | 7-phase implementation roadmap and Definition of Done. |
 
-## Decisions
-- [DECISIONS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/DECISIONS.md): Architectural decision records (ADRs) and library selections.
-
-## Workflow
-- [WORKLOG.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/WORKLOG.md): High-level record of major work and milestones.
-- [.specify/memory/workflow.md](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/workflow.md): Authoritative memory-first SDD workflow rules.
+## Workflow & Operating Rules
+- [Workflow Rules](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/workflow.md): Authoritative SDD memory-first execution procedure.
+- [Security Constitution](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/security_constitution.md): Comprehensive security baseline and review gates.

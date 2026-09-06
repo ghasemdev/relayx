@@ -1,59 +1,59 @@
-# Technical Decisions (`docs/memory/`)
+# Architecture Decision Records (ADRs)
 
-This file stores durable technical and implementation decisions. For governance-level decisions or project standards, see `.specify/memory/DECISIONS.md`.
+Last reviewed: 2026-09-07
 
-## Entry Lifecycle
+## ADR Index
 
-Each decision follows this lifecycle:
-
-```
-Active → Needs Review → Superseded → (pruned)
-```
-
-- **Active**: The decision is current and must be honored by all features and AI agents.
-- **Needs Review**: Implementation reality or new context suggests this decision may be outdated. It should still be honored until reviewed and explicitly changed.
-- **Superseded**: A newer decision has replaced this one. Keep it for historical context until the next audit, then consider pruning.
-- **Pruned**: During an audit, remove superseded entries that no longer provide historical value. This keeps the file focused.
-
-### When to change status
-
-| Current Status | Change To    | When                                                                                                       |
-| -------------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
-| Active         | Needs Review | Verified implementation or tests contradict the decision, or recurring features follow a different pattern |
-| Active         | Superseded   | A newer decision explicitly replaces this one                                                              |
-| Needs Review   | Active       | Team confirms the decision still holds after review                                                        |
-| Needs Review   | Superseded   | Team confirms a replacement decision                                                                       |
-| Superseded     | _(remove)_   | Audit finds no remaining historical value                                                                  |
-
-### Rules
-
-- Never delete an Active decision without replacing or superseding it.
-- Never silently ignore a decision. If it feels wrong, mark it Needs Review and resolve it.
-- Keep at most 3–5 Superseded entries for context. Prune older ones during audits.
+| ADR ID | Decision Title | Status | Date |
+|---|---|---|---|
+| [ADR-001](#adr-001-single-self-contained-go-binary-with-embedded-sqlite) | Single Self-Contained Go Binary with Embedded SQLite | Accepted | 2026-09-07 |
+| [ADR-002](#adr-002-dual-security-and-authorization-domains) | Dual Security and Authorization Domains | Accepted | 2026-09-07 |
+| [ADR-003](#adr-003-client-side-pre-filtering-with-default-drop-policy) | Client-Side Pre-Filtering with Default-DROP Policy | Accepted | 2026-09-07 |
+| [ADR-004](#adr-004-event-driven-push-model-for-mcp-wait_for_message) | Event-Driven Push Model for MCP `wait_for_message` | Accepted | 2026-09-07 |
+| [ADR-005](#adr-005-durable-room-queue-and-exponential-backoff) | Durable Room Queue and Exponential Backoff | Accepted | 2026-09-07 |
+| [ADR-006](#adr-006-unified-pipeline-execution-for-mock-sms) | Unified Pipeline Execution for Mock SMS | Accepted | 2026-09-07 |
 
 ---
 
-## Template
+### ADR-001: Single Self-Contained Go Binary with Embedded SQLite
+- **Context**: The relay server must run on personal developer machines (Linux, macOS) with zero friction and zero setup.
+- **Decision**: Build the server entirely in Go, embedding SQLite and migrations (`go:embed migrations/*.sql`). Reject JVM/Ktor, Docker, Postgres, Redis, Python, or Node runtimes.
+- **Consequences**:
+  - Positive: Running `./sms-server` immediately starts without container daemons or dependency management.
+  - Positive: Cross-compilation to Linux (AMD64/ARM64) and macOS (ARM64/AMD64) is trivial.
+  - Tradeoff: CGO-free or modern pure-Go SQLite driver (such as `modernc.org/sqlite`) preferred to maintain static binary cross-compilation simplicity.
 
-### YYYY-MM-DD - Decision title
+### ADR-002: Dual Security and Authorization Domains
+- **Context**: An Android phone sends SMS data to the server, and an AI Agent reads SMS data via MCP. A compromised phone token must not allow reading all stored SMS.
+- **Decision**: Strictly separate ingestion credentials from MCP query credentials. The device write token only permits `POST /api/v1/messages`. Reading requires explicit MCP credentials.
+- **Consequences**:
+  - Positive: Protects stored SMS and OTP history from unauthorized exposure.
+  - Positive: Allows individual device revoking without invalidating AI Agent setups.
 
-**Status**
-Active | Superseded | Needs review
+### ADR-003: Client-Side Pre-Filtering with Default-DROP Policy
+- **Context**: Personal smartphones receive diverse messages (personal chats, spam, banking). Forwarding every message exposes unnecessary personal data.
+- **Decision**: Evaluate rules locally on the Android device prior to network dispatch. The default action is `DROP`. Only explicitly matched messages are forwarded. If `FORWARD_TRANSFORMED` is active, the raw body can be stripped.
+- **Consequences**:
+  - Positive: High privacy; personal SMS never leaves the smartphone.
+  - Tradeoff: Android client requires local rule management UI and engine.
 
-**Why this is durable**
-What cross-feature choice is likely to matter again?
+### ADR-004: Event-Driven Push Model for MCP `wait_for_message`
+- **Context**: When an AI Agent needs an OTP, it needs to wait for the incoming SMS. Constant polling wastes CPU and creates latency.
+- **Decision**: Implement an internal Go event broker (channels / conditional broadcast) that notifies waiting MCP requests immediately when a message is committed.
+- **Consequences**:
+  - Positive: Sub-millisecond response latency once SMS is ingested. Zero CPU overhead while waiting.
+  - Positive: Robust timeout handling built into Go `select` blocks.
 
-**Decision**
-What was decided and what boundary does it create?
+### ADR-005: Durable Room Queue and Exponential Backoff
+- **Context**: Mobile connectivity is erratic (Wi-Fi drops, sleep modes, reboots). SMS cannot be lost.
+- **Decision**: Persist incoming allowed SMS into a local Room database queue before attempting network delivery. Use Android WorkManager / Foreground Service with exponential backoff retries.
+- **Consequences**:
+  - Positive: Survives device reboots (`BOOT_COMPLETED`), network changes, and server restarts.
+  - Positive: Idempotent message IDs prevent duplication on the server.
 
-**Tradeoffs**
-What was gained, what was made harder, and when should this be reconsidered?
-
-**Future mistake prevented**
-What likely incorrect approach does this rule out?
-
-**Evidence**
-Diff, tests, review, incident, or repeated implementation evidence.
-
-**Where to look next**
-Files, modules, or specs future maintainers should inspect.
+### ADR-006: Unified Pipeline Execution for Mock SMS
+- **Context**: Developers need to build, test, and verify MCP automation without access to a live SIM card.
+- **Decision**: Mock SMS inputs in developer settings must pass through the exact same receiver, filter engine, Room queue, network client, and server pipeline as live SMS.
+- **Consequences**:
+  - Positive: Total test fidelity. If the mock pipeline succeeds, live SIM traffic is guaranteed to work.
+  - Positive: End-to-end integration tests can run reliably in CI environments.
