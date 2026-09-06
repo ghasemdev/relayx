@@ -1,0 +1,240 @@
+openapi: 3.0.3
+info:
+  title: RelayX Server HTTP API
+  description: Authenticated REST API for SMS ingestion, status monitoring, and message querying.
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8080/api/v1
+    description: Default localhost binding
+paths:
+  /health:
+    get:
+      summary: Server Health Status
+      description: Returns service uptime, database connectivity, and version. No authentication required.
+      responses:
+        '200':
+          description: Server healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, uptime_seconds, database]
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  uptime_seconds:
+                    type: integer
+                    example: 3600
+                  database:
+                    type: string
+                    example: "connected"
+                  version:
+                    type: string
+                    example: "1.0.0"
+
+  /messages:
+    post:
+      summary: Ingest SMS Message
+      description: Ingests an incoming SMS payload from the authenticated Android gateway. Idempotent based on `messageId`.
+      security:
+        - DeviceBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messageId, sender, body, receivedAt]
+              properties:
+                messageId:
+                  type: string
+                  format: uuid
+                  example: "4c52089f-8a07-4e92-bc10-1849db9f4e22"
+                deviceId:
+                  type: string
+                  example: "device-pixel8-01"
+                sender:
+                  type: string
+                  example: "BANK"
+                body:
+                  type: string
+                  example: "Your verification code is 482913"
+                receivedAt:
+                  type: integer
+                  description: Unix epoch millisecond timestamp
+                  example: 1757280000000
+                metadata:
+                  type: object
+                  additionalProperties: true
+                  example:
+                    sim_slot: 0
+                    carrier: "CarrierName"
+      responses:
+        '201':
+          description: Message ingested and persisted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, messageId, status]
+                properties:
+                  id:
+                    type: string
+                  messageId:
+                    type: string
+                  status:
+                    type: string
+                    example: "RECEIVED"
+        '200':
+          description: Duplicate message retry recognized and acknowledged
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  messageId:
+                    type: string
+                  status:
+                    type: string
+                    example: "RECEIVED"
+                  duplicate:
+                    type: boolean
+                    example: true
+        '400':
+          description: Validation failure (missing required fields or invalid types)
+        '401':
+          description: Missing or invalid device authorization token
+
+    get:
+      summary: Query Messages
+      description: Returns a list of persisted messages matching filter parameters, ordered by received timestamp descending.
+      security:
+        - DeviceBearerAuth: []
+      parameters:
+        - name: sender
+          in: query
+          schema:
+            type: string
+          description: Filter by originating sender name/number
+        - name: deviceId
+          in: query
+          schema:
+            type: string
+          description: Filter by ingesting device
+        - name: after
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Only return messages received after timestamp
+        - name: before
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Only return messages received before timestamp
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [RECEIVED, FILTERED, FORWARDED, FAILED]
+      responses:
+        '200':
+          description: List of matching messages
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [messages, total]
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+                  total:
+                    type: integer
+
+  /messages/latest:
+    get:
+      summary: Get Latest Message
+      description: Retrieves the single most recently received message matching optional criteria.
+      security:
+        - DeviceBearerAuth: []
+      parameters:
+        - name: sender
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Latest message details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '404':
+          description: No message found matching criteria
+
+  /messages/{id}:
+    get:
+      summary: Get Message by ID
+      security:
+        - DeviceBearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Message record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '404':
+          description: Message not found
+
+components:
+  securitySchemes:
+    DeviceBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
+
+  schemas:
+    Message:
+      type: object
+      required: [id, messageId, deviceId, sender, body, receivedAt, createdAt, status]
+      properties:
+        id:
+          type: string
+        messageId:
+          type: string
+        deviceId:
+          type: string
+        sender:
+          type: string
+        body:
+          type: string
+        receivedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          example: "RECEIVED"
+        metadata:
+          type: object
