@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -120,5 +121,21 @@ func TestMessageIngestionAndIdempotency(t *testing.T) {
 
 	if rec3.Code != http.StatusBadRequest {
 		t.Errorf("expected status 400 for missing sender, got %d", rec3.Code)
+	}
+
+	// 4. Payload size limit (> 1 MB) -> 413 Payload Too Large
+	hugePayload := map[string]any{
+		"messageId": "huge-01",
+		"sender":    "BANK",
+		"body":      strings.Repeat("X", 1048576+50),
+	}
+	hugeBytes, _ := json.Marshal(hugePayload)
+	req4 := httptest.NewRequest(http.MethodPost, "/api/v1/messages", bytes.NewReader(hugeBytes))
+	req4.Header.Set("Authorization", "Bearer "+token)
+	rec4 := httptest.NewRecorder()
+	server.ServeHTTP(rec4, req4)
+
+	if rec4.Code != http.StatusRequestEntityTooLarge {
+		t.Errorf("expected status 413 for oversized body, got %d", rec4.Code)
 	}
 }

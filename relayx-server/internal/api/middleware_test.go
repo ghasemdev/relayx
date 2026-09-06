@@ -79,3 +79,22 @@ func TestAuthenticateDeviceMiddleware(t *testing.T) {
 		}
 	}
 }
+
+func TestSecurityHeadersMiddleware(t *testing.T) {
+	dummy := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	handler := api.SecurityHeaders(dummy)
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/messages", nil)
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	if rec.Header().Get("X-Content-Type-Options") != "nosniff" {
+		t.Errorf("expected nosniff, got %s", rec.Header().Get("X-Content-Type-Options"))
+	}
+	if rec.Header().Get("Cache-Control") != "no-store, no-cache, must-revalidate" {
+		t.Errorf("expected no-store, got %s", rec.Header().Get("Cache-Control"))
+	}
+}

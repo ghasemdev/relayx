@@ -16,6 +16,13 @@ This is a compact routing map for durable project memory (`docs/memory/`). Keep 
 | [WORKLOG.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/WORKLOG.md) | Milestones | Record of major technical migrations and roadmap checkpoints. |
 | [roadmap.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/roadmap.md) | Execution Plan | 7-phase implementation roadmap and Definition of Done. |
 
+## Security Reviews
+
+| Document | Type | Date | Overall Risk | Findings | OWASP |
+|:---|:---|:---|:---|:---|:---|
+| [2026-09-07-feature-001-server-foundation.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-07-feature-001-server-foundation.md) | branch | 2026-09-07 | MODERATE | C:0 H:0 M:1 L:2 | A04,A05,A07 |
+| [2026-09-07-feature-001-server-foundation-followup.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-07-feature-001-server-foundation-followup.md) | followup | 2026-09-07 | MODERATE | C:0 H:0 M:1 L:2 | A04,A05,A07 |
+
 ## Workflow & Operating Rules
 - [Workflow Rules](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/workflow.md): Authoritative SDD memory-first execution procedure.
 - [Security Constitution](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/security_constitution.md): Comprehensive security baseline and review gates.

@@ -43,6 +43,8 @@ Build the foundational, standalone Go server (`relayx-server`) that provides zer
 - Strictly NO external database server, Docker, JVM, Node, or Python runtime dependencies
 - Zero sensitive logging: Raw message bodies and verification codes must NEVER appear in stdout/stderr
 - Default binding to `127.0.0.1:8080`; non-localhost `--lan` requires explicit device token authorization
+- Bounded HTTP payload limit: 1 MB max request body size to prevent memory exhaustion DoS (`TASK-SEC-001`)
+- Strict HTTP caching policy: All `/api/v1/` responses emit `Cache-Control: no-store` and `X-Content-Type-Options: nosniff` (`TASK-SEC-002`)
 
 **Scale/Scope**: Personal SMS relay and automation gateway; < 1,000 messages/day.
 

@@ -114,6 +114,16 @@
 
 ---
 
+## Phase 8: Security Remediation (Follow-Up Tasks)
+
+**Purpose**: Harden API endpoints against resource exhaustion and caching per security review findings.
+
+- [x] TASK-SEC-001 Enforce 1 MB request body limit via `http.MaxBytesReader` on `POST /api/v1/messages` in `relayx-server/internal/api/messages.go`
+- [x] TASK-SEC-002 Add security & anti-caching headers middleware (`Cache-Control: no-store`, `X-Content-Type-Options: nosniff`) in `relayx-server/internal/api/middleware.go`
+- [x] TASK-SEC-003 [DEFERRED - Tech Debt] Token-bucket rate limiting for gateway authentication (Revisit trigger: Phase 4 LAN binding)
+
+---
+
 ## Dependencies & Execution Order
 
 > Detailed execution waves, DAG visual, and critical path analysis: [task-dependencies.md](task-dependencies.md)

@@ -107,6 +107,16 @@ func Recovery(next http.Handler) http.Handler {
 	})
 }
 
+// SecurityHeaders adds essential security and anti-caching headers to all HTTP responses (TASK-SEC-002).
+func SecurityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		next.ServeHTTP(w, r)
+	})
+}
+
 func writeJSONError(w http.ResponseWriter, statusCode int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)

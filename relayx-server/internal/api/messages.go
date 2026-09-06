@@ -26,8 +26,16 @@ func (h *MessageHandler) IngestMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Limit request body to 1 MB to prevent memory exhaustion DoS (TASK-SEC-001)
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+
 	var input service.IngestInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			writeJSONError(w, http.StatusRequestEntityTooLarge, "request body exceeds 1 MB limit")
+			return
+		}
 		writeJSONError(w, http.StatusBadRequest, "malformed JSON request body")
 		return
 	}

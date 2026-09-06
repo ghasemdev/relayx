@@ -83,8 +83,8 @@ func main() {
 	server.Mux().HandleFunc("GET /api/v1/messages/latest", messageHandler.GetLatestMessage)
 	server.Mux().HandleFunc("GET /api/v1/messages/{id}", messageHandler.GetMessageByID)
 
-	// Wrap server with logging and recovery middleware
-	rootHandler := api.Recovery(api.RequestLogger(server.Mux()))
+	// Wrap server with security headers, logging, and recovery middleware
+	rootHandler := api.Recovery(api.SecurityHeaders(api.RequestLogger(server.Mux())))
 	server.SetHandler(rootHandler)
 
 	// Run server in goroutine
