@@ -8,10 +8,10 @@
 
 **Purpose**: Establish the standalone Go server module and development tooling.
 
-- [ ] T001 Initialize Go module `relayx-server` with Go 1.22+ toolchain in `relayx-server/go.mod`
-- [ ] T002 Add dependencies `modernc.org/sqlite` and `github.com/google/uuid` to `relayx-server/go.mod`
-- [ ] T003 [P] Create directory structure per implementation plan under `relayx-server/`
-- [ ] T004 [P] Create cross-platform compilation targets and build script in `relayx-server/Makefile`
+- [x] T001 Initialize Go module `relayx-server` with Go 1.22+ toolchain in `relayx-server/go.mod`
+- [x] T002 Add dependencies `modernc.org/sqlite` and `github.com/google/uuid` to `relayx-server/go.mod`
+- [x] T003 [P] Create directory structure per implementation plan under `relayx-server/`
+- [x] T004 [P] Create cross-platform compilation targets and build script in `relayx-server/Makefile`
 
 ---
 
@@ -21,12 +21,12 @@
 
 **⚠️ CRITICAL**: Must complete before user story implementation begins.
 
-- [ ] T005 Implement CLI configuration and flag parser in `relayx-server/internal/config/config.go`
-- [ ] T006 [P] Define Device entity and repository interface in `relayx-server/internal/domain/device.go`
-- [ ] T007 [P] Define Message entity and repository interface in `relayx-server/internal/domain/message.go`
-- [ ] T008 [P] Define Initial SQL schema migration in `relayx-server/migrations/001_initial.sql`
-- [ ] T009 Implement embedded migration runner with `embed.FS` in `relayx-server/internal/storage/migrator.go`
-- [ ] T010 Implement SQLite connection manager with WAL mode and pragmas in `relayx-server/internal/storage/sqlite.go`
+- [x] T005 Implement CLI configuration and flag parser in `relayx-server/internal/config/config.go`
+- [x] T006 [P] Define Device entity and repository interface in `relayx-server/internal/domain/device.go`
+- [x] T007 [P] Define Message entity and repository interface in `relayx-server/internal/domain/message.go`
+- [x] T008 [P] Define Initial SQL schema migration in `relayx-server/migrations/001_initial.sql`
+- [x] T009 Implement embedded migration runner with `embed.FS` in `relayx-server/internal/storage/migrator.go`
+- [x] T010 Implement SQLite connection manager with WAL mode and pragmas in `relayx-server/internal/storage/sqlite.go`
 
 **Checkpoint**: Foundation ready — database auto-connects, runs embedded migrations, and entities are defined.
 
@@ -40,10 +40,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Implement server initialization and graceful shutdown handler in `relayx-server/cmd/server/main.go`
-- [ ] T012 [US1] Implement HTTP server lifecycle wrapper with graceful shutdown in `relayx-server/internal/api/server.go`
-- [ ] T013 [P] [US1] Unit test for configuration defaults and flag overrides in `relayx-server/internal/config/config_test.go`
-- [ ] T014 [P] [US1] Integration test for auto-database creation and migration execution in `relayx-server/internal/storage/sqlite_test.go`
+- [x] T011 [US1] Implement server initialization and graceful shutdown handler in `relayx-server/cmd/server/main.go`
+- [x] T012 [US1] Implement HTTP server lifecycle wrapper with graceful shutdown in `relayx-server/internal/api/server.go`
+- [x] T013 [P] [US1] Unit test for configuration defaults and flag overrides in `relayx-server/internal/config/config_test.go`
+- [x] T014 [P] [US1] Integration test for auto-database creation and migration execution in `relayx-server/internal/storage/sqlite_test.go`
 
 **Checkpoint**: User Story 1 complete — server binary starts with zero external setup, initializes database, and shuts down cleanly.
 
@@ -57,14 +57,14 @@
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Implement SQLite Device repository with token lookup in `relayx-server/internal/storage/device_repo.go`
-- [ ] T016 [US2] Implement SQLite Message repository with `ON CONFLICT` deduplication in `relayx-server/internal/storage/message_repo.go`
-- [ ] T017 [P] [US2] Implement Device authentication service in `relayx-server/internal/service/device_service.go`
-- [ ] T018 [P] [US2] Implement Message ingestion service in `relayx-server/internal/service/message_service.go`
-- [ ] T019 [US2] Implement Bearer token authentication middleware in `relayx-server/internal/api/middleware.go`
-- [ ] T020 [US2] Implement `POST /api/v1/messages` HTTP handler with validation in `relayx-server/internal/api/messages.go`
-- [ ] T021 [P] [US2] Unit test for Bearer token validation middleware in `relayx-server/internal/api/middleware_test.go`
-- [ ] T022 [P] [US2] Integration test for message ingestion and idempotency in `relayx-server/internal/api/messages_test.go`
+- [x] T015 [US2] Implement SQLite Device repository with token lookup in `relayx-server/internal/storage/device_repo.go`
+- [x] T016 [US2] Implement SQLite Message repository with `ON CONFLICT` deduplication in `relayx-server/internal/storage/message_repo.go`
+- [x] T017 [P] [US2] Implement Device authentication service in `relayx-server/internal/service/device_service.go`
+- [x] T018 [P] [US2] Implement Message ingestion service in `relayx-server/internal/service/message_service.go`
+- [x] T019 [US2] Implement Bearer token authentication middleware in `relayx-server/internal/api/middleware.go`
+- [x] T020 [US2] Implement `POST /api/v1/messages` HTTP handler with validation in `relayx-server/internal/api/messages.go`
+- [x] T021 [P] [US2] Unit test for Bearer token validation middleware in `relayx-server/internal/api/middleware_test.go`
+- [x] T022 [P] [US2] Integration test for message ingestion and idempotency in `relayx-server/internal/api/messages_test.go`
 
 **Checkpoint**: User Story 2 complete — mobile gateways can securely and idempotently ingest SMS.
 
@@ -78,11 +78,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T023 [P] [US3] Implement `GET /api/v1/health` handler in `relayx-server/internal/api/health.go`
-- [ ] T024 [US3] Implement message query and retrieval methods in `relayx-server/internal/storage/message_repo.go`
-- [ ] T025 [US3] Implement `GET /api/v1/messages`, `GET /messages/latest`, and `GET /messages/{id}` in `relayx-server/internal/api/messages.go`
-- [ ] T026 [P] [US3] Unit test for health endpoint in `relayx-server/internal/api/health_test.go`
-- [ ] T027 [P] [US3] Integration test for message filtering and pagination in `relayx-server/internal/api/query_test.go`
+- [x] T023 [P] [US3] Implement `GET /api/v1/health` handler in `relayx-server/internal/api/health.go`
+- [x] T024 [US3] Implement message query and retrieval methods in `relayx-server/internal/storage/message_repo.go`
+- [x] T025 [US3] Implement `GET /api/v1/messages`, `GET /messages/latest`, and `GET /messages/{id}` in `relayx-server/internal/api/messages.go`
+- [x] T026 [P] [US3] Unit test for health endpoint in `relayx-server/internal/api/health_test.go`
+- [x] T027 [P] [US3] Integration test for message filtering and pagination in `relayx-server/internal/api/query_test.go`
 
 **Checkpoint**: User Story 3 complete — operational monitoring and historical query endpoints active.
 
@@ -96,9 +96,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T028 [US4] Implement privacy-redacting structured logger handler in `relayx-server/internal/logging/logger.go`
-- [ ] T029 [US4] Implement HTTP request/response logging middleware with field masking in `relayx-server/internal/api/middleware.go`
-- [ ] T030 [P] [US4] Automated test asserting zero sensitive data leakage in logs in `relayx-server/internal/logging/logger_test.go`
+- [x] T028 [US4] Implement privacy-redacting structured logger handler in `relayx-server/internal/logging/logger.go`
+- [x] T029 [US4] Implement HTTP request/response logging middleware with field masking in `relayx-server/internal/api/middleware.go`
+- [x] T030 [P] [US4] Automated test asserting zero sensitive data leakage in logs in `relayx-server/internal/logging/logger_test.go`
 
 **Checkpoint**: User Story 4 complete — strict privacy guarantees verified by automated tests.
 
@@ -108,9 +108,9 @@
 
 **Purpose**: End-to-end verification, cross-compilation validation, and documentation alignment.
 
-- [ ] T031 [P] Validate quickstart guide end-to-end with curl commands per `specs/001-server-foundation/quickstart.md`
-- [ ] T032 Verify cross-compilation of `relayx-server` for Linux AMD64/ARM64 and macOS AMD64/ARM64 via `relayx-server/Makefile`
-- [ ] T033 Run complete server test suite with `rtk go test -v ./...` in `relayx-server/`
+- [x] T031 [P] Validate quickstart guide end-to-end with curl commands per `specs/001-server-foundation/quickstart.md`
+- [x] T032 Verify cross-compilation of `relayx-server` for Linux AMD64/ARM64 and macOS AMD64/ARM64 via `relayx-server/Makefile`
+- [x] T033 Run complete server test suite with `rtk go test -v ./...` in `relayx-server/`
 
 ---
 
