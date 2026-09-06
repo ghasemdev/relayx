@@ -19,3 +19,13 @@ local.properties
 !.agents/
 !.agents/**
 .specify/memory/**
+
+# Go build and runtime artifacts
+bin/
+relayx-server/bin/
+data/
+relayx-server/data/
+*.db
+*.db-wal
+*.db-shm
+*.test

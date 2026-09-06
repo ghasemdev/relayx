@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Cache-Control: no-store, no-cache, must-revalidate
+Content-Type: application/json
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+Date: Sun, 06 Sep 2026 22:35:18 GMT
+Content-Length: 267
+
+{"id":"ad73f0f8-161a-4270-a507-06e3becb8c05","device_id":"5d14a5a2-54eb-4911-bb87-90fda3277557","message_id":"msg-qa-101","sender":"BANK","body":"Your OTP is 765432","received_at":"2025-09-07T21:20:00Z","created_at":"2026-09-06T22:35:17.930393Z","status":"RECEIVED"}

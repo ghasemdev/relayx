@@ -12,6 +12,8 @@ Last reviewed: 2026-09-07
 | [ADR-004](#adr-004-event-driven-push-model-for-mcp-wait_for_message) | Event-Driven Push Model for MCP `wait_for_message` | Accepted | 2026-09-07 |
 | [ADR-005](#adr-005-durable-room-queue-and-exponential-backoff) | Durable Room Queue and Exponential Backoff | Accepted | 2026-09-07 |
 | [ADR-006](#adr-006-unified-pipeline-execution-for-mock-sms) | Unified Pipeline Execution for Mock SMS | Accepted | 2026-09-07 |
+| [ADR-007](#adr-007-pure-go-sqlite-driver-for-cgo-free-cross-compilation) | Pure-Go SQLite Driver for CGO-Free Cross-Compilation | Accepted | 2026-09-07 |
+| [ADR-008](#adr-008-structured-redaction-handler-for-zero-leakage-privacy) | Structured Redaction Handler for Zero-Leakage Privacy | Accepted | 2026-09-07 |
 
 ---
 
@@ -57,3 +59,20 @@ Last reviewed: 2026-09-07
 - **Consequences**:
   - Positive: Total test fidelity. If the mock pipeline succeeds, live SIM traffic is guaranteed to work.
   - Positive: End-to-end integration tests can run reliably in CI environments.
+
+### ADR-007: Pure-Go SQLite Driver for CGO-Free Cross-Compilation
+- **Context**: RelayX requires single-command cross-compilation across Linux (AMD64, ARM64) and macOS (ARM64, AMD64) without requiring external C compilers, Docker buildx, or sysroots.
+- **Decision**: Adopt pure-Go SQLite driver `modernc.org/sqlite` instead of CGO-dependent `mattn/go-sqlite3`. Configure WAL mode, `busy_timeout=5000`, and single open connection pool (`SetMaxOpenConns(1)`).
+- **Consequences**:
+  - Positive: Complete elimination of CGO (`CGO_ENABLED=0`) across all target platforms.
+  - Positive: Server auto-creates `./data/sms.db` and applies embedded migrations seamlessly on macOS and Linux hosts.
+  - Tradeoff: Concurrent write operations require careful coordination via `SetMaxOpenConns(1)` to avoid file lock contention.
+
+### ADR-008: Structured Redaction Handler for Zero-Leakage Privacy
+- **Context**: RelayX handles sensitive authentication OTP codes and confidential SMS messages. Operational observability and debug logging must never leak secrets into logs or stdout.
+- **Decision**: Wrap standard Go `slog` with a custom `RedactingHandler` that intercepts and scrubs sensitive keys (`body`, `otp`, `code`, `token`, `authorization`) and bearer auth tokens before outputting structured JSON logs.
+- **Consequences**:
+  - Positive: Enforces Constitution Principle III across all existing and future server packages automatically.
+  - Positive: Validated with automated assertions in `logger_test.go` ensuring zero leakage even in `--debug` mode.
+  - Tradeoff: Diagnostic logs must rely strictly on metadata (sender, message ID, timestamp, byte length) rather than inspecting raw payloads.
+

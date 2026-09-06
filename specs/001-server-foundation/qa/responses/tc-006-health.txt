@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Cache-Control: no-store, no-cache, must-revalidate
+Content-Type: application/json
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+Date: Sun, 06 Sep 2026 22:35:17 GMT
+Content-Length: 76
+
+{"database":"connected","status":"ok","uptime_seconds":0,"version":"1.0.0"}

@@ -1,0 +1,16 @@
+{"time":"2026-09-07T02:05:16.915627+03:30","level":"INFO","msg":"starting relayx server","version":"1.0.0","db":"/tmp/relayx_qa.db","addr":"127.0.0.1:8977"}
+{"time":"2026-09-07T02:05:16.918568+03:30","level":"INFO","msg":"applied database migration","version":"001_initial.sql"}
+{"time":"2026-09-07T02:05:16.91866+03:30","level":"INFO","msg":"configured gateway device token registered successfully"}
+{"time":"2026-09-07T02:05:16.9189+03:30","level":"INFO","msg":"server listening","addr":"127.0.0.1:8977"}
+{"time":"2026-09-07T02:05:17.917274+03:30","level":"INFO","msg":"http request","method":"GET","path":"/api/v1/health","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:54665"}
+{"time":"2026-09-07T02:05:17.93051+03:30","level":"INFO","msg":"http request","method":"POST","path":"/api/v1/messages","status":201,"duration_ms":0,"remote_addr":"127.0.0.1:54666"}
+{"time":"2026-09-07T02:05:17.944637+03:30","level":"INFO","msg":"http request","method":"POST","path":"/api/v1/messages","status":401,"duration_ms":0,"remote_addr":"127.0.0.1:54667"}
+{"time":"2026-09-07T02:05:17.959082+03:30","level":"INFO","msg":"http request","method":"POST","path":"/api/v1/messages","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:54668"}
+{"time":"2026-09-07T02:05:17.98403+03:30","level":"INFO","msg":"http request","method":"POST","path":"/api/v1/messages","status":201,"duration_ms":0,"remote_addr":"127.0.0.1:54669"}
+{"time":"2026-09-07T02:05:17.991488+03:30","level":"INFO","msg":"http request","method":"GET","path":"/api/v1/messages","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:54670"}
+{"time":"2026-09-07T02:05:18.010229+03:30","level":"INFO","msg":"http request","method":"GET","path":"/api/v1/messages/ad73f0f8-161a-4270-a507-06e3becb8c05","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:54671"}
+{"time":"2026-09-07T02:05:18.017511+03:30","level":"INFO","msg":"http request","method":"GET","path":"/api/v1/messages/non-existent-uuid","status":404,"duration_ms":0,"remote_addr":"127.0.0.1:54672"}
+{"time":"2026-09-07T02:05:18.263332+03:30","level":"INFO","msg":"http request","method":"POST","path":"/api/v1/messages","status":413,"duration_ms":2,"remote_addr":"127.0.0.1:54674"}
+{"time":"2026-09-07T02:05:18.271261+03:30","level":"INFO","msg":"shutdown signal received","signal":"terminated"}
+{"time":"2026-09-07T02:05:18.271318+03:30","level":"INFO","msg":"shutting down http server"}
+{"time":"2026-09-07T02:05:18.271358+03:30","level":"INFO","msg":"relayx server stopped cleanly"}
