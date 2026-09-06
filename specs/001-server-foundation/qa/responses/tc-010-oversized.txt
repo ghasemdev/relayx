@@ -1,0 +1,12 @@
+HTTP/1.1 100 Continue
+
+HTTP/1.1 413 Request Entity Too Large
+Cache-Control: no-store, no-cache, must-revalidate
+Content-Type: application/json
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+Date: Sun, 06 Sep 2026 22:35:18 GMT
+Content-Length: 44
+Connection: close
+
+{"error":"request body exceeds 1 MB limit"}

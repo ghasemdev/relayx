@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Cache-Control: no-store, no-cache, must-revalidate
+Content-Type: application/json
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+Date: Sun, 06 Sep 2026 22:35:17 GMT
+Content-Length: 91
+
+{"id":"ad73f0f8-161a-4270-a507-06e3becb8c05","messageId":"msg-qa-101","status":"RECEIVED"}
