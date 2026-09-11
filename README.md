@@ -4,6 +4,8 @@
 
 ---
 
+![arch.png](docs/arch.png)
+
 ## Architecture Overview
 
 ```text

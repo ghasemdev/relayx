@@ -6,25 +6,25 @@ This document outlines the sequential 7-phase implementation plan, component del
 
 ## 1. Development Phases
 
-### Phase 1 — Server Foundation (`relayx-server`)
-- [ ] Initialize Go module `relayx-server` (`go.mod`).
-- [ ] Implement standalone CLI entry point with flags:
+### Phase 1 — Server Foundation (`relayx-server`) `[COMPLETED - PR #1]`
+- [x] Initialize Go module `relayx-server` (`go.mod`).
+- [x] Implement standalone CLI entry point with flags:
   - `--host` (default: `127.0.0.1`)
   - `--port` (default: `8080`)
   - `--data` (default: `./data`)
   - `--debug` (default: `false`)
-- [ ] Integrate embedded SQLite engine creating `./data/sms.db` on first start.
-- [ ] Embed SQL schema migrations via `go:embed` (`migrations/*.sql`).
-- [ ] Implement Domain entities (`Message`, `Device`, `Rule`, `Pairing`).
-- [ ] Build Message & Device Repository with index optimizations.
-- [ ] Implement REST API (`/api/v1`):
+- [x] Integrate embedded SQLite engine creating `./data/sms.db` on first start.
+- [x] Embed SQL schema migrations via `go:embed` (`migrations/*.sql`).
+- [x] Implement Domain entities (`Message`, `Device`, `Rule`, `Pairing`).
+- [x] Build Message & Device Repository with index optimizations.
+- [x] Implement REST API (`/api/v1`):
   - `GET /health`
   - `POST /messages` (with Bearer device token authentication)
   - `GET /messages`, `/messages/latest`, `/messages/{id}`, `/messages/search`
-- [ ] Implement Graceful Shutdown (SIGINT/SIGTERM) and zero-sensitive logging middleware.
-- [ ] Unit & integration test suite for server endpoints and storage.
+- [x] Implement Graceful Shutdown (SIGINT/SIGTERM) and zero-sensitive logging middleware.
+- [x] Unit & integration test suite for server endpoints and storage.
 
-### Phase 2 — Android Gateway Foundation (`relayx-android`)
+### Phase 2 — Android Gateway Foundation (`relayx-android`) `[ACTIVE]`
 - [ ] Establish Android application module structure with Jetpack Compose.
 - [ ] Design minimal diagnostic dashboard:
   - Status indicators (Forwarding ON/OFF, Server status, Rules count, Last message time)
