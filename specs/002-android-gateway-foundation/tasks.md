@@ -3,6 +3,7 @@
 **Feature**: `specs/002-android-gateway-foundation`
 **Date**: 2026-09-11
 **Status**: Ready for Implementation
+**Dependencies Diagram**: [task-dependencies.md](task-dependencies.md)
 
 ---
 
@@ -128,6 +129,8 @@
 ---
 
 ## Dependencies & Execution Order
+
+> See [task-dependencies.md](task-dependencies.md) for the complete 12-wave Mermaid directed acyclic graph (DAG) and critical path analysis.
 
 ```text
 Phase 1 (Setup) ──> Phase 2 (Foundational)
