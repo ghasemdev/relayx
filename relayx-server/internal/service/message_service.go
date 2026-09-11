@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"relayx-server/internal/domain"
+	"relayx-server/internal/hook"
 )
 
 var (
@@ -25,10 +26,15 @@ type IngestInput struct {
 
 type MessageService struct {
 	repo domain.MessageRepository
+	hook hook.Hook
 }
 
 func NewMessageService(repo domain.MessageRepository) *MessageService {
 	return &MessageService{repo: repo}
+}
+
+func (s *MessageService) SetHook(h hook.Hook) {
+	s.hook = h
 }
 
 // Ingest handles validation, server metadata assignment, and idempotent persistence.
@@ -67,6 +73,10 @@ func (s *MessageService) Ingest(ctx context.Context, authenticatedDeviceID strin
 	persisted, isCreated, err := s.repo.Create(ctx, msg)
 	if err != nil {
 		return nil, false, fmt.Errorf("persisting message: %w", err)
+	}
+
+	if isCreated && s.hook != nil {
+		s.hook.Trigger(ctx, persisted)
 	}
 
 	return persisted, isCreated, nil

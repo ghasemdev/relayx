@@ -64,20 +64,24 @@ This document outlines the sequential 7-phase implementation plan, component del
 - [ ] Enforce independent MCP authorization domain (Agent token != Device write token).
 - [ ] Integration tests verifying MCP tools and timeout mechanics.
 
-### Phase 5 — Testing Infrastructure & Mock SMS
+### Phase 5 — Testing Infrastructure, Mock SMS & Emulator Relay
 - [ ] Build Mock SMS simulator within Android Developer Tools:
   - Interactive UI to inject mock sender and message body.
 - [ ] Ensure strict architectural parity: Mock SMS must traverse the exact production pipeline:
   `Mock Input -> Filter Engine -> Transformation -> Room Queue -> HTTP Client -> Server -> SQLite -> MCP`.
+- [ ] Server Emulator & Simulator Ingestion Hook:
+  - Configurable server CLI flags: `--adb-port` (e.g., `5554`) and `--exec-hook` (custom script / command).
+  - Automatically executes `adb -s emulator-<port> emu sms send "<sender>" "<text>"` or iOS Simulator hook upon message ingestion.
+  - Enables physical phone with live SIM to relay OTP/SMS to server, which immediately re-injects into Android Emulator or iOS Simulator for UI automation testing.
 - [ ] Create automated End-to-End integration test validating end-to-end OTP relay without a SIM card.
 - [ ] Failure recovery tests: Network outage simulation, server restart survival, and duplicate submission idempotency checks.
 
-### Phase 6 — Two-Phone Testing Mode
+### Phase 6 — Two-Phone & Virtual Device Testing Mode
 - [ ] Model device pairing protocol (6-digit numeric pairing code or QR code).
 - [ ] Implement secure WebSocket device-to-device communication channel.
-- [ ] Configure roles:
-  - **Phone A**: SIM-equipped SMS source.
-  - **Phone B**: Automation Client without SIM.
+- [ ] Configure relay topologies:
+  - **Topology 1 (Physical-to-Emulator)**: Phone A (physical SIM) -> RelayX Server -> `adb emu sms send` into Android Emulator / `simctl` into iOS Simulator.
+  - **Topology 2 (Two-Phone Pair)**: Phone A (SIM-equipped) -> Server / WebSocket -> Phone B (automation device without SIM).
 - [ ] Stream filtered SMS events over WebSocket with ACKs, reconnects, and heartbeats.
 - [ ] Implement optional Android Accessibility Service integration on Phone B for UI automation testing.
 

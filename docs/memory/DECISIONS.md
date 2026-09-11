@@ -14,6 +14,7 @@ Last reviewed: 2026-09-07
 | [ADR-006](#adr-006-unified-pipeline-execution-for-mock-sms) | Unified Pipeline Execution for Mock SMS | Accepted | 2026-09-07 |
 | [ADR-007](#adr-007-pure-go-sqlite-driver-for-cgo-free-cross-compilation) | Pure-Go SQLite Driver for CGO-Free Cross-Compilation | Accepted | 2026-09-07 |
 | [ADR-008](#adr-008-structured-redaction-handler-for-zero-leakage-privacy) | Structured Redaction Handler for Zero-Leakage Privacy | Accepted | 2026-09-07 |
+| [ADR-009](#adr-009-server-side-ingestion-hooks-for-emulator-and-simulator-relay) | Server-Side Ingestion Hooks for Emulator and Simulator Relay | Accepted | 2026-09-11 |
 
 ---
 
@@ -75,4 +76,16 @@ Last reviewed: 2026-09-07
   - Positive: Enforces Constitution Principle III across all existing and future server packages automatically.
   - Positive: Validated with automated assertions in `logger_test.go` ensuring zero leakage even in `--debug` mode.
   - Tradeoff: Diagnostic logs must rely strictly on metadata (sender, message ID, timestamp, byte length) rather than inspecting raw payloads.
+
+### ADR-009: Server-Side Ingestion Hooks for Emulator and Simulator Relay
+- **Context**: In real-world automated testing, a physical smartphone with a live cellular carrier SIM receives 2FA/bank verification SMS. Testing scripts and UI automation frequently run inside virtual devices (Android Emulator or iOS Simulator) without SIM capabilities.
+- **Decision**: Provide configurable server-side ingestion hooks in `relayx-server`:
+  1. `--adb-port <port>` (e.g. `5554`): Automatically executes `adb -s emulator-<port> emu sms send "<sender>" "<body/code>"` whenever a new SMS is ingested.
+  2. `--exec-hook <path>`: Runs a custom executable or script with message metadata and payload passed via arguments and environment variables (`RELAYX_SENDER`, `RELAYX_MESSAGE_ID`, `RELAYX_DEVICE_ID`, `RELAYX_BODY`) to support iOS Simulator (`xcrun simctl push` / SMS injection) or third-party webhooks.
+  3. Execution is asynchronous and decoupled from HTTP response latency.
+  4. Logging respects Constitution Principle III by redacting sensitive payload bodies.
+- **Consequences**:
+  - Positive: Enables seamless Physical SIM Phone -> RelayX Server -> Emulator/Simulator automation flow.
+  - Positive: Test suites can receive real verification codes directly inside running emulators without manual code copying.
+  - Tradeoff: Requires ADB or simulator tools to be available in the server runtime environment if hooks are enabled.
 

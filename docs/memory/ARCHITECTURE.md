@@ -51,6 +51,26 @@ RelayX bridges real-world telecom SMS with local AI automation through a privacy
 └───────────────────────────────────────────────────────────┘
 ```
 
+### Physical-to-Emulator / Simulator Ingestion Hook
+```text
+┌──────────────────────┐    HTTP POST /messages     ┌────────────────────────┐
+│ Phone A (Physical)   │ ─────────────────────────> │ RelayX Server          │
+│ Live SIM / SMS Ingest│ (Bearer <device-token>)    │ (Go Standalone Daemon) │
+└──────────────────────┘                            └───────────┬────────────┘
+                                                                │ Exec Hook
+                                                                ▼
+                                                    ┌────────────────────────┐
+                                                    │ adb emu sms send <otp> │
+                                                    │ (or xcrun simctl for   │
+                                                    │  iOS Simulator)        │
+                                                    └───────────┬────────────┘
+                                                                ▼
+                                                    ┌────────────────────────┐
+                                                    │ Android Emulator /     │
+                                                    │ iOS Simulator (Testing)│
+                                                    └────────────────────────┘
+```
+
 ### Optional Two-Phone Testing Mode
 ```text
 ┌──────────────────────┐            WebSocket            ┌──────────────────────┐
