@@ -1,12 +1,22 @@
 # Worklog
 
-Last reviewed: 2026-09-07
+Last reviewed: 2026-09-12
 
 This log captures high-level milestones and systemic architectural transitions for RelayX.
 
 ---
 
 ## Milestones & Architectural History
+
+### 2026-09-12: Phase 2 Android Gateway Foundation Implemented, Hardened & Verified
+- **Objective**: Deliver resilient, privacy-preserving Android Gateway client (`relayx-android`) for RelayX.
+- **Key Actions**:
+  - Implemented Jetpack Compose Material 3 diagnostic dashboard and server configuration screen using Navigation 3 and Koin 4.2.
+  - Built durable Room message outbox queue (`OutboxMessageEntity`) and WorkManager dispatch pipeline with exponential backoff.
+  - Built high-priority `SmsReceiver` with multipart PDU reassembly and `BootReceiver` for boot persistence.
+  - Built `RelayLogger` enforcing zero-sensitive logging of message bodies and OTP tokens.
+  - Hardened with `allowBackup="false"`, scoped `network_security_config.xml`, and server hook input sanitization.
+  - Verified 100% test pass rate across 12 Android unit tests, 19 Go server tests, and 12 end-to-end emulator QA scenarios.
 
 ### 2026-09-07: Phase 1 Server Foundation Implemented & Verified
 - **Objective**: Deliver self-contained standalone Go server daemon with embedded SQLite storage, authenticated REST API, and cross-compilation verification.

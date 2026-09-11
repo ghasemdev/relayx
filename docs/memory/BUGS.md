@@ -1,6 +1,6 @@
 # Bugs & Regression Patterns
 
-Last reviewed: 2026-09-07
+Last reviewed: 2026-09-12
 
 This document tracks identified failure modes, architectural edge cases, and regression traps to prevent during development.
 
@@ -32,3 +32,14 @@ This document tracks identified failure modes, architectural edge cases, and reg
 - **Symptom**: Expecting Accessibility Service to unlock a PIN-locked phone or operate when phone is turned off.
 - **Root Cause**: Misunderstanding Android OS security and hardware boundaries.
 - **Prevention**: Clearly document physical constraints in documentation: screen off is supported, but locked keystore restrictions apply. Power-off execution is physically impossible.
+
+### 6. CR/LF Telnet Command Injection in Android Emulator Console Hooks
+- **Symptom**: Ingesting messages containing newlines (`\r\n`) through `--adb-port` hook causes unexpected emulator console command execution or truncated SMS bodies.
+- **Root Cause**: `adb emu sms send <sender> <body>` transmits commands over the emulator's raw telnet console, where unescaped CR/LF characters trigger new commands.
+- **Prevention**: Enforce `SanitizeADBInput` on all arguments before passing to `adb emu`, stripping `\r` and translating `\n` to spaces. Verify via automated unit tests in `hook_test.go`.
+
+### 7. Physical ADB Extraction of Local SQLite & DataStore Preferences
+- **Symptom**: Running `adb backup` on an unlocked device extracts outbox SMS history, OTPs, and device Bearer tokens.
+- **Root Cause**: Default Android manifest configuration allows full backup unless explicitly disabled.
+- **Prevention**: Keep `android:allowBackup="false"` set in `AndroidManifest.xml` and maintain explicit exclusion rules in `backup_rules.xml` and `data_extraction_rules.xml`.
+
