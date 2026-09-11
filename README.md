@@ -69,82 +69,137 @@
 
 ---
 
+## Roadmap & Implementation Status
+
+- [x] **Phase 1: Server Foundation (`relayx-server`)**: Standalone Go daemon, embedded SQLite WAL engine, embedded migrations, Bearer token authentication, idempotency deduplication, health monitoring, structured logging redaction, and ingestion hooks.
+- [x] **Phase 2: Android Gateway Foundation (`relayx-android`)**: Kotlin 2.4.20, Compose Material 3, Navigation 3, Koin 4.2 App Startup, Room durable offline outbox, WorkManager exponential backoff dispatch, multipart SMS receiver, boot persistence, and zero-sensitive logging.
+- [ ] **Phase 3: Local Pre-Filtering Engine & Security Rules**: Rule editor UI, regex/substring matching, action policies (`ALLOW`, `DROP`, `TRANSFORM`), and test sandbox.
+- [ ] **Phase 4: Multi-Device Sync & Pairing**: Encrypted WebSocket synchronization, QR pairing, and two-phone automation mode.
+- [ ] **Phase 5: Agent MCP Server**: Full Model Context Protocol implementation (`get_latest_message`, `wait_for_message`, `get_otp`).
+- [ ] **Phase 6: Developer Tooling & Simulation**: Mock SMS injector, interactive sandbox, and CLI inspector.
+- [ ] **Phase 7: Hardening, Packaging & Release**: Production signing, APK optimization, security audits, and cross-platform releases.
+
+---
+
 ## Quickstart Guide
 
-### 1. Start the Server
-Download or build the `sms-server` binary for your platform (Linux AMD64/ARM64, macOS ARM64/AMD64):
+### 1. Build & Run the Go Server (`relayx-server`)
+
+The server is built in Go with pure-Go SQLite (`modernc.org/sqlite`) for zero-CGO static cross-compilation:
 
 ```bash
-# Start server with default localhost binding (127.0.0.1:8080)
-./sms-server
+# Navigate to server directory
+cd relayx-server
 
-# Or bind to LAN for local network access
-./sms-server --host 0.0.0.0 --port 8080
+# Build executable
+go build -o ../bin/relayx-server ./cmd/server
+
+# Start server (default: 127.0.0.1:8080, db: ./data/sms.db)
+./bin/relayx-server
+
+# Start with emulator auto-relay hook enabled
+./bin/relayx-server --port 8080 --adb-port 5554 --token "secret-device-token"
 ```
 
-On first startup, the server automatically creates `./data/sms.db` and applies embedded migrations.
+On first launch, `./data/sms.db` is auto-created with embedded schema migrations applied.
 
-### 2. Configure the Android App (`relayx-android`)
+### 2. Build & Install Android App (`relayx-android`)
+
+The gateway app requires Android 7.0+ (API 24) through Android 15+ (API 37):
+
+```bash
+# Build and run unit test suite
+./gradlew test
+
+# Assemble debug APK
+./gradlew assembleDebug
+
+# Install onto connected phone or emulator
+adb install -r relayx-android/build/outputs/apk/debug/relayx-android-debug.apk
+```
+
+### 3. Configure the Gateway
+
 1. Open **RelayX** on your Android device.
-2. In **Settings**, enter your server address (e.g. `http://192.168.1.20:8080`) and device authorization token.
-3. Tap **Test Connection** to verify connectivity.
+2. Navigate to the **Settings** tab:
+   - **Server Host**: `10.0.2.2` (for Android Emulator) or your LAN IP (e.g. `192.168.1.100`)
+   - **Port**: `8080`
+   - **Use HTTPS**: Disabled for local development (cleartext is scoped via `network_security_config.xml`)
+   - **Device ID**: Auto-generated (or custom identifier)
+   - **Device Bearer Token**: Must match `--token` specified on the server
+3. Tap **Test Connection** to probe `/api/v1/health` and verify latency.
+4. On the **Dashboard** tab, toggle **Gateway Active** to enable interception.
 
-### 3. Set Up a Filter Rule
-In the **Rules** tab, add an allowlist rule:
-- **Sender**: `BANK`
-- **Regex**: `Your verification code is (\d{6})`
-- **Action**: `FORWARD_TRANSFORMED` (or `FORWARD_RAW`)
+### 4. Inject Test SMS via Emulator Hook (No SIM Required)
 
-### 4. Test with Mock SMS (No SIM Required)
-1. Open **Developer Tools** in the app.
-2. Enter Sender: `BANK`, Body: `Your verification code is 482913`.
-3. Tap **Simulate SMS**.
-4. The message will be filtered, queued, and delivered to the server.
+You can simulate inbound SMS directly using Android ADB:
 
-### 5. Connect Your AI Agent via MCP
-Add RelayX to your MCP configuration (e.g. `claude_desktop_config.json` or Antigravity MCP settings):
-
-```json
-{
-  "mcpServers": {
-    "relayx": {
-      "command": "./sms-server",
-      "args": ["--mcp-stdio"]
-    }
-  }
-}
+```bash
+# Send test SMS from bank shortcode
+adb emu sms send 12345 "Your verification code is 849201"
 ```
 
-The AI Agent can now call MCP tools:
-- `get_latest_message(sender="BANK")`
-- `wait_for_message(sender="BANK", timeout=60)`
-- `get_otp(sender="BANK")`
+The gateway immediately intercepts the message, commits it to Room, masks the payload in logs, and dispatches it asynchronously to `relayx-server`.
 
 ---
 
 ## Server CLI Options
 
-```bash
-sms-server [OPTIONS]
+```text
+relayx-server [OPTIONS]
 
 Options:
-  --host <string>     Bind address (default: 127.0.0.1)
-  --port <int>        HTTP port (default: 8080)
-  --data <string>     Data directory path (default: ./data)
-  --debug             Enable verbose diagnostic logging (no message bodies)
-  --lan               Shorthand for --host 0.0.0.0
-  --mcp-stdio         Expose MCP server over stdin/stdout for local agents
-  --help              Display help information
+  -host string        HTTP server bind address (default: "127.0.0.1")
+  -port int           HTTP server listen port (default: 8080)
+  -db string          SQLite database file path (default: "./data/sms.db")
+  -token string       Authorized device Bearer token (enforces SHA-256 verification)
+  -debug              Enable verbose diagnostic logging (body text remains redacted)
+  -adb-port int       Android emulator port to relay SMS via adb emu sms send (e.g. 5554)
+  -exec-hook string   Custom script hook to execute on message arrival
+  -help               Display help information
 ```
 
 ---
 
-## Non-Goals & Privacy Pledge
+## Security & Privacy Architecture
 
-- **No Public Gateway**: RelayX is designed strictly for personal automation on trusted local networks.
-- **No Spam / Bulk Messaging**: Outbound mass SMS is not supported.
-- **No Lock-Screen Bypass**: Accessibility and automation integrations respect native Android OS security models.
-- **No Telemetry**: RelayX contains zero analytics, tracking, or cloud dependencies.
+- **Constitution-Governed**: All design decisions strictly adhere to the [RelayX Constitution](.specify/memory/constitution.md).
+- **Dual Security Domains**: Devices only hold write tokens for `POST /api/v1/messages`. MCP readers require separate credentials.
+- **Physical Backup Disablement**: `android:allowBackup="false"` with explicit exclusions for SQLite and DataStore in `backup_rules.xml` and `data_extraction_rules.xml` prevents physical `adb backup` data extraction.
+- **Scoped Cleartext Traffic**: `network_security_config.xml` blocks all external cleartext HTTP, restricting unencrypted traffic exclusively to `10.0.2.2`, `127.0.0.1`, and `localhost`.
+- **CRLF Injection Hardened**: Server emulator hooks sanitize carriage returns (`\r`) and newlines (`\n`) to prevent telnet console injection.
+- **Strict Zero-Sensitive Logging**: `RelayLogger` on Android and `RedactingHandler` on the server scrub message bodies, OTP codes, and auth headers.
+
+---
+
+## Project Structure
+
+```text
+relayx/
+├── relayx-android/               # Android Gateway Application
+│   ├── src/main/java/.../        # Kotlin 2.4 Compose + Room + WorkManager
+│   │   ├── data/                 # Room DB, DAOs, DataStore Preferences, Receivers, Worker
+│   │   ├── di/                   # Koin 4.2 modules & App Startup Initializer
+│   │   ├── domain/               # Core models & Use Cases
+│   │   ├── ui/                   # Jetpack Compose screens (Dashboard, Settings, NavGraph)
+│   │   ├── util/                 # RelayLogger (privacy sanitizer), AppDispatchers
+│   │   └── viewmodel/            # DashboardViewModel, SettingsViewModel
+│   └── src/test/                 # Unit test suite (Preferences, Client, Privacy Logger)
+├── relayx-server/                # Standalone Go Relay Daemon
+│   ├── cmd/server/               # Entrypoint & CLI flag parser
+│   ├── internal/api/             # HTTP routes, middleware, health, and message handlers
+│   ├── internal/config/          # Configuration management
+│   ├── internal/domain/          # Device and Message domain models
+│   ├── internal/hook/            # ADB emulator & custom script relay hooks
+│   ├── internal/logging/         # Structured privacy-redacting slog handler
+│   ├── internal/service/         # Ingestion, authentication, and deduplication services
+│   ├── internal/storage/         # Pure-Go SQLite WAL pool & embedded migrator
+│   └── migrations/               # Embedded SQL migration scripts (001_initial.sql)
+├── specs/                        # Spec-Driven Development (SDD) feature specifications
+│   ├── 001-server-foundation/    # Phase 1 spec, plan, tasks, and QA reports
+│   └── 002-android-gateway-foundation/ # Phase 2 spec, plan, tasks, and QA reports
+└── docs/                         # Architecture, roadmap, security reviews, and memory hub
+```
 
 ---
 
@@ -153,5 +208,7 @@ Options:
 - [System Architecture](docs/memory/ARCHITECTURE.md)
 - [Constitution & Core Principles](.specify/memory/constitution.md)
 - [Architecture Decision Records (ADRs)](docs/memory/DECISIONS.md)
-- [Development Roadmap & Definition of Done](docs/roadmap.md)
+- [Bugs & Regression Patterns](docs/memory/BUGS.md)
+- [Milestones & Worklog](docs/memory/WORKLOG.md)
+- [Development Roadmap](docs/roadmap.md)
 - [Memory Index](docs/memory/INDEX.md)
