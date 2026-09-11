@@ -1,44 +1,53 @@
 package com.parsomash.relayx.data.remote
 
 import com.parsomash.relayx.data.remote.dto.IngestMessageRequestDto
-import kotlinx.coroutines.runBlocking
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
+import com.parsomash.relayx.util.AppDispatchers
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RelayServerClientTest {
 
-    private lateinit var mockServer: MockWebServer
-    private lateinit var client: RelayServerClient
-
-    @Before
-    fun setUp() {
-        mockServer = MockWebServer()
-        mockServer.start()
-        client = RelayServerClient()
-    }
-
-    @After
-    fun tearDown() {
-        mockServer.shutdown()
-    }
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val appDispatchers = AppDispatchers(
+        io = testDispatcher,
+        default = testDispatcher,
+        main = testDispatcher
+    )
 
     @Test
-    fun testCheckHealthSuccess() = runBlocking {
-        mockServer.enqueue(
-            MockResponse()
-                .setResponseCode(200)
-                .setHeader("Content-Type", "application/json")
-                .setBody("""{"status":"ok","uptime_seconds":120,"database":"connected","version":"0.1.0"}""")
+    fun testCheckHealthSuccess() = runTest {
+        val mockEngine = MockEngine { request ->
+            assertEquals("/api/v1/health", request.url.encodedPath)
+            assertEquals("GET", request.method.value)
+            respond(
+                content = """{"status":"ok","uptime_seconds":120,"database":"connected","version":"0.1.0"}""",
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = RelayServerClient(
+            httpClient = HttpClient(mockEngine) {
+                install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
+            },
+            dispatchers = appDispatchers
         )
 
-        val baseUrl = mockServer.url("").toString().removeSuffix("/")
-        val result = client.checkHealth(baseUrl)
-
+        val result = client.checkHealth("http://127.0.0.1:8080")
         assertTrue(result.isSuccess)
         val (health, latency) = result.getOrThrow()
         assertEquals("ok", health.status)
@@ -46,36 +55,48 @@ class RelayServerClientTest {
         assertEquals("0.1.0", health.version)
         assertEquals(120L, health.uptimeSeconds)
         assertTrue(latency >= 0)
-
-        val recordedRequest = mockServer.takeRequest()
-        assertEquals("/api/v1/health", recordedRequest.path)
-        assertEquals("GET", recordedRequest.method)
     }
 
     @Test
-    fun testCheckHealthHttpError() = runBlocking {
-        mockServer.enqueue(
-            MockResponse()
-                .setResponseCode(500)
-                .setBody("Internal Server Error")
+    fun testCheckHealthHttpError() = runTest {
+        val mockEngine = MockEngine {
+            respond(
+                content = "Internal Server Error",
+                status = HttpStatusCode.InternalServerError
+            )
+        }
+
+        val client = RelayServerClient(
+            httpClient = HttpClient(mockEngine) {
+                install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
+            },
+            dispatchers = appDispatchers
         )
 
-        val baseUrl = mockServer.url("").toString().removeSuffix("/")
-        val result = client.checkHealth(baseUrl)
-
+        val result = client.checkHealth("http://127.0.0.1:8080")
         assertTrue(result.isFailure)
     }
 
     @Test
-    fun testIngestMessageSuccessWithBearerToken() = runBlocking {
-        mockServer.enqueue(
-            MockResponse()
-                .setResponseCode(201)
-                .setHeader("Content-Type", "application/json")
-                .setBody("""{"messageId":"msg-abc-123","status":"RECEIVED"}""")
+    fun testIngestMessageSuccessWithBearerToken() = runTest {
+        val mockEngine = MockEngine { request ->
+            assertEquals("/api/v1/messages", request.url.encodedPath)
+            assertEquals("POST", request.method.value)
+            assertEquals("Bearer secret-token-token", request.headers[HttpHeaders.Authorization])
+            respond(
+                content = """{"messageId":"msg-abc-123","status":"RECEIVED"}""",
+                status = HttpStatusCode.Created,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = RelayServerClient(
+            httpClient = HttpClient(mockEngine) {
+                install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
+            },
+            dispatchers = appDispatchers
         )
 
-        val baseUrl = mockServer.url("").toString().removeSuffix("/")
         val payload = IngestMessageRequestDto(
             messageId = "msg-abc-123",
             deviceId = "pixel-test-01",
@@ -86,7 +107,7 @@ class RelayServerClientTest {
         )
 
         val result = client.ingestMessage(
-            baseUrl = baseUrl,
+            baseUrl = "http://127.0.0.1:8080",
             bearerToken = "secret-token-token",
             payload = payload
         )
@@ -95,24 +116,25 @@ class RelayServerClientTest {
         val response = result.getOrThrow()
         assertEquals("msg-abc-123", response.messageId)
         assertEquals("RECEIVED", response.status)
-
-        val recorded = mockServer.takeRequest()
-        assertEquals("/api/v1/messages", recorded.path)
-        assertEquals("POST", recorded.method)
-        assertEquals("Bearer secret-token-token", recorded.getHeader("Authorization"))
-        assertTrue(recorded.body.readUtf8().contains("msg-abc-123"))
     }
 
     @Test
-    fun testIngestMessageUnauthorized() = runBlocking {
-        mockServer.enqueue(
-            MockResponse()
-                .setResponseCode(401)
-                .setHeader("Content-Type", "application/json")
-                .setBody("""{"error":"unauthorized"}""")
+    fun testIngestMessageUnauthorized() = runTest {
+        val mockEngine = MockEngine {
+            respond(
+                content = """{"error":"unauthorized"}""",
+                status = HttpStatusCode.Unauthorized,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        val client = RelayServerClient(
+            httpClient = HttpClient(mockEngine) {
+                install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
+            },
+            dispatchers = appDispatchers
         )
 
-        val baseUrl = mockServer.url("").toString().removeSuffix("/")
         val payload = IngestMessageRequestDto(
             messageId = "msg-fail",
             deviceId = "pixel-test-01",
@@ -122,7 +144,7 @@ class RelayServerClientTest {
         )
 
         val result = client.ingestMessage(
-            baseUrl = baseUrl,
+            baseUrl = "http://127.0.0.1:8080",
             bearerToken = "invalid-token",
             payload = payload
         )

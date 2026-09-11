@@ -27,7 +27,7 @@ abstract class RelayDatabase : RoomDatabase() {
                     RelayDatabase::class.java,
                     DATABASE_NAME
                 )
-                .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()
                 INSTANCE = instance
                 instance

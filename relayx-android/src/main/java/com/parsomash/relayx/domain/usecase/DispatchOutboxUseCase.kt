@@ -5,25 +5,30 @@ import com.parsomash.relayx.data.local.PreferencesRepository
 import com.parsomash.relayx.data.remote.RelayServerClient
 import com.parsomash.relayx.data.remote.dto.IngestMessageRequestDto
 import com.parsomash.relayx.domain.model.DeliveryStatus
+import com.parsomash.relayx.util.AppDispatchers
 import com.parsomash.relayx.util.RelayLogger
+import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Factory
 
+@Factory
 class DispatchOutboxUseCase(
     private val outboxDao: OutboxMessageDao,
     private val preferencesRepository: PreferencesRepository,
-    private val client: RelayServerClient = RelayServerClient()
+    private val client: RelayServerClient = RelayServerClient(),
+    private val dispatchers: AppDispatchers = AppDispatchers()
 ) {
 
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(): Boolean = withContext(dispatchers.io) {
         val config = preferencesRepository.getConfig()
         if (!config.forwardingEnabled) {
             RelayLogger.d("Dispatch", "Forwarding disabled; skipping queue dispatch")
-            return true
+            return@withContext true
         }
 
         val pendingEntities = outboxDao.getPendingMessages(limit = 25)
         if (pendingEntities.isEmpty()) {
             RelayLogger.d("Dispatch", "Outbox queue is empty")
-            return true
+            return@withContext true
         }
 
         RelayLogger.i("Dispatch", "Processing ${pendingEntities.size} pending outbox messages")
@@ -84,6 +89,6 @@ class DispatchOutboxUseCase(
             )
         }
 
-        return allSuccess
+        allSuccess
     }
 }

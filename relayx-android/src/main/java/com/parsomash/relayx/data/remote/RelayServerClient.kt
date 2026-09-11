@@ -3,49 +3,49 @@ package com.parsomash.relayx.data.remote
 import com.parsomash.relayx.data.remote.dto.HealthResponseDto
 import com.parsomash.relayx.data.remote.dto.IngestMessageRequestDto
 import com.parsomash.relayx.data.remote.dto.IngestMessageResponseDto
+import com.parsomash.relayx.util.AppDispatchers
 import com.parsomash.relayx.util.RelayLogger
-import kotlinx.coroutines.Dispatchers
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
+import org.koin.core.annotation.Single
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
+@Single
 class RelayServerClient(
-    private val client: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(3, TimeUnit.SECONDS)
-        .readTimeout(5, TimeUnit.SECONDS)
-        .writeTimeout(5, TimeUnit.SECONDS)
-        .build(),
-    private val json: Json = Json { ignoreUnknownKeys = true }
+    private val httpClient: HttpClient = createDefaultHttpClient(),
+    private val dispatchers: AppDispatchers = AppDispatchers()
 ) {
 
-    private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
-
-    suspend fun checkHealth(baseUrl: String): Result<Pair<HealthResponseDto, Long>> = withContext(Dispatchers.IO) {
-        val url = "$baseUrl/api/v1/health"
-        val request = Request.Builder()
-            .url(url)
-            .get()
-            .header("Accept", "application/json")
-            .build()
-
+    suspend fun checkHealth(baseUrl: String): Result<Pair<HealthResponseDto, Long>> = withContext(dispatchers.io) {
+        val cleanBaseUrl = baseUrl.trimEnd('/')
+        val url = "$cleanBaseUrl${ApiConstants.PATH_HEALTH}"
         val startTime = System.currentTimeMillis()
         try {
-            client.newCall(request).execute().use { response ->
-                val latency = System.currentTimeMillis() - startTime
-                if (!response.isSuccessful) {
-                    return@withContext Result.failure(
-                        IOException("Server returned HTTP ${response.code}: ${response.message}")
-                    )
-                }
-                val body = response.body?.string()
-                    ?: return@withContext Result.failure(IOException("Empty response body"))
-                val health = json.decodeFromString<HealthResponseDto>(body)
+            val response = httpClient.get(url) {
+                header(ApiConstants.HEADER_ACCEPT, ApiConstants.CONTENT_TYPE_JSON)
+            }
+            val latency = System.currentTimeMillis() - startTime
+            if (response.status.value in 200..299) {
+                val health = response.body<HealthResponseDto>()
                 Result.success(Pair(health, latency))
+            } else {
+                Result.failure(
+                    IOException("Server returned HTTP ${response.status.value}: ${response.status.description}")
+                )
             }
         } catch (e: Exception) {
             RelayLogger.w("Client", "Health check failed for $url", e)
@@ -57,43 +57,56 @@ class RelayServerClient(
         baseUrl: String,
         bearerToken: String,
         payload: IngestMessageRequestDto
-    ): Result<IngestMessageResponseDto> = withContext(Dispatchers.IO) {
-        val url = "$baseUrl/api/v1/messages"
-        val jsonPayload = json.encodeToString(IngestMessageRequestDto.serializer(), payload)
-        val body = jsonPayload.toRequestBody(jsonMediaType)
-
-        val requestBuilder = Request.Builder()
-            .url(url)
-            .post(body)
-            .header("Content-Type", "application/json")
-            .header("Accept", "application/json")
-
-        if (bearerToken.isNotBlank()) {
-            requestBuilder.header("Authorization", "Bearer $bearerToken")
-        }
-
+    ): Result<IngestMessageResponseDto> = withContext(dispatchers.io) {
+        val cleanBaseUrl = baseUrl.trimEnd('/')
+        val url = "$cleanBaseUrl${ApiConstants.PATH_MESSAGES}"
         try {
-            client.newCall(requestBuilder.build()).execute().use { response ->
-                val responseBody = response.body?.string().orEmpty()
-                if (response.isSuccessful) {
-                    val result = if (responseBody.isNotBlank()) {
-                        json.decodeFromString<IngestMessageResponseDto>(responseBody)
-                    } else {
-                        IngestMessageResponseDto(status = "RECEIVED")
-                    }
-                    RelayLogger.i("Client", "Message ${payload.messageId} ingested successfully (HTTP ${response.code})")
-                    Result.success(result)
-                } else if (response.code == 401) {
-                    RelayLogger.e("Client", "Ingestion rejected: Unauthorized Bearer Token")
-                    Result.failure(IOException("HTTP 401 Unauthorized: Invalid device token"))
-                } else {
-                    RelayLogger.e("Client", "Ingestion failed with HTTP ${response.code}")
-                    Result.failure(IOException("HTTP ${response.code}: $responseBody"))
+            val response = httpClient.post(url) {
+                header(ApiConstants.HEADER_ACCEPT, ApiConstants.CONTENT_TYPE_JSON)
+                contentType(ContentType.Application.Json)
+                if (bearerToken.isNotBlank()) {
+                    header(
+                        ApiConstants.HEADER_AUTHORIZATION,
+                        "${ApiConstants.HEADER_BEARER_PREFIX}$bearerToken"
+                    )
                 }
+                setBody(payload)
+            }
+
+            if (response.status.value in 200..299) {
+                val result = response.body<IngestMessageResponseDto>()
+                RelayLogger.i(
+                    "Client",
+                    "Message ${payload.messageId} ingested successfully (HTTP ${response.status.value})"
+                )
+                Result.success(result)
+            } else if (response.status == HttpStatusCode.Unauthorized) {
+                RelayLogger.e("Client", "Ingestion rejected: Unauthorized Bearer Token")
+                Result.failure(IOException("HTTP 401 Unauthorized: Invalid device token"))
+            } else {
+                val responseBody = response.bodyAsText()
+                RelayLogger.e("Client", "Ingestion failed with HTTP ${response.status.value}")
+                Result.failure(IOException("HTTP ${response.status.value}: $responseBody"))
             }
         } catch (e: Exception) {
             RelayLogger.w("Client", "Ingest message network exception for ID ${payload.messageId}", e)
             Result.failure(e)
+        }
+    }
+
+    companion object {
+        fun createDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                })
+            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = 5000
+                connectTimeoutMillis = 3000
+                socketTimeoutMillis = 5000
+            }
         }
     }
 }

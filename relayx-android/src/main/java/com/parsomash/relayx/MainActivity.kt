@@ -10,13 +10,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.parsomash.relayx.domain.usecase.GetGatewayStatsUseCase
-import com.parsomash.relayx.domain.usecase.ToggleForwardingUseCase
 import com.parsomash.relayx.ui.navigation.MainAppScaffold
 import com.parsomash.relayx.ui.theme.RelayxTheme
 import com.parsomash.relayx.viewmodel.DashboardViewModel
-import com.parsomash.relayx.viewmodel.SettingsViewModel
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -24,23 +21,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val app = application as RelayApplication
-        val preferencesRepo = app.preferencesRepository
-        val database = app.database
-
         setContent {
             RelayxTheme {
-                val dashboardViewModel: DashboardViewModel = viewModel {
-                    DashboardViewModel(
-                        getGatewayStatsUseCase = GetGatewayStatsUseCase(database.outboxMessageDao()),
-                        toggleForwardingUseCase = ToggleForwardingUseCase(preferencesRepo),
-                        preferencesRepository = preferencesRepo
-                    )
-                }
-
-                val settingsViewModel: SettingsViewModel = viewModel {
-                    SettingsViewModel(preferencesRepository = preferencesRepo)
-                }
+                val dashboardViewModel: DashboardViewModel = koinViewModel()
 
                 fun checkPermissions(): Boolean {
                     val receiveSms = ContextCompat.checkSelfPermission(
@@ -75,8 +58,6 @@ class MainActivity : ComponentActivity() {
                 }
 
                 MainAppScaffold(
-                    dashboardViewModel = dashboardViewModel,
-                    settingsViewModel = settingsViewModel,
                     onRequestPermissions = {
                         permissionLauncher.launch(
                             arrayOf(

@@ -28,13 +28,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.parsomash.relayx.R
 import com.parsomash.relayx.data.worker.MessageDispatchWorker
 import com.parsomash.relayx.viewmodel.DashboardViewModel
 import java.text.SimpleDateFormat
@@ -47,7 +49,7 @@ fun DashboardScreen(
     onRequestPermissions: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     Column(
@@ -58,7 +60,7 @@ fun DashboardScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "RelayX Gateway",
+            text = stringResource(R.string.dashboard_title),
             style = MaterialTheme.typography.headlineMedium
         )
 
@@ -77,14 +79,14 @@ fun DashboardScreen(
                         )
                         Spacer(modifier = Modifier.size(8.dp))
                         Text(
-                            text = "SMS Permissions Required",
+                            text = stringResource(R.string.permissions_required_title),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "RelayX needs SMS permissions to receive and forward verification messages.",
+                        text = stringResource(R.string.permissions_required_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
@@ -93,7 +95,7 @@ fun DashboardScreen(
                         onClick = onRequestPermissions,
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
-                        Text("Grant Permission")
+                        Text(stringResource(R.string.grant_permission))
                     }
                 }
             }
@@ -118,14 +120,17 @@ fun DashboardScreen(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = if (state.forwardingEnabled && state.hasSmsPermission) "Gateway Active" else "Gateway Idle",
+                        text = if (state.forwardingEnabled && state.hasSmsPermission)
+                            stringResource(R.string.gateway_active)
+                        else
+                            stringResource(R.string.gateway_idle),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
                         text = if (state.forwardingEnabled && state.hasSmsPermission)
-                            "Listening for incoming SMS..."
+                            stringResource(R.string.listening_sms)
                         else
-                            "Forwarding is disabled",
+                            stringResource(R.string.forwarding_disabled_desc),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -151,28 +156,29 @@ fun DashboardScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             StatusCard(
-                title = "Server",
+                title = stringResource(R.string.server_title),
                 value = "${state.serverHost}:${state.serverPort}",
                 icon = Icons.Default.Router,
                 modifier = Modifier.weight(1f)
             )
             StatusCard(
-                title = "Rules",
-                value = "${state.activeRulesCount} Active",
+                title = stringResource(R.string.rules_title),
+                value = stringResource(R.string.active_rules, state.activeRulesCount),
                 icon = Icons.Default.FilterAlt,
                 modifier = Modifier.weight(1f)
             )
         }
 
+        val neverText = stringResource(R.string.never_timestamp)
         StatusCard(
-            title = "Last Message Received",
-            value = formatTimestamp(state.stats.lastMessageTimestamp),
+            title = stringResource(R.string.last_message_received),
+            value = formatTimestamp(state.stats.lastMessageTimestamp, neverText),
             icon = Icons.Default.Schedule,
             modifier = Modifier.fillMaxWidth()
         )
 
         Text(
-            text = "Message Throughput",
+            text = stringResource(R.string.message_throughput),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(top = 8.dp)
         )
@@ -183,13 +189,13 @@ fun DashboardScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             CounterCard(
-                label = "Received",
+                label = stringResource(R.string.received),
                 count = state.stats.totalReceived,
                 icon = Icons.Default.Inbox,
                 modifier = Modifier.weight(1f)
             )
             CounterCard(
-                label = "Forwarded",
+                label = stringResource(R.string.forwarded),
                 count = state.stats.totalForwarded,
                 icon = Icons.Default.CheckCircle,
                 modifier = Modifier.weight(1f)
@@ -201,13 +207,13 @@ fun DashboardScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             CounterCard(
-                label = "Filtered",
+                label = stringResource(R.string.filtered),
                 count = state.stats.totalFiltered,
                 icon = Icons.Default.FilterAlt,
                 modifier = Modifier.weight(1f)
             )
             CounterCard(
-                label = "Failed",
+                label = stringResource(R.string.failed),
                 count = state.stats.totalFailed,
                 icon = Icons.Default.ReportProblem,
                 modifier = Modifier.weight(1f)
@@ -273,8 +279,8 @@ fun CounterCard(
     }
 }
 
-private fun formatTimestamp(timestamp: Long?): String {
-    if (timestamp == null || timestamp == 0L) return "Never"
+private fun formatTimestamp(timestamp: Long?, fallback: String): String {
+    if (timestamp == null || timestamp == 0L) return fallback
     val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     return sdf.format(Date(timestamp))
 }

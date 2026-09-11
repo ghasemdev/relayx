@@ -8,11 +8,11 @@ import com.parsomash.relayx.domain.usecase.GetGatewayStatsUseCase
 import com.parsomash.relayx.domain.usecase.ToggleForwardingUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.KoinViewModel
 
 data class DashboardUiState(
     val forwardingEnabled: Boolean = false,
@@ -23,19 +23,20 @@ data class DashboardUiState(
     val hasSmsPermission: Boolean = false
 )
 
+@KoinViewModel
 class DashboardViewModel(
     private val getGatewayStatsUseCase: GetGatewayStatsUseCase,
     private val toggleForwardingUseCase: ToggleForwardingUseCase,
     private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(DashboardUiState())
-    val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DashboardUiState>
+        field = MutableStateFlow(DashboardUiState())
 
     init {
         preferencesRepository.configFlow
             .onEach { config ->
-                _uiState.update {
+                uiState.update {
                     it.copy(
                         forwardingEnabled = config.forwardingEnabled,
                         serverHost = config.serverHost,
@@ -47,7 +48,7 @@ class DashboardViewModel(
 
         getGatewayStatsUseCase()
             .onEach { stats ->
-                _uiState.update { it.copy(stats = stats) }
+                uiState.update { it.copy(stats = stats) }
             }
             .launchIn(viewModelScope)
     }
@@ -62,6 +63,6 @@ class DashboardViewModel(
     }
 
     fun updatePermissionState(hasPermission: Boolean) {
-        _uiState.update { it.copy(hasSmsPermission = hasPermission) }
+        uiState.update { it.copy(hasSmsPermission = hasPermission) }
     }
 }

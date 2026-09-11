@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -18,7 +17,6 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Router
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,13 +28,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.parsomash.relayx.R
 import com.parsomash.relayx.domain.usecase.ConnectionTestResult
 import com.parsomash.relayx.viewmodel.SettingsViewModel
 
@@ -45,7 +45,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -55,15 +55,15 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Server Configuration",
+            text = stringResource(R.string.settings_title),
             style = MaterialTheme.typography.headlineMedium
         )
 
         OutlinedTextField(
             value = state.host,
             onValueChange = viewModel::onHostChanged,
-            label = { Text("Server Host / IP") },
-            placeholder = { Text("10.0.2.2 or 192.168.1.100") },
+            label = { Text(stringResource(R.string.host_label)) },
+            placeholder = { Text(stringResource(R.string.host_placeholder)) },
             leadingIcon = { Icon(Icons.Default.Router, contentDescription = null) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -72,8 +72,8 @@ fun SettingsScreen(
         OutlinedTextField(
             value = state.port,
             onValueChange = viewModel::onPortChanged,
-            label = { Text("Port") },
-            placeholder = { Text("8080") },
+            label = { Text(stringResource(R.string.port_label)) },
+            placeholder = { Text(stringResource(R.string.port_placeholder)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -87,9 +87,9 @@ fun SettingsScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(text = "Use HTTPS", style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(R.string.use_https_label), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    text = "Encrypt connection with TLS",
+                    text = stringResource(R.string.use_https_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -103,7 +103,8 @@ fun SettingsScreen(
         OutlinedTextField(
             value = state.deviceId,
             onValueChange = viewModel::onDeviceIdChanged,
-            label = { Text("Device ID") },
+            label = { Text(stringResource(R.string.device_id_label)) },
+            placeholder = { Text(stringResource(R.string.device_id_placeholder)) },
             leadingIcon = { Icon(Icons.Default.PhoneAndroid, contentDescription = null) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -112,8 +113,8 @@ fun SettingsScreen(
         OutlinedTextField(
             value = state.bearerToken,
             onValueChange = viewModel::onBearerTokenChanged,
-            label = { Text("Bearer Device Write Token") },
-            placeholder = { Text("rx-...") },
+            label = { Text(stringResource(R.string.bearer_token_label)) },
+            placeholder = { Text(stringResource(R.string.bearer_token_placeholder)) },
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
             visualTransformation = PasswordVisualTransformation(),
             singleLine = true,
@@ -132,7 +133,7 @@ fun SettingsScreen(
                 if (state.isTesting) {
                     CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                 } else {
-                    Text("Test Connection")
+                    Text(stringResource(R.string.test_connection))
                 }
             }
 
@@ -140,51 +141,38 @@ fun SettingsScreen(
                 onClick = viewModel::saveSettings,
                 modifier = Modifier.weight(1f)
             ) {
-                Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.size(8.dp))
-                Text("Save Settings")
+                Text(stringResource(R.string.save_settings))
             }
         }
 
-        state.saveMessage?.let { msg ->
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = msg,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(12.dp)
-                )
-            }
-        }
-
+        // Connection Test Result Badge
         state.testResult?.let { result ->
             when (result) {
                 is ConnectionTestResult.Success -> {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(12.dp),
+                            modifier = Modifier.padding(14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                            Spacer(modifier = Modifier.size(12.dp))
-                            Column {
-                                Text(
-                                    text = "Connected Successfully (${result.latencyMs}ms)",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                                )
-                                Text(
-                                    text = "Version: ${result.version} | Database: ${result.database}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                                )
-                            }
+                            Icon(
+                                Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.size(10.dp))
+                            Text(
+                                text = stringResource(
+                                    R.string.connected_status,
+                                    result.latencyMs,
+                                    result.version,
+                                    result.database
+                                ),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
                         }
                     }
                 }
@@ -194,29 +182,33 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(12.dp),
+                            modifier = Modifier.padding(14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Error, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-                            Spacer(modifier = Modifier.size(12.dp))
-                            Column {
-                                Text(
-                                    text = "Connection Failed",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                                Text(
-                                    text = result.errorMessage,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                            }
+                            Icon(
+                                Icons.Default.Error,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                            Spacer(modifier = Modifier.size(10.dp))
+                            Text(
+                                text = stringResource(R.string.connection_failed_status, result.errorMessage),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
                         }
                     }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        // Save confirmation message
+        state.saveMessage?.let { msg ->
+            Text(
+                text = msg,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }

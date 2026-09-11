@@ -5,7 +5,9 @@ import com.parsomash.relayx.data.local.PreferencesRepository
 import com.parsomash.relayx.domain.model.GatewayStats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import org.koin.core.annotation.Factory
 
+@Factory
 class GetGatewayStatsUseCase(
     private val dao: OutboxMessageDao
 ) {
@@ -27,6 +29,7 @@ class GetGatewayStatsUseCase(
     }
 }
 
+@Factory
 class ToggleForwardingUseCase(
     private val preferencesRepository: PreferencesRepository
 ) {
