@@ -23,7 +23,6 @@ local.properties
 # Go build and runtime artifacts
 bin/
 relayx-server/bin/
-data/
 relayx-server/data/
 *.db
 *.db-wal

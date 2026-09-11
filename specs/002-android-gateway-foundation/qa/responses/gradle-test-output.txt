@@ -1,0 +1,412 @@
+Initialized native services in: /Volumes/ADATASD810/Library/.gradle/native
+Initialized jansi services in: /Volumes/ADATASD810/Library/.gradle/native
+The client will now receive all logging from the daemon (pid: 21238). The daemon log file: /Volumes/ADATASD810/Library/.gradle/daemon/9.7.1/daemon-21238.out.log
+Starting 60th build in daemon [uptime: 3 hrs 0 mins 49.874 secs, performance: 98%, GC rate: 0.00/s, heap usage: 31% of 2 GiB]
+Using 10 worker leases.
+Operational build model parameters: {cachingModelBuilding=false, configurationCache=true, configurationCacheDisabledReason=null, configurationCacheParallelLoad=true, configurationCacheParallelStore=false, configureOnDemand=false, invalidateCoupledProjects=false, isolatedProjects=false, isolatedProjectsDiagnostics=false, isolatedProjectsDangerouslyIgnoreProblems=false, modelAsProjectDependency=false, modelBuilding=false, parallelModelBuilding=false, parallelProjectConfiguration=false, parallelProjectExecution=false, vintage=false}
+Encryption key source: default Gradle keystore (pkcs12)
+Now considering [/Volumes/ADATASD810/Projects/Android/relayx] as hierarchies to watch
+Calculating task graph as configuration cache cannot be reused because file 'gradle/libs.versions.toml' has changed.
+Now considering [/Volumes/ADATASD810/Projects/Android/relayx] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Resolved plugin [id: 'org.gradle.toolchains.foojay-resolver-convention', version: '1.0.0']
+Settings evaluated using settings file '/Volumes/ADATASD810/Projects/Android/relayx/settings.gradle.kts'.
+Projects loaded. Root project using build file '/Volumes/ADATASD810/Projects/Android/relayx/build.gradle.kts'.
+Included projects: [root project 'relayx', project ':relayx-android']
+
+> Configure project :
+Evaluating root project 'relayx' using build file '/Volumes/ADATASD810/Projects/Android/relayx/build.gradle.kts'.
+Resolved plugin [id: 'com.android.application', version: '9.4.0', apply: false]
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose', version: '2.4.20', apply: false]
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.serialization', version: '2.4.20', apply: false]
+Resolved plugin [id: 'io.insert-koin.compiler.plugin', version: '1.2.1', apply: false]
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.3.2', apply: false]
+
+> Configure project :relayx-android
+Evaluating project ':relayx-android' using build file '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build.gradle.kts'.
+Resolved plugin [id: 'com.android.application', version: '9.4.0']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose', version: '2.4.20']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.serialization', version: '2.4.20']
+Resolved plugin [id: 'io.insert-koin.compiler.plugin', version: '1.2.1']
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.3.2']
+Build da6c2441-7913-4a4c-ae62-dd3f6619abd2 is started
+Using default execution profile
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+All projects evaluated.
+Task name matched 'test'
+Selected primary task 'test' from project :
+Adding -Xuse-inline-scopes-numbers Kotlin compiler flag for task :relayx-android:compileDebugKotlin
+Tasks to be executed: [task ':relayx-android:preBuild', task ':relayx-android:preDebugBuild', task ':relayx-android:generateDebugResources', task ':relayx-android:packageDebugResources', task ':relayx-android:processDebugNavigationResources', task ':relayx-android:parseDebugLocalResources', task ':relayx-android:generateDebugRFile', task ':relayx-android:kspDebugKotlin', task ':relayx-android:compileDebugKotlin', task ':relayx-android:javaPreCompileDebug', task ':relayx-android:compileDebugJavaWithJavac', task ':relayx-android:checkDebugAarMetadata', task ':relayx-android:mapDebugSourceSetPaths', task ':relayx-android:compileDebugNavigationResources', task ':relayx-android:mergeDebugResources', task ':relayx-android:createDebugCompatibleScreenManifests', task ':relayx-android:extractDeepLinksDebug', task ':relayx-android:processDebugMainManifest', task ':relayx-android:processDebugManifest', task ':relayx-android:processDebugManifestForPackage', task ':relayx-android:processDebugResources', task ':relayx-android:bundleDebugClassesToRuntimeJar', task ':relayx-android:bundleDebugClassesToCompileJar', task ':relayx-android:kspDebugUnitTestKotlin', task ':relayx-android:preDebugUnitTestBuild', task ':relayx-android:compileDebugUnitTestKotlin', task ':relayx-android:javaPreCompileDebugUnitTest', task ':relayx-android:compileDebugUnitTestJavaWithJavac', task ':relayx-android:processDebugJavaRes', task ':relayx-android:processDebugUnitTestJavaRes', task ':relayx-android:testDebugUnitTest', task ':relayx-android:test']
+Tasks that were excluded: []
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/java', not found
+[Koin] Auto-enabling strictSafety on :relayx-android (detected startKoin / @KoinApplication / koinApplication).
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/test/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debugUnitTest/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debugUnitTest/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debugUnitTest/java', not found
+Ignoring listeners of task graph ready event, as this build (:) has already executed work.
+Resolve mutations for :relayx-android:preBuild (Thread[#3479,Execution worker,5,main]) started.
+:relayx-android:preBuild (Thread[#3484,Execution worker Thread 6,5,main]) started.
+
+> Task :relayx-android:preBuild UP-TO-DATE
+Skipping task ':relayx-android:preBuild' as it has no actions.
+Resolve mutations for :relayx-android:preDebugBuild (Thread[#3484,Execution worker Thread 6,5,main]) started.
+Resolve mutations for :relayx-android:preDebugUnitTestBuild (Thread[#3478,included builds,5,main]) started.
+:relayx-android:preDebugBuild (Thread[#3484,Execution worker Thread 6,5,main]) started.
+:relayx-android:preDebugUnitTestBuild (Thread[#3478,included builds,5,main]) started.
+
+> Task :relayx-android:preDebugBuild UP-TO-DATE
+Skipping task ':relayx-android:preDebugBuild' as it has no actions.
+
+> Task :relayx-android:preDebugUnitTestBuild UP-TO-DATE
+Skipping task ':relayx-android:preDebugUnitTestBuild' as it has no actions.
+Resolve mutations for :relayx-android:generateDebugResources (Thread[#3484,Execution worker Thread 6,5,main]) started.
+Resolve mutations for :relayx-android:processDebugNavigationResources (Thread[#3483,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :relayx-android:javaPreCompileDebug (Thread[#3478,included builds,5,main]) started.
+Resolve mutations for :relayx-android:checkDebugAarMetadata (Thread[#3479,Execution worker,5,main]) started.
+Resolve mutations for :relayx-android:extractDeepLinksDebug (Thread[#3480,Execution worker Thread 2,5,main]) started.
+:relayx-android:javaPreCompileDebug (Thread[#3478,included builds,5,main]) started.
+Resolve mutations for :relayx-android:mapDebugSourceSetPaths (Thread[#3487,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :relayx-android:createDebugCompatibleScreenManifests (Thread[#3485,Execution worker Thread 7,5,main]) started.
+:relayx-android:generateDebugResources (Thread[#3484,Execution worker Thread 6,5,main]) started.
+:relayx-android:mapDebugSourceSetPaths (Thread[#3487,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :relayx-android:javaPreCompileDebugUnitTest (Thread[#3486,Execution worker Thread 8,5,main]) started.
+:relayx-android:extractDeepLinksDebug (Thread[#3482,Execution worker Thread 4,5,main]) started.
+:relayx-android:processDebugNavigationResources (Thread[#3483,Execution worker Thread 5,5,main]) started.
+:relayx-android:checkDebugAarMetadata (Thread[#3479,Execution worker,5,main]) started.
+:relayx-android:createDebugCompatibleScreenManifests (Thread[#3485,Execution worker Thread 7,5,main]) started.
+:relayx-android:javaPreCompileDebugUnitTest (Thread[#3486,Execution worker Thread 8,5,main]) started.
+
+> Task :relayx-android:createDebugCompatibleScreenManifests UP-TO-DATE
+Caching disabled for task ':relayx-android:createDebugCompatibleScreenManifests' because:
+  Build cache is disabled
+  Caching has been disabled for the task
+Skipping task ':relayx-android:createDebugCompatibleScreenManifests' as it is up-to-date.
+
+> Task :relayx-android:generateDebugResources UP-TO-DATE
+Caching disabled for task ':relayx-android:generateDebugResources' because:
+  Build cache is disabled
+Skipping task ':relayx-android:generateDebugResources' as it is up-to-date.
+
+> Task :relayx-android:javaPreCompileDebugUnitTest UP-TO-DATE
+Caching disabled for task ':relayx-android:javaPreCompileDebugUnitTest' because:
+  Build cache is disabled
+Skipping task ':relayx-android:javaPreCompileDebugUnitTest' as it is up-to-date.
+
+> Task :relayx-android:javaPreCompileDebug UP-TO-DATE
+Caching disabled for task ':relayx-android:javaPreCompileDebug' because:
+  Build cache is disabled
+Skipping task ':relayx-android:javaPreCompileDebug' as it is up-to-date.
+
+> Task :relayx-android:extractDeepLinksDebug UP-TO-DATE
+Caching disabled for task ':relayx-android:extractDeepLinksDebug' because:
+  Build cache is disabled
+Skipping task ':relayx-android:extractDeepLinksDebug' as it is up-to-date.
+
+> Task :relayx-android:mapDebugSourceSetPaths UP-TO-DATE
+Caching disabled for task ':relayx-android:mapDebugSourceSetPaths' because:
+  Build cache is disabled
+  Caching has been disabled for the task
+Skipping task ':relayx-android:mapDebugSourceSetPaths' as it is up-to-date.
+Resolve mutations for :relayx-android:mergeDebugResources (Thread[#3480,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :relayx-android:processDebugMainManifest (Thread[#3482,Execution worker Thread 4,5,main]) started.
+Resolve mutations for :relayx-android:packageDebugResources (Thread[#3481,Execution worker Thread 3,5,main]) started.
+:relayx-android:packageDebugResources (Thread[#3480,Execution worker Thread 2,5,main]) started.
+:relayx-android:mergeDebugResources (Thread[#3478,included builds,5,main]) started.
+:relayx-android:processDebugMainManifest (Thread[#3487,Execution worker Thread 9,5,main]) started.
+
+> Task :relayx-android:packageDebugResources UP-TO-DATE
+Caching disabled for task ':relayx-android:packageDebugResources' because:
+  Build cache is disabled
+Skipping task ':relayx-android:packageDebugResources' as it is up-to-date.
+
+> Task :relayx-android:checkDebugAarMetadata UP-TO-DATE
+Caching disabled for task ':relayx-android:checkDebugAarMetadata' because:
+  Build cache is disabled
+  Caching has been disabled for the task
+Skipping task ':relayx-android:checkDebugAarMetadata' as it is up-to-date.
+
+> Task :relayx-android:processDebugNavigationResources UP-TO-DATE
+Caching disabled for task ':relayx-android:processDebugNavigationResources' because:
+  Build cache is disabled
+Skipping task ':relayx-android:processDebugNavigationResources' as it is up-to-date.
+Resolve mutations for :relayx-android:parseDebugLocalResources (Thread[#3483,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :relayx-android:compileDebugNavigationResources (Thread[#3480,Execution worker Thread 2,5,main]) started.
+:relayx-android:parseDebugLocalResources (Thread[#3483,Execution worker Thread 5,5,main]) started.
+:relayx-android:compileDebugNavigationResources (Thread[#3480,Execution worker Thread 2,5,main]) started.
+
+> Task :relayx-android:parseDebugLocalResources UP-TO-DATE
+Caching disabled for task ':relayx-android:parseDebugLocalResources' because:
+  Build cache is disabled
+Skipping task ':relayx-android:parseDebugLocalResources' as it is up-to-date.
+Resolve mutations for :relayx-android:generateDebugRFile (Thread[#3483,Execution worker Thread 5,5,main]) started.
+:relayx-android:generateDebugRFile (Thread[#3483,Execution worker Thread 5,5,main]) started.
+
+> Task :relayx-android:compileDebugNavigationResources UP-TO-DATE
+Caching disabled for task ':relayx-android:compileDebugNavigationResources' because:
+  Build cache is disabled
+Skipping task ':relayx-android:compileDebugNavigationResources' as it is up-to-date.
+
+> Task :relayx-android:generateDebugRFile UP-TO-DATE
+Caching disabled for task ':relayx-android:generateDebugRFile' because:
+  Build cache is disabled
+Skipping task ':relayx-android:generateDebugRFile' as it is up-to-date.
+Resolve mutations for :relayx-android:kspDebugKotlin (Thread[#3483,Execution worker Thread 5,5,main]) started.
+:relayx-android:kspDebugKotlin (Thread[#3483,Execution worker Thread 5,5,main]) started.
+
+> Task :relayx-android:mergeDebugResources UP-TO-DATE
+Caching disabled for task ':relayx-android:mergeDebugResources' because:
+  Build cache is disabled
+Skipping task ':relayx-android:mergeDebugResources' as it is up-to-date.
+
+> Task :relayx-android:processDebugMainManifest UP-TO-DATE
+Caching disabled for task ':relayx-android:processDebugMainManifest' because:
+  Build cache is disabled
+Skipping task ':relayx-android:processDebugMainManifest' as it is up-to-date.
+Resolve mutations for :relayx-android:processDebugManifest (Thread[#3487,Execution worker Thread 9,5,main]) started.
+:relayx-android:processDebugManifest (Thread[#3487,Execution worker Thread 9,5,main]) started.
+
+> Task :relayx-android:processDebugManifest UP-TO-DATE
+Caching disabled for task ':relayx-android:processDebugManifest' because:
+  Build cache is disabled
+Skipping task ':relayx-android:processDebugManifest' as it is up-to-date.
+Resolve mutations for :relayx-android:processDebugManifestForPackage (Thread[#3487,Execution worker Thread 9,5,main]) started.
+:relayx-android:processDebugManifestForPackage (Thread[#3487,Execution worker Thread 9,5,main]) started.
+
+> Task :relayx-android:processDebugManifestForPackage UP-TO-DATE
+Caching disabled for task ':relayx-android:processDebugManifestForPackage' because:
+  Build cache is disabled
+Skipping task ':relayx-android:processDebugManifestForPackage' as it is up-to-date.
+Resolve mutations for :relayx-android:processDebugResources (Thread[#3487,Execution worker Thread 9,5,main]) started.
+:relayx-android:processDebugResources (Thread[#3487,Execution worker Thread 9,5,main]) started.
+
+> Task :relayx-android:processDebugResources UP-TO-DATE
+Caching disabled for task ':relayx-android:processDebugResources' because:
+  Build cache is disabled
+Skipping task ':relayx-android:processDebugResources' as it is up-to-date.
+
+> Task :relayx-android:kspDebugKotlin
+Caching disabled for task ':relayx-android:kspDebugKotlin' because:
+  Build cache is disabled
+Task ':relayx-android:kspDebugKotlin' is not up-to-date because:
+  Value of input property 'kspConfig.logLevel' has changed for task ':relayx-android:kspDebugKotlin'
+The input changes require a full rebuild for incremental task ':relayx-android:kspDebugKotlin'.
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+i: [ksp] loaded provider(s): [androidx.room.RoomKspProcessor$Provider]
+Resolve mutations for :relayx-android:compileDebugKotlin (Thread[#3483,Execution worker Thread 5,5,main]) started.
+:relayx-android:compileDebugKotlin (Thread[#3483,Execution worker Thread 5,5,main]) started.
+
+> Task :relayx-android:compileDebugKotlin
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+Caching disabled for task ':relayx-android:compileDebugKotlin' because:
+  Build cache is disabled
+  'Task outputs cacheable' not satisfied
+Task ':relayx-android:compileDebugKotlin' is not up-to-date because:
+  Task.upToDateWhen is false.
+The input changes require a full rebuild for incremental task ':relayx-android:compileDebugKotlin'.
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/java', not found
+Kotlin source files: /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/viewmodel/SettingsViewModel.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/viewmodel/DashboardViewModel.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/ui/settings/SettingsScreen.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/ui/navigation/RelayNavGraph.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/ui/dashboard/DashboardScreen.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/ui/theme/Color.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/ui/theme/Theme.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/ui/theme/Type.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/RelayApplication.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/MainActivity.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/di/AppModule.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/util/AppDispatchers.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/util/RelayLogger.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/local/OutboxMessageEntity.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/local/OutboxMessageDao.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/local/RelayDatabase.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/local/PreferencesRepository.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/receiver/BootReceiver.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/receiver/SmsReceiver.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/worker/MessageDispatchWorker.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/remote/dto/NetworkDtos.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/remote/ApiConstants.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/data/remote/RelayServerClient.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/domain/model/Models.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/DispatchOutboxUseCase.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/TestConnectionUseCase.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/DashboardUseCases.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/IngestSmsUseCase.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/kotlin/com/parsomash/relayx/data/local/OutboxMessageDao_Impl.kt, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/generated/ksp/debug/kotlin/com/parsomash/relayx/data/local/RelayDatabase_Impl.kt
+Java source files: 
+Script source files: 
+Script file extensions: 
+Using Kotlin/JVM incremental compilation
+[KOTLIN] Kotlin compilation 'jdkHome' argument: /opt/homebrew/Cellar/openjdk@25/25.0.4.1/libexec/openjdk.jdk/Contents/Home
+i: Options for KOTLIN DAEMON: IncrementalCompilationOptions(super=CompilationOptions(compilerMode=INCREMENTAL_COMPILER, targetPlatform=JVM, reportCategories=[0], reportSeverity=2, requestedCompilationResults=[0], kotlinScriptExtensions=[], generateCompilerRefIndex=false), sourceChanges=org.jetbrains.kotlin.buildtools.api.SourcesChanges$Unknown@4772a2c7, classpathChanges=NotAvailableDueToMissingClasspathSnapshot, workingDir=/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/kotlin/compileDebugKotlin/cacheable, multiModuleICSettings=null, icFeatures=IncrementalCompilationFeatures(usePreciseJavaTracking=true, withAbiSnapshot=false, preciseCompilationResultsBackup=true, keepIncrementalCompilationCachesInMemory=true, enableUnsafeIncrementalCompilationForMultiplatform=false, enableMonotonousIncrementalCompileSetExpansion=true), outputFiles=[/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/kotlin/compileDebugKotlin/cacheable, /Volumes/ADATASD810/Projects/Android/relayx/relayx-android/build/kotlin/compileDebugKotlin/local-state])
+w: ATTENTION!
+This build uses unsafe internal compiler arguments:
+
+-XXLanguage:+ExplicitBackingFields
+
+This mode is not recommended for production use,
+as no stability/compatibility guarantees are given on
+compiler or generated code. Use it at your own risk!
+
+i: Finished executing kotlin compiler using DAEMON strategy
+Resolve mutations for :relayx-android:processDebugJavaRes (Thread[#3482,Execution worker Thread 4,5,main]) started.
+Resolve mutations for :relayx-android:compileDebugJavaWithJavac (Thread[#3487,Execution worker Thread 9,5,main]) started.
+:relayx-android:processDebugJavaRes (Thread[#3482,Execution worker Thread 4,5,main]) started.
+:relayx-android:compileDebugJavaWithJavac (Thread[#3487,Execution worker Thread 9,5,main]) started.
+
+> Task :relayx-android:compileDebugJavaWithJavac NO-SOURCE
+Skipping task ':relayx-android:compileDebugJavaWithJavac' as it has no source files and no previous output files.
+Resolve mutations for :relayx-android:bundleDebugClassesToRuntimeJar (Thread[#3487,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :relayx-android:bundleDebugClassesToCompileJar (Thread[#3483,Execution worker Thread 5,5,main]) started.
+:relayx-android:bundleDebugClassesToRuntimeJar (Thread[#3487,Execution worker Thread 9,5,main]) started.
+:relayx-android:bundleDebugClassesToCompileJar (Thread[#3483,Execution worker Thread 5,5,main]) started.
+
+> Task :relayx-android:processDebugJavaRes UP-TO-DATE
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/main/resources', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/debug/resources', not found
+Caching disabled for task ':relayx-android:processDebugJavaRes' because:
+  Build cache is disabled
+  Caching has been disabled for the task
+Skipping task ':relayx-android:processDebugJavaRes' as it is up-to-date.
+
+> Task :relayx-android:bundleDebugClassesToRuntimeJar UP-TO-DATE
+Caching disabled for task ':relayx-android:bundleDebugClassesToRuntimeJar' because:
+  Build cache is disabled
+  Caching has been disabled for the task
+Skipping task ':relayx-android:bundleDebugClassesToRuntimeJar' as it is up-to-date.
+
+> Task :relayx-android:bundleDebugClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':relayx-android:bundleDebugClassesToCompileJar' because:
+  Build cache is disabled
+  Caching has been disabled for the task
+Skipping task ':relayx-android:bundleDebugClassesToCompileJar' as it is up-to-date.
+work action resolve out (project ':relayx-android') (Thread[#3482,Execution worker Thread 4,5,main]) started.
+work action resolve classes.jar (project ':relayx-android') (Thread[#3487,Execution worker Thread 9,5,main]) started.
+work action resolve classes.jar (project ':relayx-android') (Thread[#3483,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :relayx-android:kspDebugUnitTestKotlin (Thread[#3483,Execution worker Thread 5,5,main]) started.
+:relayx-android:kspDebugUnitTestKotlin (Thread[#3483,Execution worker Thread 5,5,main]) started.
+
+> Task :relayx-android:kspDebugUnitTestKotlin
+Caching disabled for task ':relayx-android:kspDebugUnitTestKotlin' because:
+  Build cache is disabled
+Task ':relayx-android:kspDebugUnitTestKotlin' is not up-to-date because:
+  Value of input property 'kspConfig.logLevel' has changed for task ':relayx-android:kspDebugUnitTestKotlin'
+The input changes require a full rebuild for incremental task ':relayx-android:kspDebugUnitTestKotlin'.
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/test/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/test/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/kotlin', not found
+i: [ksp] loaded provider(s): [androidx.room.RoomKspProcessor$Provider]
+Resolve mutations for :relayx-android:compileDebugUnitTestKotlin (Thread[#3483,Execution worker Thread 5,5,main]) started.
+:relayx-android:compileDebugUnitTestKotlin (Thread[#3483,Execution worker Thread 5,5,main]) started.
+
+> Task :relayx-android:compileDebugUnitTestKotlin UP-TO-DATE
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/test/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/test/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/test/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/java', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/kotlin', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/java', not found
+Caching disabled for task ':relayx-android:compileDebugUnitTestKotlin' because:
+  Build cache is disabled
+Skipping task ':relayx-android:compileDebugUnitTestKotlin' as it is up-to-date.
+Resolve mutations for :relayx-android:compileDebugUnitTestJavaWithJavac (Thread[#3483,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :relayx-android:processDebugUnitTestJavaRes (Thread[#3484,Execution worker Thread 6,5,main]) started.
+:relayx-android:processDebugUnitTestJavaRes (Thread[#3484,Execution worker Thread 6,5,main]) started.
+:relayx-android:compileDebugUnitTestJavaWithJavac (Thread[#3483,Execution worker Thread 5,5,main]) started.
+
+> Task :relayx-android:compileDebugUnitTestJavaWithJavac NO-SOURCE
+Skipping task ':relayx-android:compileDebugUnitTestJavaWithJavac' as it has no source files and no previous output files.
+
+> Task :relayx-android:processDebugUnitTestJavaRes UP-TO-DATE
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/test/resources', not found
+file or directory '/Volumes/ADATASD810/Projects/Android/relayx/relayx-android/src/testDebug/resources', not found
+Caching disabled for task ':relayx-android:processDebugUnitTestJavaRes' because:
+  Build cache is disabled
+  Caching has been disabled for the task
+Skipping task ':relayx-android:processDebugUnitTestJavaRes' as it is up-to-date.
+Resolve mutations for :relayx-android:testDebugUnitTest (Thread[#3484,Execution worker Thread 6,5,main]) started.
+:relayx-android:testDebugUnitTest (Thread[#3484,Execution worker Thread 6,5,main]) started.
+
+> Task :relayx-android:testDebugUnitTest UP-TO-DATE
+Caching disabled for task ':relayx-android:testDebugUnitTest' because:
+  Build cache is disabled
+Skipping task ':relayx-android:testDebugUnitTest' as it is up-to-date.
+Resolve mutations for :relayx-android:test (Thread[#3484,Execution worker Thread 6,5,main]) started.
+:relayx-android:test (Thread[#3484,Execution worker Thread 6,5,main]) started.
+
+> Task :relayx-android:test UP-TO-DATE
+Skipping task ':relayx-android:test' as it has no actions.
+Build da6c2441-7913-4a4c-ae62-dd3f6619abd2 is closed
+
+See the complete report at file:///Volumes/ADATASD810/Projects/Android/relayx/build/reports/configuration-cache/a7wmqlcdyihzhwhhrprkugwzd/akudc0eg6h7681xsrse3mwxkz/configuration-cache-report.html
+
+[Incubating] Problems report is available at: file:///Volumes/ADATASD810/Projects/Android/relayx/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 6s
+26 actionable tasks: 3 executed, 23 up-to-date
+Watched directory hierarchies: [/Volumes/ADATASD810/Projects/Android/relayx]
+Configuration cache entry stored.
+Configuration Cache (/Volumes/ADATASD810/Projects/Android/relayx/.gradle/configuration-cache) [subdir: /Volumes/ADATASD810/Projects/Android/relayx/.gradle/configuration-cache/d06ac942-ac1e-4d06-82a6-74881f0b6896] cleanup deleted 8 files/directories.

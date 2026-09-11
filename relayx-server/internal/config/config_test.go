@@ -33,6 +33,8 @@ func TestFlagOverrides(t *testing.T) {
 		"-db", "/tmp/test.db",
 		"-token", "sec-token-123",
 		"-debug",
+		"-adb-port", "5554",
+		"-exec-hook", "/bin/echo",
 	}
 
 	cfg, err := config.Load(args)
@@ -55,6 +57,12 @@ func TestFlagOverrides(t *testing.T) {
 	if !cfg.Debug {
 		t.Errorf("expected debug true, got %v", cfg.Debug)
 	}
+	if cfg.ADBPort != 5554 {
+		t.Errorf("expected adb port 5554, got %d", cfg.ADBPort)
+	}
+	if cfg.ExecHook != "/bin/echo" {
+		t.Errorf("expected exec hook /bin/echo, got %s", cfg.ExecHook)
+	}
 }
 
 func TestEnvOverrides(t *testing.T) {
@@ -63,12 +71,16 @@ func TestEnvOverrides(t *testing.T) {
 	os.Setenv("RELAYX_DB_PATH", "./custom.db")
 	os.Setenv("RELAYX_DEVICE_TOKEN", "env-token")
 	os.Setenv("RELAYX_DEBUG", "1")
+	os.Setenv("RELAYX_ADB_PORT", "5556")
+	os.Setenv("RELAYX_EXEC_HOOK", "/usr/bin/logger")
 	defer func() {
 		os.Unsetenv("RELAYX_HOST")
 		os.Unsetenv("RELAYX_PORT")
 		os.Unsetenv("RELAYX_DB_PATH")
 		os.Unsetenv("RELAYX_DEVICE_TOKEN")
 		os.Unsetenv("RELAYX_DEBUG")
+		os.Unsetenv("RELAYX_ADB_PORT")
+		os.Unsetenv("RELAYX_EXEC_HOOK")
 	}()
 
 	cfg, err := config.Load([]string{})
@@ -90,6 +102,12 @@ func TestEnvOverrides(t *testing.T) {
 	}
 	if !cfg.Debug {
 		t.Errorf("expected debug true, got %v", cfg.Debug)
+	}
+	if cfg.ADBPort != 5556 {
+		t.Errorf("expected adb port 5556, got %d", cfg.ADBPort)
+	}
+	if cfg.ExecHook != "/usr/bin/logger" {
+		t.Errorf("expected exec hook /usr/bin/logger, got %s", cfg.ExecHook)
 	}
 }
 

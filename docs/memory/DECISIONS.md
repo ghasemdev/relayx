@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-Last reviewed: 2026-09-07
+Last reviewed: 2026-09-12
 
 ## ADR Index
 
@@ -14,6 +14,9 @@ Last reviewed: 2026-09-07
 | [ADR-006](#adr-006-unified-pipeline-execution-for-mock-sms) | Unified Pipeline Execution for Mock SMS | Accepted | 2026-09-07 |
 | [ADR-007](#adr-007-pure-go-sqlite-driver-for-cgo-free-cross-compilation) | Pure-Go SQLite Driver for CGO-Free Cross-Compilation | Accepted | 2026-09-07 |
 | [ADR-008](#adr-008-structured-redaction-handler-for-zero-leakage-privacy) | Structured Redaction Handler for Zero-Leakage Privacy | Accepted | 2026-09-07 |
+| [ADR-009](#adr-009-server-side-ingestion-hooks-for-emulator-and-simulator-relay) | Server-Side Ingestion Hooks for Emulator and Simulator Relay | Accepted | 2026-09-11 |
+| [ADR-010](#adr-010-koin-42-component-scanning-app-startup--navigation-3-integration) | Koin 4.2 Component Scanning, App Startup & Navigation 3 Integration | Accepted | 2026-09-12 |
+| [ADR-011](#adr-011-defense-in-depth-for-gateway-data-stores-and-cleartext-scoping) | Defense-in-Depth for Gateway Data Stores and Cleartext Scoping | Accepted | 2026-09-12 |
 
 ---
 
@@ -75,4 +78,36 @@ Last reviewed: 2026-09-07
   - Positive: Enforces Constitution Principle III across all existing and future server packages automatically.
   - Positive: Validated with automated assertions in `logger_test.go` ensuring zero leakage even in `--debug` mode.
   - Tradeoff: Diagnostic logs must rely strictly on metadata (sender, message ID, timestamp, byte length) rather than inspecting raw payloads.
+
+### ADR-009: Server-Side Ingestion Hooks for Emulator and Simulator Relay
+- **Context**: In real-world automated testing, a physical smartphone with a live cellular carrier SIM receives 2FA/bank verification SMS. Testing scripts and UI automation frequently run inside virtual devices (Android Emulator or iOS Simulator) without SIM capabilities.
+- **Decision**: Provide configurable server-side ingestion hooks in `relayx-server`:
+  1. `--adb-port <port>` (e.g. `5554`): Automatically executes `adb -s emulator-<port> emu sms send "<sender>" "<body/code>"` whenever a new SMS is ingested.
+  2. `--exec-hook <path>`: Runs a custom executable or script with message metadata and payload passed via arguments and environment variables (`RELAYX_SENDER`, `RELAYX_MESSAGE_ID`, `RELAYX_DEVICE_ID`, `RELAYX_BODY`) to support iOS Simulator (`xcrun simctl push` / SMS injection) or third-party webhooks.
+  3. Execution is asynchronous and decoupled from HTTP response latency.
+  4. Logging respects Constitution Principle III by redacting sensitive payload bodies.
+- **Consequences**:
+  - Positive: Enables seamless Physical SIM Phone -> RelayX Server -> Emulator/Simulator automation flow.
+  - Positive: Test suites can receive real verification codes directly inside running emulators without manual code copying.
+  - Tradeoff: Requires ADB or simulator tools to be available in the server runtime environment if hooks are enabled.
+
+### ADR-010: Koin 4.2 Component Scanning, App Startup & Navigation 3 Integration
+- **Context**: Android dependency injection and initialization must integrate cleanly with Jetpack Compose Navigation 3 and avoid main-thread blocking or boilerplate Application subclasses.
+- **Decision**: Adopt Koin 4.2 with compiler plugin (`koin-annotations:1.2.1`) for compile-time verified DI (`@Single`, `@KoinViewModel`, `@ComponentScan`). Initialize DI via AndroidX App Startup (`koin-androidx-startup:4.2.2`). Connect ViewModel resolution in Navigation 3 via Koin's `koinEntryProvider()`. Standardize on Kotlin stdlib `kotlin.uuid.Uuid` and Kotlin 2.4+ Explicit Backing Fields (`-XXLanguage:+ExplicitBackingFields`) for ViewModel state flows.
+- **Consequences**:
+  - Positive: Zero reflection overhead on DI resolution; clean declarative ViewModels and single-responsibility modules.
+  - Positive: Consistent UUID management between Android client and server domain models without `java.util.UUID` legacy dependencies.
+  - Tradeoff: Requires Kotlin compiler flag `-XXLanguage:+ExplicitBackingFields` and KSP processor synchronization.
+
+### ADR-011: Defense-in-Depth for Gateway Data Stores and Cleartext Scoping
+- **Context**: An SMS gateway device stores sensitive transit data (outbox SMS, Bearer authentication tokens). Leaving Android application backup enabled exposes Room SQLite and DataStore to ADB extraction. Permitting global cleartext traffic exposes API communications outside local test environments.
+- **Decision**:
+  1. Set `android:allowBackup="false"` on the application manifest.
+  2. Maintain explicit exclusion rules in `backup_rules.xml` and `data_extraction_rules.xml` targeting `database` (`relayx.db*`) and `datastore/` directories.
+  3. Introduce `network_security_config.xml` with `base-config cleartextTrafficPermitted="false"`, scoping cleartext HTTP exclusively to local development domains (`10.0.2.2`, `127.0.0.1`, `localhost`).
+- **Consequences**:
+  - Positive: Prevents physical data extraction of cryptographic tokens and queued SMS via `adb backup` or device transfers.
+  - Positive: Guarantees HTTPS enforcement for all non-loopback production traffic.
+  - Tradeoff: Testing with LAN IP addresses requires temporary dev configuration or TLS deployment.
+
 

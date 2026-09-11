@@ -14,6 +14,8 @@ type Config struct {
 	DBPath      string
 	DeviceToken string
 	Debug       bool
+	ADBPort     int
+	ExecHook    string
 }
 
 // DefaultConfig returns configuration with sensible production/development defaults.
@@ -24,6 +26,8 @@ func DefaultConfig() *Config {
 		DBPath:      "./data/sms.db",
 		DeviceToken: "",
 		Debug:       false,
+		ADBPort:     0,
+		ExecHook:    "",
 	}
 }
 
@@ -50,6 +54,14 @@ func Load(args []string) (*Config, error) {
 	if debugStr := os.Getenv("RELAYX_DEBUG"); debugStr != "" {
 		cfg.Debug = debugStr == "true" || debugStr == "1"
 	}
+	if adbPortStr := os.Getenv("RELAYX_ADB_PORT"); adbPortStr != "" {
+		if p, err := strconv.Atoi(adbPortStr); err == nil && p > 0 && p <= 65535 {
+			cfg.ADBPort = p
+		}
+	}
+	if execHook := os.Getenv("RELAYX_EXEC_HOOK"); execHook != "" {
+		cfg.ExecHook = execHook
+	}
 
 	// Flag overrides
 	fs := flag.NewFlagSet("relayx-server", flag.ContinueOnError)
@@ -58,6 +70,8 @@ func Load(args []string) (*Config, error) {
 	fs.StringVar(&cfg.DBPath, "db", cfg.DBPath, "SQLite database file path")
 	fs.StringVar(&cfg.DeviceToken, "token", cfg.DeviceToken, "Authorized device Bearer token")
 	fs.BoolVar(&cfg.Debug, "debug", cfg.Debug, "Enable debug logging")
+	fs.IntVar(&cfg.ADBPort, "adb-port", cfg.ADBPort, "Android emulator port to relay SMS via adb emu sms send (e.g. 5554)")
+	fs.StringVar(&cfg.ExecHook, "exec-hook", cfg.ExecHook, "Custom executable/script hook to run on message arrival")
 
 	if err := fs.Parse(args); err != nil {
 		return nil, fmt.Errorf("parsing flags: %w", err)

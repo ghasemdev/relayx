@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"relayx-server/internal/api"
 	"relayx-server/internal/config"
+	"relayx-server/internal/hook"
 	"relayx-server/internal/logging"
 	"relayx-server/internal/service"
 	"relayx-server/internal/storage"
@@ -43,6 +44,15 @@ func main() {
 
 	deviceService := service.NewDeviceService(deviceRepo)
 	messageService := service.NewMessageService(messageRepo)
+
+	hookRunner := hook.NewRunner(cfg.ADBPort, cfg.ExecHook)
+	messageService.SetHook(hookRunner)
+	if cfg.ADBPort > 0 {
+		logger.Info("emulator adb relay hook enabled", "port", cfg.ADBPort, "target", fmt.Sprintf("emulator-%d", cfg.ADBPort))
+	}
+	if cfg.ExecHook != "" {
+		logger.Info("custom exec relay hook enabled", "hook", cfg.ExecHook)
+	}
 
 	// Handle device token setup
 	initCtx := context.Background()
