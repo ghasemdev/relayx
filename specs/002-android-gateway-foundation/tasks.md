@@ -11,9 +11,9 @@
 
 **Purpose**: Project build configuration, dependencies, and manifest declarations.
 
-- [ ] T001 Configure Room, WorkManager, OkHttp, Kotlinx Serialization, and DataStore dependencies in `gradle/libs.versions.toml`
-- [ ] T002 Apply plugins and add dependencies in `relayx-android/build.gradle.kts`
-- [ ] T003 Configure Android application permissions (`RECEIVE_SMS`, `READ_SMS`, `INTERNET`, `ACCESS_NETWORK_STATE`, `RECEIVE_BOOT_COMPLETED`) in `relayx-android/src/main/AndroidManifest.xml`
+- [x] T001 Configure Room, WorkManager, OkHttp, Kotlinx Serialization, and DataStore dependencies in `gradle/libs.versions.toml`
+- [x] T002 Apply plugins and add dependencies in `relayx-android/build.gradle.kts`
+- [x] T003 Configure Android application permissions (`RECEIVE_SMS`, `READ_SMS`, `INTERNET`, `ACCESS_NETWORK_STATE`, `RECEIVE_BOOT_COMPLETED`) in `relayx-android/src/main/AndroidManifest.xml`
 
 ---
 
@@ -21,13 +21,13 @@
 
 **Purpose**: Core data layer, database persistence, domain models, and privacy utilities.
 
-- [ ] T004 Implement zero-sensitive logging utility `RelayLogger` in `relayx-android/src/main/java/com/parsomash/relayx/util/RelayLogger.kt`
-- [ ] T005 [P] Define core domain models (`GatewayConfig`, `QueuedMessage`, `GatewayStats`) in `relayx-android/src/main/java/com/parsomash/relayx/domain/model/Models.kt`
-- [ ] T006 [P] Implement DataStore `PreferencesRepository` for server configuration and flags in `relayx-android/src/main/java/com/parsomash/relayx/data/local/PreferencesRepository.kt`
-- [ ] T007 [P] Define Room database entity `OutboxMessageEntity` in `relayx-android/src/main/java/com/parsomash/relayx/data/local/OutboxMessageEntity.kt`
-- [ ] T008 Implement `OutboxMessageDao` with queue polling, status transitions, and message counts in `relayx-android/src/main/java/com/parsomash/relayx/data/local/OutboxMessageDao.kt`
-- [ ] T009 Implement `RelayDatabase` Room database class in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RelayDatabase.kt`
-- [ ] T010 Implement `RelayApplication` initializing database and repository singletons in `relayx-android/src/main/java/com/parsomash/relayx/RelayApplication.kt`
+- [x] T004 Implement zero-sensitive logging utility `RelayLogger` in `relayx-android/src/main/java/com/parsomash/relayx/util/RelayLogger.kt`
+- [x] T005 [P] Define core domain models (`GatewayConfig`, `QueuedMessage`, `GatewayStats`) in `relayx-android/src/main/java/com/parsomash/relayx/domain/model/Models.kt`
+- [x] T006 [P] Implement DataStore `PreferencesRepository` for server configuration and flags in `relayx-android/src/main/java/com/parsomash/relayx/data/local/PreferencesRepository.kt`
+- [x] T007 [P] Define Room database entity `OutboxMessageEntity` in `relayx-android/src/main/java/com/parsomash/relayx/data/local/OutboxMessageEntity.kt`
+- [x] T008 Implement `OutboxMessageDao` with queue polling, status transitions, and message counts in `relayx-android/src/main/java/com/parsomash/relayx/data/local/OutboxMessageDao.kt`
+- [x] T009 Implement `RelayDatabase` Room database class in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RelayDatabase.kt`
+- [x] T010 Implement `RelayApplication` initializing database and repository singletons in `relayx-android/src/main/java/com/parsomash/relayx/RelayApplication.kt`
 
 **Checkpoint**: Core persistence and configuration foundation ready. User stories can proceed.
 
@@ -39,11 +39,11 @@
 
 **Independent Test**: Enter server address and port in Settings, tap "Test Connection", and verify successful HTTP response and latency badge.
 
-- [ ] T011 [P] [US2] Create network DTOs (`HealthResponseDto`, `IngestMessageDto`) in `relayx-android/src/main/java/com/parsomash/relayx/data/remote/dto/NetworkDtos.kt`
-- [ ] T012 [US2] Implement `RelayServerClient` OkHttp client with Bearer auth and `/health` probe in `relayx-android/src/main/java/com/parsomash/relayx/data/remote/RelayServerClient.kt`
-- [ ] T013 [US2] Implement `TestConnectionUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/TestConnectionUseCase.kt`
-- [ ] T014 [US2] Implement `SettingsViewModel` managing configuration inputs and connection probe state in `relayx-android/src/main/java/com/parsomash/relayx/viewmodel/SettingsViewModel.kt`
-- [ ] T015 [US2] Implement Material 3 `SettingsScreen` with input fields and connection test action in `relayx-android/src/main/java/com/parsomash/relayx/ui/settings/SettingsScreen.kt`
+- [x] T011 [P] [US2] Create network DTOs (`HealthResponseDto`, `IngestMessageDto`) in `relayx-android/src/main/java/com/parsomash/relayx/data/remote/dto/NetworkDtos.kt`
+- [x] T012 [US2] Implement `RelayServerClient` OkHttp client with Bearer auth and `/health` probe in `relayx-android/src/main/java/com/parsomash/relayx/data/remote/RelayServerClient.kt`
+- [x] T013 [US2] Implement `TestConnectionUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/TestConnectionUseCase.kt`
+- [x] T014 [US2] Implement `SettingsViewModel` managing configuration inputs and connection probe state in `relayx-android/src/main/java/com/parsomash/relayx/viewmodel/SettingsViewModel.kt`
+- [x] T015 [US2] Implement Material 3 `SettingsScreen` with input fields and connection test action in `relayx-android/src/main/java/com/parsomash/relayx/ui/settings/SettingsScreen.kt`
 
 **Checkpoint**: Server configuration and connection testing functional independently.
 
@@ -55,10 +55,10 @@
 
 **Independent Test**: Launch dashboard, toggle forwarding state, and confirm UI reflects active listening and counter metrics.
 
-- [ ] T016 [US1] Implement `GetGatewayStatsUseCase` and `ToggleForwardingUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/DashboardUseCases.kt`
-- [ ] T017 [US1] Implement `DashboardViewModel` observing queue statistics and forwarding state in `relayx-android/src/main/java/com/parsomash/relayx/viewmodel/DashboardViewModel.kt`
-- [ ] T018 [US1] Implement Material 3 `DashboardScreen` displaying status badges, master switch, and live counter cards in `relayx-android/src/main/java/com/parsomash/relayx/ui/dashboard/DashboardScreen.kt`
-- [ ] T019 [US1] Implement navigation bar and host layout in `relayx-android/src/main/java/com/parsomash/relayx/ui/navigation/RelayNavGraph.kt` and integrate into `relayx-android/src/main/java/com/parsomash/relayx/MainActivity.kt`
+- [x] T016 [US1] Implement `GetGatewayStatsUseCase` and `ToggleForwardingUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/DashboardUseCases.kt`
+- [x] T017 [US1] Implement `DashboardViewModel` observing queue statistics and forwarding state in `relayx-android/src/main/java/com/parsomash/relayx/viewmodel/DashboardViewModel.kt`
+- [x] T018 [US1] Implement Material 3 `DashboardScreen` displaying status badges, master switch, and live counter cards in `relayx-android/src/main/java/com/parsomash/relayx/ui/dashboard/DashboardScreen.kt`
+- [x] T019 [US1] Implement navigation bar and host layout in `relayx-android/src/main/java/com/parsomash/relayx/ui/navigation/RelayNavGraph.kt` and integrate into `relayx-android/src/main/java/com/parsomash/relayx/MainActivity.kt`
 
 **Checkpoint**: Diagnostic dashboard and settings navigation fully functional.
 
@@ -70,9 +70,9 @@
 
 **Independent Test**: Send SMS to device via `adb emu sms send` while offline, verify message persists in Room with status `PENDING` and counter increments.
 
-- [ ] T020 [US3] Implement `IngestSmsUseCase` creating unique message UUID and saving to Room outbox in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/IngestSmsUseCase.kt`
-- [ ] T021 [US3] Implement `SmsReceiver` BroadcastReceiver assembling multipart SMS PDUs and executing `IngestSmsUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/data/receiver/SmsReceiver.kt`
-- [ ] T022 [US3] Implement runtime permission request flow for `RECEIVE_SMS` in `relayx-android/src/main/java/com/parsomash/relayx/ui/dashboard/DashboardScreen.kt`
+- [x] T020 [US3] Implement `IngestSmsUseCase` creating unique message UUID and saving to Room outbox in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/IngestSmsUseCase.kt`
+- [x] T021 [US3] Implement `SmsReceiver` BroadcastReceiver assembling multipart SMS PDUs and executing `IngestSmsUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/data/receiver/SmsReceiver.kt`
+- [x] T022 [US3] Implement runtime permission request flow for `RECEIVE_SMS` in `relayx-android/src/main/java/com/parsomash/relayx/ui/dashboard/DashboardScreen.kt`
 
 **Checkpoint**: SMS reception and local outbox queue persistence complete and verifiable offline.
 
@@ -84,9 +84,9 @@
 
 **Independent Test**: Queue a message with server stopped; observe retries with escalating delays (1s, 2s, 5s, 10s, 30s, 60s); start server and confirm status updates to `DELIVERED`.
 
-- [ ] T023 [US4] Implement `DispatchOutboxUseCase` orchestrating network submission and updating message delivery state in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/DispatchOutboxUseCase.kt`
-- [ ] T024 [US4] Implement `MessageDispatchWorker` CoroutineWorker with exponential backoff and network constraints in `relayx-android/src/main/java/com/parsomash/relayx/data/worker/MessageDispatchWorker.kt`
-- [ ] T025 [US4] Trigger `MessageDispatchWorker` from `SmsReceiver` and `DashboardViewModel` on new message arrival
+- [x] T023 [US4] Implement `DispatchOutboxUseCase` orchestrating network submission and updating message delivery state in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/DispatchOutboxUseCase.kt`
+- [x] T024 [US4] Implement `MessageDispatchWorker` CoroutineWorker with exponential backoff and network constraints in `relayx-android/src/main/java/com/parsomash/relayx/data/worker/MessageDispatchWorker.kt`
+- [x] T025 [US4] Trigger `MessageDispatchWorker` from `SmsReceiver` and `DashboardViewModel` on new message arrival
 
 **Checkpoint**: Full end-to-end forward pipeline with retry resilience complete.
 
@@ -98,8 +98,8 @@
 
 **Independent Test**: Simulate reboot (`adb shell am broadcast -a android.intent.action.BOOT_COMPLETED`), verify `BootReceiver` triggers queue draining.
 
-- [ ] T026 [US5] Implement `BootReceiver` listening for `BOOT_COMPLETED` and scheduling `MessageDispatchWorker` in `relayx-android/src/main/java/com/parsomash/relayx/data/receiver/BootReceiver.kt`
-- [ ] T027 [US5] Register `BootReceiver` in `relayx-android/src/main/AndroidManifest.xml` with `RECEIVE_BOOT_COMPLETED`
+- [x] T026 [US5] Implement `BootReceiver` listening for `BOOT_COMPLETED` and scheduling `MessageDispatchWorker` in `relayx-android/src/main/java/com/parsomash/relayx/data/receiver/BootReceiver.kt`
+- [x] T027 [US5] Register `BootReceiver` in `relayx-android/src/main/AndroidManifest.xml` with `RECEIVE_BOOT_COMPLETED`
 
 **Checkpoint**: System reboot survival verified.
 
@@ -111,8 +111,8 @@
 
 **Independent Test**: Inspect Logcat output during SMS reception and forward dispatch to ensure no message bodies or OTP codes appear.
 
-- [ ] T028 [US6] Audit all log calls in `SmsReceiver`, `MessageDispatchWorker`, and `RelayServerClient` to enforce `RelayLogger` metadata-only logging
-- [ ] T029 [US6] Implement automated test in `relayx-android/src/test/java/com/parsomash/relayx/util/RelayLoggerTest.kt` verifying that message bodies and OTP tokens are never outputted
+- [x] T028 [US6] Audit all log calls in `SmsReceiver`, `MessageDispatchWorker`, and `RelayServerClient` to enforce `RelayLogger` metadata-only logging
+- [x] T029 [US6] Implement automated test in `relayx-android/src/test/java/com/parsomash/relayx/util/RelayLoggerTest.kt` verifying that message bodies and OTP tokens are never outputted
 
 **Checkpoint**: Privacy guarantees verified with automated assertions.
 
@@ -122,9 +122,9 @@
 
 **Purpose**: Cross-cutting unit testing, code quality, and APK verification.
 
-- [ ] T030 [P] Implement unit tests for `PreferencesRepository` in `relayx-android/src/test/java/com/parsomash/relayx/data/local/PreferencesRepositoryTest.kt`
-- [ ] T031 [P] Implement unit tests for `RelayServerClient` in `relayx-android/src/test/java/com/parsomash/relayx/data/remote/RelayServerClientTest.kt`
-- [ ] T032 Run full verification suite (`rtk ./gradlew test` and `rtk ./gradlew assembleDebug`)
+- [x] T030 [P] Implement unit tests for `PreferencesRepository` in `relayx-android/src/test/java/com/parsomash/relayx/data/local/PreferencesRepositoryTest.kt`
+- [x] T031 [P] Implement unit tests for `RelayServerClient` in `relayx-android/src/test/java/com/parsomash/relayx/data/remote/RelayServerClientTest.kt`
+- [x] T032 Run full verification suite (`rtk ./gradlew test` and `rtk ./gradlew assembleDebug`)
 
 ---
 
