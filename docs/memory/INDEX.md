@@ -22,6 +22,8 @@ This is a compact routing map for durable project memory (`docs/memory/`). Keep 
 |:---|:---|:---|:---|:---|:---|
 | [2026-09-07-feature-001-server-foundation.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-07-feature-001-server-foundation.md) | branch | 2026-09-07 | MODERATE | C:0 H:0 M:1 L:2 | A04,A05,A07 |
 | [2026-09-07-feature-001-server-foundation-followup.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-07-feature-001-server-foundation-followup.md) | followup | 2026-09-07 | MODERATE | C:0 H:0 M:1 L:2 | A04,A05,A07 |
+| [2026-09-12-feature-002-android-gateway-foundation.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-12-feature-002-android-gateway-foundation.md) | branch | 2026-09-12 | MODERATE | C:0 H:0 M:1 L:2 | A02,A03,A05 |
+| [2026-09-12-feature-002-android-gateway-foundation-followup.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-12-feature-002-android-gateway-foundation-followup.md) | followup | 2026-09-12 | MODERATE | C:0 H:0 M:1 L:2 | A02,A03,A05 |
 
 ## Workflow & Operating Rules
 - [Workflow Rules](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/workflow.md): Authoritative SDD memory-first execution procedure.

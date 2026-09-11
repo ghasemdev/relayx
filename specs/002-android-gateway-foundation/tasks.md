@@ -128,6 +128,16 @@
 
 ---
 
+## Phase 10: Security Hardening (Follow-Up Tasks)
+
+**Purpose**: Implement security hardening items identified during branch and task security reviews.
+
+- [x] TASK-SEC-001 [MEDIUM] [A02:2025 / CWE-312] Disable application backup (`android:allowBackup="false"`) and configure backup/data extraction rules in `relayx-android/src/main/AndroidManifest.xml`, `relayx-android/src/main/res/xml/backup_rules.xml`, and `relayx-android/src/main/res/xml/data_extraction_rules.xml`
+- [x] TASK-SEC-002 [LOW] [A05:2025 / CWE-319] Restrict cleartext HTTP traffic via `network_security_config.xml` to emulator loopback (`10.0.2.2`, `localhost`, `127.0.0.1`) and bind to `relayx-android/src/main/AndroidManifest.xml`
+- [x] TASK-SEC-003 [LOW] [A03:2025 / CWE-93] Sanitize CR/LF newline sequences in `relayx-server/internal/hook/hook.go` to prevent emulator console command injection and add unit tests in `relayx-server/internal/hook/hook_test.go`
+
+---
+
 ## Dependencies & Execution Order
 
 > See [task-dependencies.md](task-dependencies.md) for the complete 12-wave Mermaid directed acyclic graph (DAG) and critical path analysis.
@@ -152,6 +162,9 @@ Phase 1 (Setup) ──> Phase 2 (Foundational)
                            │
                            ▼
                      Phase 9 (Polish & Quality Gates)
+                           │
+                           ▼
+                     Phase 10 (Security Hardening)
 ```
 
 ### Parallel Opportunities
@@ -159,3 +172,5 @@ Phase 1 (Setup) ──> Phase 2 (Foundational)
 - **Phase 2**: T005, T006, and T007 can be developed concurrently in parallel.
 - **Phase 3**: T011 network DTOs can run in parallel with settings UI scaffolding.
 - **Phase 9**: T030 and T031 unit tests can be developed in parallel across local and remote data layers.
+- **Phase 10**: TASK-SEC-001, TASK-SEC-002 (Android), and TASK-SEC-003 (Server) can be implemented independently in parallel.
+

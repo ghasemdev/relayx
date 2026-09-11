@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"relayx-server/internal/domain"
@@ -30,6 +31,12 @@ func NewRunner(adbPort int, execHook string) *Runner {
 	}
 }
 
+// SanitizeADBInput removes carriage return and newline characters to prevent emulator console command injection.
+func SanitizeADBInput(s string) string {
+	s = strings.ReplaceAll(s, "\r", "")
+	return strings.ReplaceAll(s, "\n", " ")
+}
+
 // Trigger asynchronously invokes active hooks for newly ingested messages.
 func (r *Runner) Trigger(ctx context.Context, msg *domain.Message) {
 	if r == nil || msg == nil {
@@ -50,19 +57,21 @@ func (r *Runner) runADB(msg *domain.Message) {
 	defer cancel()
 
 	targetDevice := fmt.Sprintf("emulator-%d", r.adbPort)
+	sanitizedSender := SanitizeADBInput(msg.Sender)
+	sanitizedBody := SanitizeADBInput(msg.Body)
+
 	slog.Info("executing adb emulator sms relay hook",
 		"target", targetDevice,
-		"sender", msg.Sender,
+		"sender", sanitizedSender,
 		"message_id", msg.MessageID,
 	)
 
-	cmd := exec.CommandContext(ctx, "adb", "-s", targetDevice, "emu", "sms", "send", msg.Sender, msg.Body)
-	output, err := cmd.CombinedOutput()
+	cmd := exec.CommandContext(ctx, "adb", "-s", targetDevice, "emu", "sms", "send", sanitizedSender, sanitizedBody)
+	_, err := cmd.CombinedOutput()
 	if err != nil {
 		slog.Error("adb emulator sms relay failed",
 			"target", targetDevice,
 			"error", err,
-			"output", string(output),
 			"message_id", msg.MessageID,
 		)
 		return

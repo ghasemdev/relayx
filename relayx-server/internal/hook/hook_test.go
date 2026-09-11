@@ -62,3 +62,46 @@ func TestHookRunnerNilSafety(t *testing.T) {
 	runner.Trigger(context.Background(), nil)
 	runner.Trigger(context.Background(), &domain.Message{})
 }
+
+func TestSanitizeADBInput(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "plain text",
+			input:    "Hello World",
+			expected: "Hello World",
+		},
+		{
+			name:     "crlf sequence",
+			input:    "Line1\r\nLine2",
+			expected: "Line1 Line2",
+		},
+		{
+			name:     "multiple newlines and carriage returns",
+			input:    "BANK_AUTH\r\nsms send 123 malicious\r\n",
+			expected: "BANK_AUTH sms send 123 malicious ",
+		},
+		{
+			name:     "isolated carriage returns",
+			input:    "Line1\rLine2",
+			expected: "Line1Line2",
+		},
+		{
+			name:     "empty string",
+			input:    "",
+			expected: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := hook.SanitizeADBInput(tt.input)
+			if got != tt.expected {
+				t.Errorf("SanitizeADBInput(%q) = %q; want %q", tt.input, got, tt.expected)
+			}
+		})
+	}
+}
