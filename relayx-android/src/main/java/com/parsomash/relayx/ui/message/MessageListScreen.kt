@@ -66,9 +66,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun MessageListScreen(
     viewModel: MessageListViewModel,
-    initialFilter: String = "ALL",
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    initialFilter: String = "ALL"
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current

@@ -49,9 +49,9 @@ import java.util.Locale
 
 @Composable
 fun DashboardScreen(
-    modifier: Modifier = Modifier,
     viewModel: DashboardViewModel,
     onRequestPermissions: () -> Unit,
+    modifier: Modifier = Modifier,
     onNavigateToMessageList: (filter: String) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
