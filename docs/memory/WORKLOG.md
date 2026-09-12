@@ -1,12 +1,22 @@
 # Worklog
 
-Last reviewed: 2026-09-12
+Last reviewed: 2026-09-13
 
 This log captures high-level milestones and systemic architectural transitions for RelayX.
 
 ---
 
 ## Milestones & Architectural History
+
+### 2026-09-13: Phase 3 Android Message Inspection & Detail Modal Implemented, Hardened & Verified
+- **Objective**: Deliver real-time message inspection, multi-state filtering, payload privacy controls, and idempotent retry dispatch.
+- **Key Actions**:
+  - Implemented `MessageListScreen` with reactive status filtering (`All`, `Pending`, `Forwarded`, `Failed`, `Filtered`) via synchronized `HorizontalPager` and `PrimaryScrollableTabRow`.
+  - Built debounced real-time search across sender numbers and message UUIDs.
+  - Implemented edge-to-edge layout with animated `NavigationBar` slide transitions and scroll-direction-aware collapsible search header.
+  - Built `MessageDetailBottomSheet` with default payload masking (`••••••••••••`), eye toggle unmasking, clipboard copy feedback (`LocalClipboard`), and idempotent delivery retry.
+  - Hardened with Compose API parameter ordering conventions and completed full security reviews (Branch, Follow-up, Task).
+  - Verified 100% test pass rate across 22 Android unit tests, 19 Go server tests, and 15 live emulator QA scenarios.
 
 ### 2026-09-12: Phase 2 Android Gateway Foundation Implemented, Hardened & Verified
 - **Objective**: Deliver resilient, privacy-preserving Android Gateway client (`relayx-android`) for RelayX.

@@ -11,7 +11,7 @@ This is a compact routing map for durable project memory (`docs/memory/`). Keep 
 |:---|:---|:---|
 | [PROJECT_CONTEXT.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/PROJECT_CONTEXT.md) | Product & System | System actors, core constraints, domains, and priorities. |
 | [ARCHITECTURE.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/ARCHITECTURE.md) | Technical Design | Component layout, Go server package design, SQLite schema, REST API, and MCP tools. |
-| [DECISIONS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/DECISIONS.md) | ADRs | Architectural decision records (ADR-001 through ADR-011). |
+| [DECISIONS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/DECISIONS.md) | ADRs | Architectural decision records (ADR-001 through ADR-013). |
 | [BUGS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/BUGS.md) | Quality & Security | Known regression traps, doze mode risks, sensitive data leaks, and race conditions. |
 | [WORKLOG.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/WORKLOG.md) | Milestones | Record of major technical migrations and roadmap checkpoints. |
 | [roadmap.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/roadmap.md) | Execution Plan | 9-phase implementation roadmap and Definition of Done. |

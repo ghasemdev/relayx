@@ -1,6 +1,6 @@
 # Bugs & Regression Patterns
 
-Last reviewed: 2026-09-12
+Last reviewed: 2026-09-13
 
 This document tracks identified failure modes, architectural edge cases, and regression traps to prevent during development.
 
@@ -42,4 +42,10 @@ This document tracks identified failure modes, architectural edge cases, and reg
 - **Symptom**: Running `adb backup` on an unlocked device extracts outbox SMS history, OTPs, and device Bearer tokens.
 - **Root Cause**: Default Android manifest configuration allows full backup unless explicitly disabled.
 - **Prevention**: Keep `android:allowBackup="false"` set in `AndroidManifest.xml` and maintain explicit exclusion rules in `backup_rules.xml` and `data_extraction_rules.xml`.
+
+### 8. Compose Parameter Ordering Lint Violation (`Modifier` not first optional)
+- **Symptom**: Android Studio / Compose compiler lint warning: *"Modifier parameter should be the first optional parameter"*.
+- **Root Cause**: Placing optional ViewModel defaults (e.g. `viewModel: MessageListViewModel = koinViewModel()`) or optional event callbacks ahead of `modifier: Modifier = Modifier`.
+- **Prevention**: Strictly order Composable parameters: (1) required parameters without default values, (2) `modifier: Modifier = Modifier` as the first optional parameter, (3) remaining optional parameters with default values.
+
 

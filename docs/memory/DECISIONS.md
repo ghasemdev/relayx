@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-Last reviewed: 2026-09-12
+Last reviewed: 2026-09-13
 
 ## ADR Index
 
@@ -17,6 +17,8 @@ Last reviewed: 2026-09-12
 | [ADR-009](#adr-009-server-side-ingestion-hooks-for-emulator-and-simulator-relay) | Server-Side Ingestion Hooks for Emulator and Simulator Relay | Accepted | 2026-09-11 |
 | [ADR-010](#adr-010-koin-42-component-scanning-app-startup--navigation-3-integration) | Koin 4.2 Component Scanning, App Startup & Navigation 3 Integration | Accepted | 2026-09-12 |
 | [ADR-011](#adr-011-defense-in-depth-for-gateway-data-stores-and-cleartext-scoping) | Defense-in-Depth for Gateway Data Stores and Cleartext Scoping | Accepted | 2026-09-12 |
+| [ADR-012](#adr-012-navigation-3-edge-to-edge-scaffolding-with-animated-global-chrome) | Navigation 3 Edge-to-Edge Scaffolding with Animated Global Chrome | Accepted | 2026-09-13 |
+| [ADR-013](#adr-013-reactive-state-synchronization-for-collapsible-headers-with-directional-scroll-reset) | Reactive State Synchronization for Collapsible Headers with Directional Scroll Reset | Accepted | 2026-09-13 |
 
 ---
 
@@ -109,5 +111,21 @@ Last reviewed: 2026-09-12
   - Positive: Prevents physical data extraction of cryptographic tokens and queued SMS via `adb backup` or device transfers.
   - Positive: Guarantees HTTPS enforcement for all non-loopback production traffic.
   - Tradeoff: Testing with LAN IP addresses requires temporary dev configuration or TLS deployment.
+
+### ADR-012: Navigation 3 Edge-to-Edge Scaffolding with Animated Global Chrome
+- **Context**: In Jetpack Compose Navigation 3, placing a global `Scaffold` with `NavigationBar` around the entire navigation host injects inner padding that causes list screens to experience double padding or bottom dead space. Furthermore, full-screen message inspection requires hiding the bottom bar smoothly to maximize list viewport area.
+- **Decision**: Decouple the root `Scaffold` content padding from leaf destination layouts. Wrap the global `NavigationBar` inside `AnimatedVisibility(visible = currentRoute != "messages", enter = slideInVertically { it }, exit = slideOutVertically { it })`. Enable `MessageListScreen` to extend full-size edge-to-edge down to the system display boundary, handling its own navigation bar insets at the scroll edge.
+- **Consequences**:
+  - Positive: True edge-to-edge scrolling without dead space or bottom bar cutoffs.
+  - Positive: Fluid, animated transitions between dashboard navigation and full-screen message lists.
+  - Tradeoff: Child screens must explicitly handle window insets (`Modifier.navigationBarsPadding()`) for their bottom scroll content.
+
+### ADR-013: Reactive State Synchronization for Collapsible Headers with Directional Scroll Reset
+- **Context**: Collapsible top search bars must allow users to tap a top app bar action icon to expand search and scroll to top, but also automatically collapse and hide the search bar when scrolling down through the list. A naive boolean toggle causes state de-synchronization where subsequent downward scrolling fails to collapse the header.
+- **Decision**: Combine `derivedStateOf` for immediate scroll detection with a `snapshotFlow(currentListState)` scroll offset delta collector that automatically clears the `isSearchExplicitlyExpanded` state as soon as downward scrolling is detected.
+- **Consequences**:
+  - Positive: Smooth, predictable UX where top bar actions trigger immediate expansion, while standard list scrolling collapses the search header naturally.
+  - Positive: Decouples tab-specific `LazyListState` across `HorizontalPager` pages while preserving responsive search animation behavior.
+
 
 
