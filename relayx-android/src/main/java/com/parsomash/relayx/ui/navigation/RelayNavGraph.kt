@@ -21,6 +21,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
@@ -123,26 +124,30 @@ fun MainAppScaffold(
         backStack.removeLastOrNull()
     }
 
+    val showBottomBar = currentRoute !is AppRoute.MessageList
+
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                bottomNavItems.forEach { item ->
-                    NavigationBarItem(
-                        selected = currentRoute == item.route,
-                        onClick = {
-                            if (currentRoute != item.route) {
-                                backStack.clear()
-                                backStack.add(item.route)
-                            }
-                        },
-                        icon = {
-                            Icon(
-                                item.icon,
-                                contentDescription = stringResource(item.titleResId)
-                            )
-                        },
-                        label = { Text(stringResource(item.titleResId)) }
-                    )
+            if (showBottomBar) {
+                NavigationBar {
+                    bottomNavItems.forEach { item ->
+                        NavigationBarItem(
+                            selected = currentRoute == item.route,
+                            onClick = {
+                                if (currentRoute != item.route) {
+                                    backStack.clear()
+                                    backStack.add(item.route)
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    item.icon,
+                                    contentDescription = stringResource(item.titleResId)
+                                )
+                            },
+                            label = { Text(stringResource(item.titleResId)) }
+                        )
+                    }
                 }
             }
         }
@@ -150,7 +155,10 @@ fun MainAppScaffold(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(
+                    top = if (showBottomBar) innerPadding.calculateTopPadding() else 0.dp,
+                    bottom = if (showBottomBar) innerPadding.calculateBottomPadding() else 0.dp
+                )
         ) {
             CompositionLocalProvider(
                 LocalRequestPermissions provides onRequestPermissions,
