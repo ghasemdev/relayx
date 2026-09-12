@@ -28,6 +28,7 @@ This is a compact routing map for durable project memory (`docs/memory/`). Keep 
 | [2026-09-13-feature-003-android-message-inspection.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-13-feature-003-android-message-inspection.md) | branch | 2026-09-13 | LOW | C:0 H:0 M:0 L:2 | A02,A04 |
 | [2026-09-13-feature-003-android-message-inspection-tasks.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-13-feature-003-android-message-inspection-tasks.md) | tasks | 2026-09-13 | LOW | C:0 H:0 M:0 L:2 | A02,A04 |
 | [2026-09-13-feature-003-android-message-inspection-followup.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-13-feature-003-android-message-inspection-followup.md) | followup | 2026-09-13 | LOW | C:0 H:0 M:0 L:2 | A02,A04 |
+| [2026-09-13-feature-004-server-web-dashboard.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-13-feature-004-server-web-dashboard.md) | branch | 2026-09-13 | INFORMATIONAL | C:0 H:0 M:0 L:0 | |
 
 ## Workflow & Operating Rules
 - [Workflow Rules](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/workflow.md): Authoritative SDD memory-first execution procedure.

@@ -7,6 +7,8 @@ import (
 	"os"
 	"regexp"
 	"strings"
+
+	"relayx-server/internal/domain"
 )
 
 var (
@@ -75,10 +77,28 @@ func (h *RedactingHandler) Enabled(ctx context.Context, level slog.Level) bool {
 func (h *RedactingHandler) Handle(ctx context.Context, r slog.Record) error {
 	// Sanitize attributes inside the record
 	newRecord := slog.NewRecord(r.Time, r.Level, r.Message, r.PC)
+	attrsMap := make(map[string]any)
 	r.Attrs(func(a slog.Attr) bool {
-		newRecord.AddAttrs(sanitizeAttr(a))
+		sanitized := sanitizeAttr(a)
+		newRecord.AddAttrs(sanitized)
+		attrsMap[sanitized.Key] = sanitized.Value.Any()
 		return true
 	})
+
+	if GlobalBroadcaster != nil {
+		component := "server"
+		if comp, ok := attrsMap["component"].(string); ok && comp != "" {
+			component = comp
+		}
+		GlobalBroadcaster.Broadcast(domain.LogEntry{
+			Timestamp:  r.Time,
+			Level:      r.Level.String(),
+			Component:  component,
+			Message:    r.Message,
+			Attributes: attrsMap,
+		})
+	}
+
 	return h.next.Handle(ctx, newRecord)
 }
 

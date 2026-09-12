@@ -16,6 +16,7 @@ import (
 	"relayx-server/internal/logging"
 	"relayx-server/internal/service"
 	"relayx-server/internal/storage"
+	"relayx-server/internal/web"
 )
 
 const ServerVersion = "1.0.0"
@@ -92,6 +93,27 @@ func main() {
 	server.Mux().HandleFunc("GET /api/v1/messages", messageHandler.ListMessages)
 	server.Mux().HandleFunc("GET /api/v1/messages/latest", messageHandler.GetLatestMessage)
 	server.Mux().HandleFunc("GET /api/v1/messages/{id}", messageHandler.GetMessageByID)
+
+	// Dashboard & Observability Routes
+	webAssets, err := web.Assets()
+	if err != nil {
+		logger.Error("failed to load embedded web assets", "error", err)
+		os.Exit(1)
+	}
+	server.Mux().Handle("GET /dashboard/", http.StripPrefix("/dashboard/", http.FileServer(webAssets)))
+
+	dashService := service.NewDashboardService(db, deviceRepo, cfg.DBPath, ServerVersion)
+	dashHandler := api.NewDashboardHandler(dashService, logging.GlobalBroadcaster, cfg.AdminToken)
+	adminAuth := api.AuthenticateAdmin(cfg.AdminToken)
+
+	server.Mux().Handle("GET /api/v1/dashboard/logs/stream", adminAuth(http.HandlerFunc(dashHandler.HandleLogStream)))
+	server.Mux().Handle("GET /api/v1/dashboard/metrics", adminAuth(http.HandlerFunc(dashHandler.HandleGetMetrics)))
+	server.Mux().Handle("GET /api/v1/dashboard/database/tables", adminAuth(http.HandlerFunc(dashHandler.HandleGetTables)))
+	server.Mux().Handle("GET /api/v1/dashboard/database/tables/{name}", adminAuth(http.HandlerFunc(dashHandler.HandleQueryTable)))
+	server.Mux().Handle("GET /api/v1/dashboard/devices", adminAuth(http.HandlerFunc(dashHandler.HandleListDevices)))
+	server.Mux().Handle("POST /api/v1/dashboard/devices", adminAuth(http.HandlerFunc(dashHandler.HandleRegisterDevice)))
+	server.Mux().Handle("DELETE /api/v1/dashboard/devices/{id}", adminAuth(http.HandlerFunc(dashHandler.HandleRevokeDevice)))
+	server.Mux().Handle("POST /api/v1/dashboard/auth/login", http.HandlerFunc(dashHandler.HandleLogin))
 
 	// Wrap server with security headers, logging, and recovery middleware
 	rootHandler := api.Recovery(api.SecurityHeaders(api.RequestLogger(server.Mux())))

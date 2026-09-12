@@ -48,4 +48,15 @@ This document tracks identified failure modes, architectural edge cases, and reg
 - **Root Cause**: Placing optional ViewModel defaults (e.g. `viewModel: MessageListViewModel = koinViewModel()`) or optional event callbacks ahead of `modifier: Modifier = Modifier`.
 - **Prevention**: Strictly order Composable parameters: (1) required parameters without default values, (2) `modifier: Modifier = Modifier` as the first optional parameter, (3) remaining optional parameters with default values.
 
+### 9. HTTP Middleware ResponseWriter Wrapping Stripping `http.Flusher`
+- **Symptom**: Server-Sent Events (SSE) endpoints return `streaming unsupported by server` (HTTP 500) when accessed through standard HTTP middleware chains.
+- **Root Cause**: Interceptor structs that wrap `http.ResponseWriter` (e.g. to log response status codes) embed the interface but do not explicitly implement `http.Flusher` or `Unwrap() http.ResponseWriter`. The standard type assertion `w.(http.Flusher)` fails on the wrapped struct.
+- **Prevention**: Any custom `http.ResponseWriter` wrapper must delegate `Flush()` to the underlying writer if it implements `http.Flusher`, and provide `Unwrap() http.ResponseWriter` (Go 1.20+ convention). Verify SSE streaming in end-to-end integration tests through the full middleware stack.
+
+### 10. SQLite Foreign Key Constraint Violations on Device Revocation
+- **Symptom**: Deleting a device via `DELETE /api/v1/dashboard/devices/{id}` fails with `FOREIGN KEY constraint failed` (HTTP 500) if the device has previously ingested messages.
+- **Root Cause**: In SQLite with foreign keys active (`PRAGMA foreign_keys = ON;`), the `messages` table schema defines `device_id TEXT NOT NULL REFERENCES devices(id)` without `ON DELETE CASCADE`. Executing `DELETE FROM devices WHERE id = ?` fails immediately.
+- **Prevention**: Implement repository deletion inside an atomic transaction: first delete related dependent records (`DELETE FROM messages WHERE device_id = ?;`), then delete the parent entity (`DELETE FROM devices WHERE id = ?;`).
+
+
 

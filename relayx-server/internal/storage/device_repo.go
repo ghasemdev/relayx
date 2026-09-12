@@ -81,3 +81,49 @@ func (r *SQLiteDeviceRepository) UpdateLastSeen(ctx context.Context, id string, 
 	}
 	return nil
 }
+
+func (r *SQLiteDeviceRepository) List(ctx context.Context) ([]domain.Device, error) {
+	query := `SELECT id, name, token_hash, created_at, last_seen_at FROM devices ORDER BY created_at DESC;`
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("listing devices: %w", err)
+	}
+	defer rows.Close()
+
+	var devices []domain.Device
+	for rows.Next() {
+		var d domain.Device
+		var lastSeen sql.NullTime
+		if err := rows.Scan(&d.ID, &d.Name, &d.TokenHash, &d.CreatedAt, &lastSeen); err != nil {
+			return nil, fmt.Errorf("scanning device row: %w", err)
+		}
+		if lastSeen.Valid {
+			d.LastSeenAt = &lastSeen.Time
+		}
+		devices = append(devices, d)
+	}
+
+	if devices == nil {
+		devices = []domain.Device{}
+	}
+
+	return devices, nil
+}
+
+func (r *SQLiteDeviceRepository) Delete(ctx context.Context, id string) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("beginning transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.ExecContext(ctx, `DELETE FROM messages WHERE device_id = ?;`, id); err != nil {
+		return fmt.Errorf("deleting device messages: %w", err)
+	}
+
+	if _, err := tx.ExecContext(ctx, `DELETE FROM devices WHERE id = ?;`, id); err != nil {
+		return fmt.Errorf("deleting device: %w", err)
+	}
+
+	return tx.Commit()
+}
