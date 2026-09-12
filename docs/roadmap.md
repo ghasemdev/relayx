@@ -44,19 +44,20 @@ This document outlines the sequential 9-phase implementation plan, component del
   - [x] Restrict cleartext HTTP traffic strictly to local loopback addresses (`10.0.2.2`, `127.0.0.1`, `localhost`) via `network_security_config.xml`.
   - [x] Strict zero-sensitive logging with `RelayLogger` payload and OTP masking.
 
-### Phase 3 — Android Message Inspection & Detail Modal (`relayx-android`)
-- [ ] Navigation from Dashboard metric cards (Received, Forwarded, Filtered, Failed) to a dedicated Message List Screen.
-- [ ] Message List Screen:
-  - Filter tabs by status (All, Pending Outbox, Forwarded/Delivered, Filtered, Failed/Retrying).
-  - Search by sender, message ID, or date.
-  - Message card items displaying sender, arrival time, delivery status badge, and retry attempts.
-- [ ] Last Message Detail Bottom Sheet:
-  - Clicking "Last Message Received" card on Dashboard opens an interactive `ModalBottomSheet`.
-  - Displays complete metadata: Unique Message UUID, Sender identity, Ingestion timestamp, Delivery status, Attempt count, Error reasons (if delivery failed).
-  - Privacy-preserving content view (masked preview with explicit user toggle to inspect).
-  - One-tap "Retry Now" action button to trigger immediate outbox worker dispatch for failed messages.
+### Phase 3 — Android Message Inspection & Detail Modal (`relayx-android`) `[COMPLETED - PR #3]`
+- [x] Navigation from Dashboard metric cards (Received, Forwarded, Filtered, Failed) to a dedicated Message List Screen.
+- [x] Message List Screen:
+  - [x] Filter tabs by status (All, Pending Outbox, Forwarded/Delivered, Filtered, Failed/Retrying) with synchronized `HorizontalPager`.
+  - [x] Search by sender, message ID, or date with debounced real-time filtering.
+  - [x] Message card items displaying sender, arrival time, delivery status badge, and retry attempts.
+  - [x] Edge-to-edge listing with animated bottom navigation and directional collapsible search header.
+- [x] Last Message Detail Bottom Sheet:
+  - [x] Clicking "Last Message Received" card on Dashboard opens an interactive `ModalBottomSheet`.
+  - [x] Displays complete metadata: Unique Message UUID, Sender identity, Ingestion timestamp, Delivery status, Attempt count, Error reasons (if delivery failed).
+  - [x] Privacy-preserving content view (masked preview `••••••••••••` with explicit user toggle to inspect).
+  - [x] One-tap "Retry Delivery" action button to trigger immediate outbox worker dispatch for failed messages with UUID preservation.
 
-### Phase 4 — Server Web Dashboard & Live Observability (`relayx-server`)
+### Phase 4 — Server Web Dashboard & Live Observability (`relayx-server`) `[IN PROGRESS]`
 - [ ] Embed Web Dashboard directly inside standalone Go binary (`go:embed` HTML/JS/CSS assets).
 - [ ] Live Log Streaming ("Logcat"):
   - Real-time log streaming over Server-Sent Events (SSE) or WebSockets from server structured logger (`slog`).

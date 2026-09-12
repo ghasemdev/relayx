@@ -73,7 +73,7 @@
 
 - [x] **Phase 1: Server Foundation (`relayx-server`)**: Standalone Go daemon, embedded SQLite WAL engine, embedded migrations, Bearer token authentication, idempotency deduplication, health monitoring, structured logging redaction, and ingestion hooks.
 - [x] **Phase 2: Android Gateway Foundation (`relayx-android`)**: Kotlin 2.4.20, Compose Material 3, Navigation 3, Koin 4.2 App Startup, Room durable offline outbox, WorkManager exponential backoff dispatch, multipart SMS receiver, boot persistence, and zero-sensitive logging.
-- [ ] **Phase 3: Android Message Inspection & Detail Modal (`relayx-android`)**: Message list screen navigated from metric cards (Received, Forwarded, Filtered, Failed) and interactive bottom sheet for last message received.
+- [x] **Phase 3: Android Message Inspection & Detail Modal (`relayx-android`)**: Message list screen navigated from metric cards (Received, Forwarded, Filtered, Failed) with synchronized `HorizontalPager` tabs, real-time debounced search, animated chrome, and interactive bottom sheet for last message received with privacy masking.
 - [ ] **Phase 4: Server Web Dashboard & Live Observability (`relayx-server`)**: Embedded Web UI in Go binary, real-time logcat streaming over SSE/WebSockets, SQLite database table browser, message history, and token management.
 - [ ] **Phase 5: Local Pre-Filtering Engine & Security Rules (`relayx-android`)**: Rule editor UI, regex/substring matching, action policies (`ALLOW`, `DROP`, `TRANSFORM`), and test sandbox.
 - [ ] **Phase 6: Agent MCP Server (`relayx-server`)**: Full Model Context Protocol implementation (`get_latest_message`, `wait_for_message`, `get_otp`).
