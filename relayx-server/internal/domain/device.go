@@ -20,4 +20,6 @@ type DeviceRepository interface {
 	GetByID(ctx context.Context, id string) (*Device, error)
 	Upsert(ctx context.Context, device *Device) error
 	UpdateLastSeen(ctx context.Context, id string, lastSeen time.Time) error
+	List(ctx context.Context) ([]Device, error)
+	Delete(ctx context.Context, id string) error
 }

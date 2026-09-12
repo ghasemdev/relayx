@@ -18,6 +18,12 @@ func TestDefaultConfig(t *testing.T) {
 	if cfg.DBPath != "./data/sms.db" {
 		t.Errorf("expected default db ./data/sms.db, got %s", cfg.DBPath)
 	}
+	if cfg.DeviceToken != "" {
+		t.Errorf("expected default token empty, got %s", cfg.DeviceToken)
+	}
+	if cfg.AdminToken != "" {
+		t.Errorf("expected default admin token empty, got %s", cfg.AdminToken)
+	}
 	if cfg.Debug {
 		t.Errorf("expected default debug false, got %v", cfg.Debug)
 	}
@@ -32,6 +38,7 @@ func TestFlagOverrides(t *testing.T) {
 		"-port", "9090",
 		"-db", "/tmp/test.db",
 		"-token", "sec-token-123",
+		"-admin-token", "adm-secret-789",
 		"-debug",
 		"-adb-port", "5554",
 		"-exec-hook", "/bin/echo",
@@ -54,6 +61,9 @@ func TestFlagOverrides(t *testing.T) {
 	if cfg.DeviceToken != "sec-token-123" {
 		t.Errorf("expected token sec-token-123, got %s", cfg.DeviceToken)
 	}
+	if cfg.AdminToken != "adm-secret-789" {
+		t.Errorf("expected admin token adm-secret-789, got %s", cfg.AdminToken)
+	}
 	if !cfg.Debug {
 		t.Errorf("expected debug true, got %v", cfg.Debug)
 	}
@@ -70,6 +80,7 @@ func TestEnvOverrides(t *testing.T) {
 	os.Setenv("RELAYX_PORT", "7070")
 	os.Setenv("RELAYX_DB_PATH", "./custom.db")
 	os.Setenv("RELAYX_DEVICE_TOKEN", "env-token")
+	os.Setenv("RELAYX_ADMIN_TOKEN", "env-admin-token")
 	os.Setenv("RELAYX_DEBUG", "1")
 	os.Setenv("RELAYX_ADB_PORT", "5556")
 	os.Setenv("RELAYX_EXEC_HOOK", "/usr/bin/logger")
@@ -78,6 +89,7 @@ func TestEnvOverrides(t *testing.T) {
 		os.Unsetenv("RELAYX_PORT")
 		os.Unsetenv("RELAYX_DB_PATH")
 		os.Unsetenv("RELAYX_DEVICE_TOKEN")
+		os.Unsetenv("RELAYX_ADMIN_TOKEN")
 		os.Unsetenv("RELAYX_DEBUG")
 		os.Unsetenv("RELAYX_ADB_PORT")
 		os.Unsetenv("RELAYX_EXEC_HOOK")
@@ -99,6 +111,9 @@ func TestEnvOverrides(t *testing.T) {
 	}
 	if cfg.DeviceToken != "env-token" {
 		t.Errorf("expected token env-token, got %s", cfg.DeviceToken)
+	}
+	if cfg.AdminToken != "env-admin-token" {
+		t.Errorf("expected admin token env-admin-token, got %s", cfg.AdminToken)
 	}
 	if !cfg.Debug {
 		t.Errorf("expected debug true, got %v", cfg.Debug)

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RelayX Server Dashboard & Observability</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      ⚡ RelayX
+      <span class="tag">Gateway Observability</span>
+    </div>
+    <nav>
+      <button class="nav-btn active" data-tab="overview">Overview</button>
+      <button class="nav-btn" data-tab="logcat">Live Logcat</button>
+      <button class="nav-btn" data-tab="database">Database</button>
+      <button class="nav-btn" data-tab="devices">Devices</button>
+    </nav>
+    <div class="header-status">
+      <div id="statusDot" class="status-dot"></div>
+      <span id="statusText">Connecting...</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- TAB 1: OVERVIEW -->
+    <section id="tab-overview" class="tab-pane active">
+      <div class="metrics-grid">
+        <div class="card">
+          <div class="card-title">Server Uptime</div>
+          <div class="card-value" id="valUptime">--</div>
+          <div class="card-subtitle" id="valVersion">Version: 1.0.0</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Active Goroutines</div>
+          <div class="card-value" id="valGoroutines">--</div>
+          <div class="card-subtitle" id="valMemory">Memory: -- MB</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Database Storage</div>
+          <div class="card-value" id="valDBSize">--</div>
+          <div class="card-subtitle" id="valWALSize">WAL: --</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Delivery Success Rate</div>
+          <div class="card-value" id="valSuccessRate">--%</div>
+          <div class="card-subtitle" id="valSuccessSubtitle">Forwarded / Total</div>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="card">
+          <div class="card-title">Total Messages Ingested</div>
+          <div class="card-value" id="cntReceived" style="color: var(--primary-accent)">0</div>
+          <div class="card-subtitle">All captured SMS records</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Forwarded to Agents</div>
+          <div class="card-value" id="cntForwarded" style="color: var(--success)">0</div>
+          <div class="card-subtitle">Delivered successfully</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Filtered (Pre-Dropped)</div>
+          <div class="card-value" id="cntFiltered" style="color: var(--text-secondary)">0</div>
+          <div class="card-subtitle">Dropped by rule engine</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Delivery Failed</div>
+          <div class="card-value" id="cntFailed" style="color: var(--danger)">0</div>
+          <div class="card-subtitle">Network/server dispatch errors</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: LIVE LOGCAT -->
+    <section id="tab-logcat" class="tab-pane">
+      <div class="logcat-container">
+        <div class="logcat-toolbar">
+          <div class="toolbar-left">
+            <select id="logLevelFilter">
+              <option value="ALL">All Levels</option>
+              <option value="DEBUG">DEBUG & Above</option>
+              <option value="INFO" selected>INFO & Above</option>
+              <option value="WARN">WARN & Above</option>
+              <option value="ERROR">ERROR Only</option>
+            </select>
+            <input type="text" id="logSearchInput" placeholder="Filter logs (e.g. sender, error)...">
+          </div>
+          <div class="toolbar-right">
+            <button class="btn" id="btnPauseScroll">Pause Auto-Scroll</button>
+            <button class="btn btn-danger" id="btnClearLogs">Clear</button>
+          </div>
+        </div>
+        <div class="log-window" id="logWindow"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: DATABASE TABLE BROWSER -->
+    <section id="tab-database" class="tab-pane">
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="toolbar-left">
+            <select id="dbTableSelect">
+              <option value="messages">messages</option>
+              <option value="devices">devices</option>
+              <option value="schema_migrations">schema_migrations</option>
+            </select>
+            <input type="text" id="dbSearchInput" placeholder="Search table...">
+            <select id="dbStatusFilter" style="display:none;">
+              <option value="">All Statuses</option>
+              <option value="RECEIVED">RECEIVED</option>
+              <option value="FORWARDED">FORWARDED</option>
+              <option value="FILTERED">FILTERED</option>
+              <option value="FAILED">FAILED</option>
+            </select>
+          </div>
+          <div class="toolbar-right">
+            <span id="dbTotalCount">Total: 0</span>
+            <button class="btn" id="btnRefreshTable">Refresh</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table id="dbDataTable">
+            <thead id="dbTableHeader"></thead>
+            <tbody id="dbTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="pagination-bar">
+          <div>
+            Page <span id="dbCurrentPage">1</span> of <span id="dbTotalPages">1</span>
+          </div>
+          <div>
+            <button class="btn" id="btnPrevPage">Previous</button>
+            <button class="btn" id="btnNextPage">Next</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: DEVICES -->
+    <section id="tab-devices" class="tab-pane">
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="toolbar-left">
+            <h3 style="font-size: 1rem; color: var(--text-primary)">Registered Gateway Devices</h3>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-primary" id="btnOpenRegisterDevice">+ Register New Device</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Device ID</th>
+                <th>Device Name</th>
+                <th>Token Fingerprint</th>
+                <th>Registered At</th>
+                <th>Last Seen</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="deviceTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- RECORD DETAIL MODAL -->
+  <div class="modal-backdrop" id="recordModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">Record Inspection</h3>
+        <button class="btn" id="btnCloseModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <pre class="json-view" id="modalJsonContent"></pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btnCloseModalBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER DEVICE MODAL -->
+  <div class="modal-backdrop" id="registerDeviceModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Register New Gateway Device</h3>
+        <button class="btn" id="btnCloseRegisterModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="registerForm">
+          <label style="display:block; margin-bottom: 0.5rem; color: var(--text-secondary)">Device Name:</label>
+          <input type="text" id="newDeviceName" placeholder="e.g. Pixel 4 XL Automation SIM" style="width: 100%; margin-bottom: 1rem;">
+          <p style="font-size: 0.8rem; color: var(--text-muted)">
+            A secret Bearer token will be generated. You must copy it immediately as it cannot be shown again.
+          </p>
+        </div>
+        <div id="registerResult" style="display: none;">
+          <p style="color: var(--success); font-weight: 600; margin-bottom: 0.5rem">Device registered successfully!</p>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem">Bearer Authorization Token:</p>
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem">
+            <input type="text" id="generatedTokenText" readonly style="flex:1; font-family: var(--font-mono); font-size: 0.8rem">
+            <button class="btn btn-primary" id="btnCopyToken">Copy</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btnCancelRegister">Cancel</button>
+        <button class="btn btn-primary" id="btnSubmitRegister">Generate Token</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

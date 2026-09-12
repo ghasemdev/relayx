@@ -61,6 +61,49 @@ func AuthenticateDevice(devService *service.DeviceService) func(http.Handler) ht
 	}
 }
 
+// AuthenticateAdmin enforces optional admin token authentication on dashboard endpoints.
+// If adminToken is empty, access is unrestricted.
+func AuthenticateAdmin(adminToken string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if adminToken == "" {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			// 1. Check Bearer Authorization header
+			authHeader := r.Header.Get("Authorization")
+			if authHeader != "" {
+				parts := strings.SplitN(authHeader, " ", 2)
+				if len(parts) == 2 && strings.EqualFold(parts[0], "Bearer") {
+					if strings.TrimSpace(parts[1]) == adminToken {
+						next.ServeHTTP(w, r)
+						return
+					}
+				}
+			}
+
+			// 2. Check Cookie
+			if cookie, err := r.Cookie("relayx_admin_token"); err == nil {
+				if cookie.Value == adminToken {
+					next.ServeHTTP(w, r)
+					return
+				}
+			}
+
+			// 3. Check Query parameter (convenient for SSE EventSource connections)
+			if tokenParam := r.URL.Query().Get("token"); tokenParam != "" {
+				if tokenParam == adminToken {
+					next.ServeHTTP(w, r)
+					return
+				}
+			}
+
+			writeJSONError(w, http.StatusUnauthorized, "unauthorized admin access: invalid or missing admin token")
+		})
+	}
+}
+
 // responseWriterInterceptor captures the HTTP response status code.
 type responseWriterInterceptor struct {
 	http.ResponseWriter
@@ -70,6 +113,16 @@ type responseWriterInterceptor struct {
 func (rw *responseWriterInterceptor) WriteHeader(code int) {
 	rw.statusCode = code
 	rw.ResponseWriter.WriteHeader(code)
+}
+
+func (rw *responseWriterInterceptor) Flush() {
+	if flusher, ok := rw.ResponseWriter.(http.Flusher); ok {
+		flusher.Flush()
+	}
+}
+
+func (rw *responseWriterInterceptor) Unwrap() http.ResponseWriter {
+	return rw.ResponseWriter
 }
 
 // RequestLogger logs incoming HTTP requests and durations without leaking sensitive payloads.

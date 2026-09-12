@@ -13,6 +13,7 @@ type Config struct {
 	Port        int
 	DBPath      string
 	DeviceToken string
+	AdminToken  string
 	Debug       bool
 	ADBPort     int
 	ExecHook    string
@@ -25,6 +26,7 @@ func DefaultConfig() *Config {
 		Port:        8080,
 		DBPath:      "./data/sms.db",
 		DeviceToken: "",
+		AdminToken:  "",
 		Debug:       false,
 		ADBPort:     0,
 		ExecHook:    "",
@@ -51,6 +53,9 @@ func Load(args []string) (*Config, error) {
 	if token := os.Getenv("RELAYX_DEVICE_TOKEN"); token != "" {
 		cfg.DeviceToken = token
 	}
+	if adminToken := os.Getenv("RELAYX_ADMIN_TOKEN"); adminToken != "" {
+		cfg.AdminToken = adminToken
+	}
 	if debugStr := os.Getenv("RELAYX_DEBUG"); debugStr != "" {
 		cfg.Debug = debugStr == "true" || debugStr == "1"
 	}
@@ -69,6 +74,7 @@ func Load(args []string) (*Config, error) {
 	fs.IntVar(&cfg.Port, "port", cfg.Port, "HTTP server listen port")
 	fs.StringVar(&cfg.DBPath, "db", cfg.DBPath, "SQLite database file path")
 	fs.StringVar(&cfg.DeviceToken, "token", cfg.DeviceToken, "Authorized device Bearer token")
+	fs.StringVar(&cfg.AdminToken, "admin-token", cfg.AdminToken, "Administrative token to access web dashboard")
 	fs.BoolVar(&cfg.Debug, "debug", cfg.Debug, "Enable debug logging")
 	fs.IntVar(&cfg.ADBPort, "adb-port", cfg.ADBPort, "Android emulator port to relay SMS via adb emu sms send (e.g. 5554)")
 	fs.StringVar(&cfg.ExecHook, "exec-hook", cfg.ExecHook, "Custom executable/script hook to run on message arrival")

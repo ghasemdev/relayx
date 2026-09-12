@@ -19,6 +19,7 @@ Last reviewed: 2026-09-13
 | [ADR-011](#adr-011-defense-in-depth-for-gateway-data-stores-and-cleartext-scoping) | Defense-in-Depth for Gateway Data Stores and Cleartext Scoping | Accepted | 2026-09-12 |
 | [ADR-012](#adr-012-navigation-3-edge-to-edge-scaffolding-with-animated-global-chrome) | Navigation 3 Edge-to-Edge Scaffolding with Animated Global Chrome | Accepted | 2026-09-13 |
 | [ADR-013](#adr-013-reactive-state-synchronization-for-collapsible-headers-with-directional-scroll-reset) | Reactive State Synchronization for Collapsible Headers with Directional Scroll Reset | Accepted | 2026-09-13 |
+| [ADR-014](#adr-014-embedded-static-web-dashboard-with-downstream-log-redaction-and-non-blocking-sse-fan-out) | Embedded Static Web Dashboard with Downstream Log Redaction & Non-Blocking SSE Fan-Out | Accepted | 2026-09-13 |
 
 ---
 
@@ -126,6 +127,20 @@ Last reviewed: 2026-09-13
 - **Consequences**:
   - Positive: Smooth, predictable UX where top bar actions trigger immediate expansion, while standard list scrolling collapses the search header naturally.
   - Positive: Decouples tab-specific `LazyListState` across `HorizontalPager` pages while preserving responsive search animation behavior.
+
+### ADR-014: Embedded Static Web Dashboard with Downstream Log Redaction and Non-Blocking SSE Fan-Out
+- **Context**: RelayX developers and operators require zero-configuration visibility into live server events, database contents, system metrics, and registered devices without external dependencies (Node.js, npm, CDNs, Docker) and without compromising Constitution Principle III (zero sensitive payload leaks).
+- **Decision**:
+  1. Embed all frontend assets (HTML, CSS, JavaScript) directly into the single Go server binary via `go:embed static/*` and serve them under `/dashboard/`.
+  2. Implement an in-memory `LogBroadcaster` with a bounded ring buffer (500 items) and non-blocking channel dispatch (`select { case ch <- entry: default: }`).
+  3. Hook the broadcaster into `RedactingHandler` downstream of attribute sanitization (`sanitizeAttr`) so sensitive keys (`body`, `otp`, `token`, `code`) are redacted before emission to browser Server-Sent Events (`/api/v1/dashboard/logs/stream`).
+  4. Provide read-only SQLite table browsing with strict table allowlisting (`messages`, `devices`, `schema_migrations`), validated column sorting, and default masked body display (`••••••••••••`).
+  5. Enforce optional admin token authentication via `--admin-token` / `RELAYX_ADMIN_TOKEN` supporting Bearer headers, session cookies, and query tokens (for EventSource).
+- **Consequences**:
+  - Positive: Fully self-contained single static binary (~10-11 MB) adhering strictly to Constitution Principle I.
+  - Positive: Guarantees zero sensitive OTP/SMS body leakage over live browser streaming (Constitution Principle III).
+  - Positive: Slow browser tabs or network hiccups cannot block ingestion throughput or cause unbounded memory growth.
+  - Tradeoff: In-memory log buffer retains only the most recent 500 records across server restarts.
 
 
 

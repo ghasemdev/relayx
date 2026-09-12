@@ -10,10 +10,10 @@
 
 **Purpose**: Define domain structures, configuration flags, embedded asset package, and base styling required across all dashboard views.
 
-- [ ] T001 Define domain entities (`LogEntry`, `SystemMetrics`, `TableMetadata`, `TablePage`, `DeviceSummary`, `DatabaseMetrics`, `MessageCounters`) in `relayx-server/internal/domain/dashboard.go`
-- [ ] T002 Create embedded asset package structure with `//go:embed static/*` declaration in `relayx-server/internal/web/embed.go`
-- [ ] T003 [P] Create base CSS stylesheet with dark/light themes, card layouts, table styling, and terminal log window styles in `relayx-server/internal/web/static/style.css`
-- [ ] T004 [P] Add CLI flag `--admin-token` and env `RELAYX_ADMIN_TOKEN` in `relayx-server/internal/config/config.go` and update `relayx-server/internal/config/config_test.go`
+- [x] T001 Define domain entities (`LogEntry`, `SystemMetrics`, `TableMetadata`, `TablePage`, `DeviceSummary`, `DatabaseMetrics`, `MessageCounters`) in `relayx-server/internal/domain/dashboard.go`
+- [x] T002 Create embedded asset package structure with `//go:embed static/*` declaration in `relayx-server/internal/web/embed.go`
+- [x] T003 [P] Create base CSS stylesheet with dark/light themes, card layouts, table styling, and terminal log window styles in `relayx-server/internal/web/static/style.css`
+- [x] T004 [P] Add CLI flag `--admin-token` and env `RELAYX_ADMIN_TOKEN` in `relayx-server/internal/config/config.go` and update `relayx-server/internal/config/config_test.go`
 
 ---
 
@@ -23,12 +23,12 @@
 
 **⚠️ CRITICAL**: Blocks implementation of all user stories.
 
-- [ ] T005 Implement thread-safe fan-out `LogBroadcaster` with bounded ring buffer and non-blocking channel dispatch in `relayx-server/internal/logging/broadcaster.go`
-- [ ] T006 [P] Unit test `LogBroadcaster` verifying non-blocking dispatch and slow consumer backpressure in `relayx-server/internal/logging/broadcaster_test.go`
-- [ ] T007 Hook `LogBroadcaster` into `RedactingHandler` so all broadcast logs pass through payload redaction in `relayx-server/internal/logging/logger.go`
-- [ ] T008 Implement read-only SQLite table browser helper with table allowlisting (`messages`, `devices`, `schema_migrations`) and disk stat utilities in `relayx-server/internal/storage/table_browser.go`
-- [ ] T009 Implement optional admin authentication middleware in `relayx-server/internal/api/middleware.go`
-- [ ] T010 Register web dashboard static file server under `/dashboard/` in `relayx-server/internal/api/server.go`
+- [x] T005 Implement thread-safe fan-out `LogBroadcaster` with bounded ring buffer and non-blocking channel dispatch in `relayx-server/internal/logging/broadcaster.go`
+- [x] T006 [P] Unit test `LogBroadcaster` verifying non-blocking dispatch and slow consumer backpressure in `relayx-server/internal/logging/broadcaster_test.go`
+- [x] T007 Hook `LogBroadcaster` into `RedactingHandler` so all broadcast logs pass through payload redaction in `relayx-server/internal/logging/logger.go`
+- [x] T008 Implement read-only SQLite table browser helper with table allowlisting (`messages`, `devices`, `schema_migrations`) and disk stat utilities in `relayx-server/internal/storage/table_browser.go`
+- [x] T009 Implement optional admin authentication middleware in `relayx-server/internal/api/middleware.go`
+- [x] T010 Register web dashboard static file server under `/dashboard/` in `relayx-server/internal/api/server.go`
 
 **Checkpoint**: Core logging broadcaster, storage browser, and HTTP route foundation verified with unit tests. User story development can now proceed.
 
@@ -41,12 +41,12 @@
 **Independent Test**: Connect to `/api/v1/dashboard/logs/stream`, send a message to `POST /api/v1/messages`, and verify that the redacted log event arrives in the browser within 50ms without page reload.
 
 ### Tests for User Story 1 ⚠️
-- [ ] T011 [P] [US1] Unit test SSE log stream handler with subscriber connection lifecycle in `relayx-server/internal/api/dashboard_handler_test.go`
+- [x] T011 [P] [US1] Unit test SSE log stream handler with subscriber connection lifecycle in `relayx-server/internal/api/dashboard_handler_test.go`
 
 ### Implementation for User Story 1
-- [ ] T012 [US1] Implement SSE handler `HandleLogStream` with heartbeat keep-alive and graceful disconnect cleanup in `relayx-server/internal/api/dashboard_handler.go`
-- [ ] T013 [US1] Build log viewer UI tab and terminal console container in `relayx-server/internal/web/static/index.html`
-- [ ] T014 [US1] Implement SSE client logic (`EventSource`), auto-scroll toggle, pause/resume, level filters (`ALL`, `DEBUG`, `INFO`, `WARN`, `ERROR`), and keyword search in `relayx-server/internal/web/static/app.js`
+- [x] T012 [US1] Implement SSE handler `HandleLogStream` with heartbeat keep-alive and graceful disconnect cleanup in `relayx-server/internal/api/dashboard_handler.go`
+- [x] T013 [US1] Build log viewer UI tab and terminal console container in `relayx-server/internal/web/static/index.html`
+- [x] T014 [US1] Implement SSE client logic (`EventSource`), auto-scroll toggle, pause/resume, level filters (`ALL`, `DEBUG`, `INFO`, `WARN`, `ERROR`), and keyword search in `relayx-server/internal/web/static/app.js`
 
 **Checkpoint**: User Story 1 is functional as an MVP. Developers can observe live streaming server logs with zero sensitive data leakage directly from their browser.
 
@@ -59,12 +59,12 @@
 **Independent Test**: Query `/api/v1/dashboard/database/tables/messages`, verify paginated JSON response, verify masked body in web UI, and toggle plaintext reveal via the eye icon.
 
 ### Tests for User Story 2 ⚠️
-- [ ] T015 [P] [US2] Unit test table listing and parameterized query endpoints in `relayx-server/internal/api/dashboard_handler_test.go`
+- [x] T015 [P] [US2] Unit test table listing and parameterized query endpoints in `relayx-server/internal/api/dashboard_handler_test.go`
 
 ### Implementation for User Story 2
-- [ ] T016 [US2] Implement `HandleGetTables` and `HandleQueryTable` with pagination and sorting in `relayx-server/internal/api/dashboard_handler.go`
-- [ ] T017 [US2] Build Database Browser UI tab, table selector dropdown, pagination controls, and record detail modal in `relayx-server/internal/web/static/index.html`
-- [ ] T018 [US2] Implement table rendering, sorting, pagination fetch, default masking (`••••••••••••`), and eye reveal toggle in `relayx-server/internal/web/static/app.js`
+- [x] T016 [US2] Implement `HandleGetTables` and `HandleQueryTable` with pagination and sorting in `relayx-server/internal/api/dashboard_handler.go`
+- [x] T017 [US2] Build Database Browser UI tab, table selector dropdown, pagination controls, and record detail modal in `relayx-server/internal/web/static/index.html`
+- [x] T018 [US2] Implement table rendering, sorting, pagination fetch, default masking (`••••••••••••`), and eye reveal toggle in `relayx-server/internal/web/static/app.js`
 
 **Checkpoint**: User Story 2 is functional. Developers can browse database tables, sort columns, and inspect full message metadata without external tools.
 
@@ -77,12 +77,12 @@
 **Independent Test**: Fetch `/api/v1/dashboard/metrics` and verify metrics cards render on `/dashboard/` with accurate counts.
 
 ### Tests for User Story 3 ⚠️
-- [ ] T019 [P] [US3] Unit test metrics endpoint in `relayx-server/internal/api/dashboard_handler_test.go`
+- [x] T019 [P] [US3] Unit test metrics endpoint in `relayx-server/internal/api/dashboard_handler_test.go`
 
 ### Implementation for User Story 3
-- [ ] T020 [US3] Implement `HandleGetMetrics` computing runtime memory, uptime, database sizes, and message counts in `relayx-server/internal/api/dashboard_handler.go`
-- [ ] T021 [US3] Build Overview tab layout with metric cards (Uptime, Memory, DB Size, WAL Size, Ingestion Counters, Success Rate) in `relayx-server/internal/web/static/index.html`
-- [ ] T022 [US3] Implement reactive polling/refresh for metrics and health indicators in `relayx-server/internal/web/static/app.js`
+- [x] T020 [US3] Implement `HandleGetMetrics` computing runtime memory, uptime, database sizes, and message counts in `relayx-server/internal/api/dashboard_handler.go`
+- [x] T021 [US3] Build Overview tab layout with metric cards (Uptime, Memory, DB Size, WAL Size, Ingestion Counters, Success Rate) in `relayx-server/internal/web/static/index.html`
+- [x] T022 [US3] Implement reactive polling/refresh for metrics and health indicators in `relayx-server/internal/web/static/app.js`
 
 **Checkpoint**: User Story 3 is functional. Operators can inspect overall system health and message delivery throughput at a glance.
 
@@ -95,12 +95,12 @@
 **Independent Test**: Create a device via the UI, verify the secret token is shown once with copy button, and verify device revocation rejects subsequent ingestion requests.
 
 ### Tests for User Story 4 ⚠️
-- [ ] T023 [P] [US4] Unit test device listing, registration, and revocation handlers in `relayx-server/internal/api/dashboard_handler_test.go`
+- [x] T023 [P] [US4] Unit test device listing, registration, and revocation handlers in `relayx-server/internal/api/dashboard_handler_test.go`
 
 ### Implementation for User Story 4
-- [ ] T024 [US4] Implement `HandleListDevices`, `HandleRegisterDevice`, and `HandleRevokeDevice` in `relayx-server/internal/api/dashboard_handler.go`
-- [ ] T025 [US4] Build Device Management tab layout, registration modal with one-time token display, and revocation confirmation in `relayx-server/internal/web/static/index.html`
-- [ ] T026 [US4] Implement device fetch, registration, clipboard copy feedback, and revocation API calls in `relayx-server/internal/web/static/app.js`
+- [x] T024 [US4] Implement `HandleListDevices`, `HandleRegisterDevice`, and `HandleRevokeDevice` in `relayx-server/internal/api/dashboard_handler.go`
+- [x] T025 [US4] Build Device Management tab layout, registration modal with one-time token display, and revocation confirmation in `relayx-server/internal/web/static/index.html`
+- [x] T026 [US4] Implement device fetch, registration, clipboard copy feedback, and revocation API calls in `relayx-server/internal/web/static/app.js`
 
 **Checkpoint**: All 4 user stories are functional and testable independently.
 
@@ -110,11 +110,11 @@
 
 **Purpose**: Verification, security audits, accessibility compliance, and end-to-end QA.
 
-- [ ] T027 [P] Add Constitution Principle III audit tests asserting zero sensitive OTP/payload leakage in SSE stream and default table browser in `relayx-server/internal/api/dashboard_handler_test.go`
-- [ ] T028 [P] Run full server test suite with `rtk go test -v ./...`
-- [ ] T029 Compile static binary with `rtk go build -o ../bin/relayx-server ./cmd/server` and test cross-compilation via `Makefile`
-- [ ] T030 Execute browser manual verification on `http://127.0.0.1:8080/dashboard/` following `specs/004-server-web-dashboard/quickstart.md`
-- [ ] T031 Document QA results and verification artifacts in `specs/004-server-web-dashboard/qa/`
+- [x] T027 [P] Add Constitution Principle III audit tests asserting zero sensitive OTP/payload leakage in SSE stream and default table browser in `relayx-server/internal/api/dashboard_handler_test.go`
+- [x] T028 [P] Run full server test suite with `rtk go test -v ./...`
+- [x] T029 Compile static binary with `rtk go build -o ../bin/relayx-server ./cmd/server` and test cross-compilation via `Makefile`
+- [x] T030 Execute browser manual verification on `http://127.0.0.1:8080/dashboard/` following `specs/004-server-web-dashboard/quickstart.md`
+- [x] T031 Document QA results and verification artifacts in `specs/004-server-web-dashboard/qa/`
 
 ---
 
