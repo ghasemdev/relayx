@@ -48,6 +48,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -91,13 +92,31 @@ fun MessageListScreen(
 
     val currentListState = listStates.getOrElse(pagerState.currentPage) { listStates.first() }
 
-    val isScrolled by remember {
+    val isScrolled by remember(currentListState) {
         derivedStateOf {
             currentListState.firstVisibleItemIndex > 0 || currentListState.firstVisibleItemScrollOffset > 40
         }
     }
 
     var isSearchExplicitlyExpanded by remember { mutableStateOf(false) }
+
+    // Reset explicit search expansion whenever the user scrolls down
+    LaunchedEffect(currentListState) {
+        var lastIndex = currentListState.firstVisibleItemIndex
+        var lastOffset = currentListState.firstVisibleItemScrollOffset
+        snapshotFlow {
+            Pair(currentListState.firstVisibleItemIndex, currentListState.firstVisibleItemScrollOffset)
+        }.collect { (newIndex, newOffset) ->
+            if (currentListState.isScrollInProgress) {
+                val isScrollingDown = newIndex > lastIndex || (newIndex == lastIndex && newOffset > lastOffset + 4)
+                if (isScrollingDown) {
+                    isSearchExplicitlyExpanded = false
+                }
+            }
+            lastIndex = newIndex
+            lastOffset = newOffset
+        }
+    }
 
     // Search bar is visible when user is near the top, when a query is entered, or when explicitly tapped
     val showInlineSearchBar = !isScrolled || state.searchQuery.isNotEmpty() || isSearchExplicitlyExpanded
