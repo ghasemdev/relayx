@@ -44,4 +44,37 @@
 
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_settings">Settings</string>
+
+    <!-- Message Inspection & Filtering -->
+    <string name="message_list_title">Messages</string>
+    <string name="filter_all">All</string>
+    <string name="filter_pending">Pending</string>
+    <string name="filter_forwarded">Forwarded</string>
+    <string name="filter_failed">Failed</string>
+    <string name="filter_filtered">Filtered</string>
+    <string name="search_messages_hint">Search sender or UUID…</string>
+    <string name="clear_search">Clear search</string>
+    <string name="empty_messages_title">No Messages Found</string>
+    <string name="empty_messages_desc">No messages match the active filter or search query.</string>
+    <string name="no_messages_in_db">No messages have been received yet. Send a test SMS to view it here.</string>
+
+    <!-- Message Detail Modal Bottom Sheet -->
+    <string name="message_detail_title">Message Details</string>
+    <string name="label_message_id">Message ID</string>
+    <string name="label_sender">Sender</string>
+    <string name="label_received_at">Received At</string>
+    <string name="label_status">Status</string>
+    <string name="label_attempts">Attempts: %1$d / %2$d</string>
+    <string name="label_payload">Message Payload</string>
+    <string name="label_diagnostics">Failure Diagnostics</string>
+    <string name="action_retry_delivery">Retry Delivery</string>
+    <string name="action_retrying">Scheduling retry…</string>
+    <string name="action_copy_id">Copy ID</string>
+    <string name="id_copied_toast">Message ID copied to clipboard</string>
+    <string name="reveal_payload">Reveal text</string>
+    <string name="hide_payload">Mask text</string>
+    <string name="masked_payload_placeholder">••••••••••••</string>
+    <string name="navigate_back">Back</string>
+    <string name="no_message_selected">No message available</string>
+    <string name="attempts_format">%1$d / %2$d</string>
 </resources>

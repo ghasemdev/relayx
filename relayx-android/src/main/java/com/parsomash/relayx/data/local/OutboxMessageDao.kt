@@ -40,6 +40,18 @@ interface OutboxMessageDao {
     @Query("SELECT COUNT(1) FROM outbox_messages WHERE status = 'FAILED'")
     fun observeFailedCount(): Flow<Int>
 
+    @Query("SELECT COUNT(1) FROM outbox_messages WHERE status = 'FILTERED'")
+    fun observeFilteredCount(): Flow<Int>
+
     @Query("SELECT MAX(received_at) FROM outbox_messages")
     fun observeLastMessageTimestamp(): Flow<Long?>
+
+    @Query("SELECT * FROM outbox_messages ORDER BY received_at DESC")
+    fun observeAllMessages(): Flow<List<OutboxMessageEntity>>
+
+    @Query("SELECT * FROM outbox_messages ORDER BY received_at DESC LIMIT 1")
+    fun observeLatestMessage(): Flow<OutboxMessageEntity?>
+
+    @Query("UPDATE outbox_messages SET status = 'PENDING', error_message = null, last_attempt_at = :now WHERE id = :id")
+    suspend fun resetForRetry(id: String, now: Long): Int
 }

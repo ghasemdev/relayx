@@ -4,7 +4,8 @@ enum class DeliveryStatus {
     PENDING,
     SENDING,
     DELIVERED,
-    FAILED
+    FAILED,
+    FILTERED
 }
 
 data class GatewayConfig(
