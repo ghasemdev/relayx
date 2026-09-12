@@ -2,8 +2,11 @@ package com.parsomash.relayx.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.parsomash.relayx.data.local.OutboxMessageDao
 import com.parsomash.relayx.data.local.PreferencesRepository
 import com.parsomash.relayx.domain.model.GatewayStats
+import com.parsomash.relayx.domain.model.MessageDetail
+import com.parsomash.relayx.domain.model.toDetail
 import com.parsomash.relayx.domain.usecase.GetGatewayStatsUseCase
 import com.parsomash.relayx.domain.usecase.ToggleForwardingUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,14 +23,18 @@ data class DashboardUiState(
     val serverHost: String = "10.0.2.2",
     val serverPort: Int = 8080,
     val activeRulesCount: Int = 1, // Default passthrough rule in Phase 2
-    val hasSmsPermission: Boolean = false
+    val hasSmsPermission: Boolean = false,
+    val latestMessage: MessageDetail? = null,
+    val isShowingDetailSheet: Boolean = false,
+    val isRetrying: Boolean = false
 )
 
 @KoinViewModel
 class DashboardViewModel(
-    private val getGatewayStatsUseCase: GetGatewayStatsUseCase,
     private val toggleForwardingUseCase: ToggleForwardingUseCase,
-    private val preferencesRepository: PreferencesRepository
+    private val outboxMessageDao: OutboxMessageDao,
+    getGatewayStatsUseCase: GetGatewayStatsUseCase,
+    preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
 
     val uiState: StateFlow<DashboardUiState>
@@ -51,6 +58,12 @@ class DashboardViewModel(
                 uiState.update { it.copy(stats = stats) }
             }
             .launchIn(viewModelScope)
+
+        outboxMessageDao.observeLatestMessage()
+            .onEach { entity ->
+                uiState.update { it.copy(latestMessage = entity?.toDetail()) }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun toggleForwarding(enabled: Boolean, onEnabled: (() -> Unit)? = null) {
@@ -64,5 +77,28 @@ class DashboardViewModel(
 
     fun updatePermissionState(hasPermission: Boolean) {
         uiState.update { it.copy(hasSmsPermission = hasPermission) }
+    }
+
+    fun showLatestMessageDetail() {
+        if (uiState.value.latestMessage != null) {
+            uiState.update { it.copy(isShowingDetailSheet = true) }
+        }
+    }
+
+    fun dismissDetailSheet() {
+        uiState.update { it.copy(isShowingDetailSheet = false) }
+    }
+
+    fun retryMessage(messageId: String, onScheduleDispatch: (() -> Unit)? = null) {
+        viewModelScope.launch {
+            uiState.update { it.copy(isRetrying = true) }
+            try {
+                val now = System.currentTimeMillis()
+                outboxMessageDao.resetForRetry(messageId, now)
+                onScheduleDispatch?.invoke()
+            } finally {
+                uiState.update { it.copy(isRetrying = false) }
+            }
+        }
     }
 }

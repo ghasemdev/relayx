@@ -2,6 +2,15 @@
 
 package com.parsomash.relayx.ui.navigation
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,17 +24,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.parsomash.relayx.R
 import com.parsomash.relayx.ui.dashboard.DashboardScreen
+import com.parsomash.relayx.ui.message.MessageListScreen
 import com.parsomash.relayx.ui.settings.SettingsScreen
 import com.parsomash.relayx.viewmodel.DashboardViewModel
+import com.parsomash.relayx.viewmodel.MessageListViewModel
 import com.parsomash.relayx.viewmodel.SettingsViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -33,7 +46,14 @@ import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
 
-val LocalRequestPermissions = staticCompositionLocalOf<() -> Unit> { {} }
+val LocalRequestPermissions = staticCompositionLocalOf { {} }
+
+data class NavigationActions(
+    val navigateTo: (AppRoute) -> Unit = {},
+    val goBack: () -> Unit = {}
+)
+
+val LocalNavigationActions = staticCompositionLocalOf { NavigationActions() }
 
 @Serializable
 sealed class AppRoute : NavKey {
@@ -42,6 +62,9 @@ sealed class AppRoute : NavKey {
 
     @Serializable
     data object Settings : AppRoute()
+
+    @Serializable
+    data class MessageList(val initialFilter: String = "ALL") : AppRoute()
 }
 
 data class BottomNavItem(
@@ -59,15 +82,30 @@ val navigationModule = module {
     navigation<AppRoute.Dashboard> {
         val dashboardViewModel: DashboardViewModel = koinViewModel()
         val onRequestPermissions = LocalRequestPermissions.current
+        val navActions = LocalNavigationActions.current
         DashboardScreen(
             viewModel = dashboardViewModel,
-            onRequestPermissions = onRequestPermissions
+            onRequestPermissions = onRequestPermissions,
+            onNavigateToMessageList = { filter ->
+                navActions.navigateTo(AppRoute.MessageList(filter))
+            }
         )
     }
     navigation<AppRoute.Settings> {
         val settingsViewModel: SettingsViewModel = koinViewModel()
         SettingsScreen(
             viewModel = settingsViewModel
+        )
+    }
+    navigation<AppRoute.MessageList> { route ->
+        val messageListViewModel: MessageListViewModel = koinViewModel()
+        val navActions = LocalNavigationActions.current
+        MessageListScreen(
+            viewModel = messageListViewModel,
+            initialFilter = route.initialFilter,
+            onBackClick = {
+                navActions.goBack()
+            }
         )
     }
 }
@@ -79,21 +117,55 @@ fun MainAppScaffold(
     val backStack = rememberNavBackStack(AppRoute.Dashboard)
     val currentRoute = backStack.lastOrNull() ?: AppRoute.Dashboard
 
+    val navigationActions = remember(backStack) {
+        NavigationActions(
+            navigateTo = { route -> backStack.add(route) },
+            goBack = {
+                if (backStack.size > 1) {
+                    backStack.removeLastOrNull()
+                }
+            }
+        )
+    }
+
+    BackHandler(enabled = backStack.size > 1) {
+        backStack.removeLastOrNull()
+    }
+
+    val showBottomBar = currentRoute !is AppRoute.MessageList
+
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                bottomNavItems.forEach { item ->
-                    NavigationBarItem(
-                        selected = currentRoute == item.route,
-                        onClick = {
-                            if (currentRoute != item.route) {
-                                backStack.clear()
-                                backStack.add(item.route)
-                            }
-                        },
-                        icon = { Icon(item.icon, contentDescription = stringResource(item.titleResId)) },
-                        label = { Text(stringResource(item.titleResId)) }
-                    )
+            AnimatedVisibility(
+                visible = showBottomBar,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
+                ) + fadeIn(animationSpec = tween(durationMillis = 200)),
+                exit = slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing)
+                ) + fadeOut(animationSpec = tween(durationMillis = 200))
+            ) {
+                NavigationBar {
+                    bottomNavItems.forEach { item ->
+                        NavigationBarItem(
+                            selected = currentRoute == item.route,
+                            onClick = {
+                                if (currentRoute != item.route) {
+                                    backStack.clear()
+                                    backStack.add(item.route)
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    item.icon,
+                                    contentDescription = stringResource(item.titleResId)
+                                )
+                            },
+                            label = { Text(stringResource(item.titleResId)) }
+                        )
+                    }
                 }
             }
         }
@@ -101,9 +173,15 @@ fun MainAppScaffold(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(
+                    top = if (showBottomBar) innerPadding.calculateTopPadding() else 0.dp,
+                    bottom = if (showBottomBar) innerPadding.calculateBottomPadding() else 0.dp
+                )
         ) {
-            CompositionLocalProvider(LocalRequestPermissions provides onRequestPermissions) {
+            CompositionLocalProvider(
+                LocalRequestPermissions provides onRequestPermissions,
+                LocalNavigationActions provides navigationActions
+            ) {
                 NavDisplay(
                     backStack = backStack,
                     entryProvider = koinEntryProvider()
@@ -112,4 +190,3 @@ fun MainAppScaffold(
         }
     }
 }
-

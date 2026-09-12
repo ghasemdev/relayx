@@ -11,7 +11,7 @@ This is a compact routing map for durable project memory (`docs/memory/`). Keep 
 |:---|:---|:---|
 | [PROJECT_CONTEXT.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/PROJECT_CONTEXT.md) | Product & System | System actors, core constraints, domains, and priorities. |
 | [ARCHITECTURE.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/ARCHITECTURE.md) | Technical Design | Component layout, Go server package design, SQLite schema, REST API, and MCP tools. |
-| [DECISIONS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/DECISIONS.md) | ADRs | Architectural decision records (ADR-001 through ADR-011). |
+| [DECISIONS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/DECISIONS.md) | ADRs | Architectural decision records (ADR-001 through ADR-013). |
 | [BUGS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/BUGS.md) | Quality & Security | Known regression traps, doze mode risks, sensitive data leaks, and race conditions. |
 | [WORKLOG.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/WORKLOG.md) | Milestones | Record of major technical migrations and roadmap checkpoints. |
 | [roadmap.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/roadmap.md) | Execution Plan | 9-phase implementation roadmap and Definition of Done. |
@@ -25,6 +25,9 @@ This is a compact routing map for durable project memory (`docs/memory/`). Keep 
 | [2026-09-12-feature-002-android-gateway-foundation.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-12-feature-002-android-gateway-foundation.md) | branch | 2026-09-12 | MODERATE | C:0 H:0 M:1 L:2 | A02,A03,A05 |
 | [2026-09-12-feature-002-android-gateway-foundation-followup.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-12-feature-002-android-gateway-foundation-followup.md) | followup | 2026-09-12 | MODERATE | C:0 H:0 M:1 L:2 | A02,A03,A05 |
 | [2026-09-12-feature-002-android-gateway-foundation-tasks.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-12-feature-002-android-gateway-foundation-tasks.md) | tasks | 2026-09-12 | LOW | C:0 H:0 M:0 L:3 | A02,A03,A05 |
+| [2026-09-13-feature-003-android-message-inspection.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-13-feature-003-android-message-inspection.md) | branch | 2026-09-13 | LOW | C:0 H:0 M:0 L:2 | A02,A04 |
+| [2026-09-13-feature-003-android-message-inspection-tasks.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-13-feature-003-android-message-inspection-tasks.md) | tasks | 2026-09-13 | LOW | C:0 H:0 M:0 L:2 | A02,A04 |
+| [2026-09-13-feature-003-android-message-inspection-followup.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-13-feature-003-android-message-inspection-followup.md) | followup | 2026-09-13 | LOW | C:0 H:0 M:0 L:2 | A02,A04 |
 
 ## Workflow & Operating Rules
 - [Workflow Rules](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/workflow.md): Authoritative SDD memory-first execution procedure.

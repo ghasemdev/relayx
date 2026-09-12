@@ -1,5 +1,6 @@
 package com.parsomash.relayx.ui.dashboard
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -31,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -38,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.parsomash.relayx.R
 import com.parsomash.relayx.data.worker.MessageDispatchWorker
+import com.parsomash.relayx.ui.message.MessageDetailBottomSheet
 import com.parsomash.relayx.viewmodel.DashboardViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -47,7 +51,8 @@ import java.util.Locale
 fun DashboardScreen(
     viewModel: DashboardViewModel,
     onRequestPermissions: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToMessageList: (filter: String) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -174,6 +179,9 @@ fun DashboardScreen(
             title = stringResource(R.string.last_message_received),
             value = formatTimestamp(state.stats.lastMessageTimestamp, neverText),
             icon = Icons.Default.Schedule,
+            onClick = if (state.latestMessage != null) {
+                { viewModel.showLatestMessageDetail() }
+            } else null,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -192,12 +200,14 @@ fun DashboardScreen(
                 label = stringResource(R.string.received),
                 count = state.stats.totalReceived,
                 icon = Icons.Default.Inbox,
+                onClick = { onNavigateToMessageList("ALL") },
                 modifier = Modifier.weight(1f)
             )
             CounterCard(
                 label = stringResource(R.string.forwarded),
                 count = state.stats.totalForwarded,
                 icon = Icons.Default.CheckCircle,
+                onClick = { onNavigateToMessageList("FORWARDED") },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -210,17 +220,33 @@ fun DashboardScreen(
                 label = stringResource(R.string.filtered),
                 count = state.stats.totalFiltered,
                 icon = Icons.Default.FilterAlt,
+                onClick = { onNavigateToMessageList("FILTERED") },
                 modifier = Modifier.weight(1f)
             )
             CounterCard(
                 label = stringResource(R.string.failed),
                 count = state.stats.totalFailed,
                 icon = Icons.Default.ReportProblem,
+                onClick = { onNavigateToMessageList("FAILED") },
                 modifier = Modifier.weight(1f)
             )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+    }
+
+    // Modal Bottom Sheet for inspecting the latest message
+    if (state.isShowingDetailSheet && state.latestMessage != null) {
+        MessageDetailBottomSheet(
+            detail = state.latestMessage!!,
+            onDismissRequest = { viewModel.dismissDetailSheet() },
+            onRetryClick = { messageId ->
+                viewModel.retryMessage(messageId) {
+                    MessageDispatchWorker.enqueue(context)
+                }
+            },
+            isRetrying = state.isRetrying
+        )
     }
 }
 
@@ -229,11 +255,20 @@ fun StatusCard(
     title: String,
     value: String,
     icon: ImageVector,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
+    val cardModifier = if (onClick != null) {
+        modifier
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+    } else {
+        modifier
+    }
+
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = modifier
+        modifier = cardModifier
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -254,11 +289,20 @@ fun CounterCard(
     label: String,
     count: Int,
     icon: ImageVector,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
+    val cardModifier = if (onClick != null) {
+        modifier
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+    } else {
+        modifier
+    }
+
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = modifier
+        modifier = cardModifier
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
