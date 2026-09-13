@@ -3,167 +3,472 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RelayX Server Dashboard & Observability</title>
+  <title>RelayX &mdash; Gateway Observability & Telemetry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      ⚡ RelayX
-      <span class="tag">Gateway Observability</span>
+  <!-- Background Ambient Glow -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">RelayX</span>
+        <span class="brand-badge">Gateway v1.0</span>
+      </div>
     </div>
-    <nav>
-      <button class="nav-btn active" data-tab="overview">Overview</button>
-      <button class="nav-btn" data-tab="logcat">Live Logcat</button>
-      <button class="nav-btn" data-tab="database">Database</button>
-      <button class="nav-btn" data-tab="devices">Devices</button>
+
+    <!-- Navigation Pills -->
+    <nav class="nav-container" aria-label="Main Navigation">
+      <button class="nav-btn active" data-tab="overview" title="Keyboard shortcut: 1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span>Overview</span>
+        <kbd class="kbd-shortcut">1</kbd>
+      </button>
+
+      <button class="nav-btn" data-tab="logcat" title="Keyboard shortcut: 2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </svg>
+        <span>Live Logcat</span>
+        <span class="stream-pulse-chip" id="logcatNavBadge">LIVE</span>
+        <kbd class="kbd-shortcut">2</kbd>
+      </button>
+
+      <button class="nav-btn" data-tab="database" title="Keyboard shortcut: 3">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+          <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+        </svg>
+        <span>Database</span>
+        <kbd class="kbd-shortcut">3</kbd>
+      </button>
+
+      <button class="nav-btn" data-tab="devices" title="Keyboard shortcut: 4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12.01" y2="18"></line>
+        </svg>
+        <span>Devices</span>
+        <kbd class="kbd-shortcut">4</kbd>
+      </button>
     </nav>
-    <div class="header-status">
-      <div id="statusDot" class="status-dot"></div>
-      <span id="statusText">Connecting...</span>
+
+    <!-- Header Status & Actions -->
+    <div class="header-actions">
+      <div class="connection-status-pill">
+        <span id="statusDot" class="status-dot"></span>
+        <span id="statusText" class="status-text">Connecting...</span>
+      </div>
+      <button class="action-icon-btn" id="btnHeaderRefresh" title="Refresh Telemetry">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+      </button>
     </div>
   </header>
 
-  <main>
+  <!-- Main Content Viewport -->
+  <main class="main-viewport">
+    
     <!-- TAB 1: OVERVIEW -->
-    <section id="tab-overview" class="tab-pane active">
-      <div class="metrics-grid">
-        <div class="card">
-          <div class="card-title">Server Uptime</div>
-          <div class="card-value" id="valUptime">--</div>
-          <div class="card-subtitle" id="valVersion">Version: 1.0.0</div>
+    <section id="tab-overview" class="tab-pane active" aria-labelledby="Overview Dashboard">
+      
+      <!-- System KPI Cards -->
+      <div class="section-title-bar">
+        <div>
+          <h2 class="section-title">System Observability</h2>
+          <p class="section-desc">Real-time health, server runtime metrics, and SMS routing pipeline.</p>
         </div>
-        <div class="card">
-          <div class="card-title">Active Goroutines</div>
-          <div class="card-value" id="valGoroutines">--</div>
-          <div class="card-subtitle" id="valMemory">Memory: -- MB</div>
-        </div>
-        <div class="card">
-          <div class="card-title">Database Storage</div>
-          <div class="card-value" id="valDBSize">--</div>
-          <div class="card-subtitle" id="valWALSize">WAL: --</div>
-        </div>
-        <div class="card">
-          <div class="card-title">Delivery Success Rate</div>
-          <div class="card-value" id="valSuccessRate">--%</div>
-          <div class="card-subtitle" id="valSuccessSubtitle">Forwarded / Total</div>
+        <div class="auto-refresh-indicator">
+          <span class="pulse-ring"></span>
+          <span>Auto-refreshing every 5s</span>
         </div>
       </div>
 
       <div class="metrics-grid">
-        <div class="card">
-          <div class="card-title">Total Messages Ingested</div>
-          <div class="card-value" id="cntReceived" style="color: var(--primary-accent)">0</div>
-          <div class="card-subtitle">All captured SMS records</div>
+        <!-- Card 1: Server Uptime -->
+        <div class="glass-card stat-card">
+          <div class="card-header-row">
+            <span class="card-label">Server Uptime</span>
+            <div class="card-icon-bubble bubble-indigo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="card-stat-value" id="valUptime">--</div>
+          <div class="card-footer-info">
+            <span class="info-pill" id="valVersion">Version: 1.0.0</span>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-title">Forwarded to Agents</div>
-          <div class="card-value" id="cntForwarded" style="color: var(--success)">0</div>
-          <div class="card-subtitle">Delivered successfully</div>
+
+        <!-- Card 2: Goroutines & Memory -->
+        <div class="glass-card stat-card">
+          <div class="card-header-row">
+            <span class="card-label">Goroutines & Memory</span>
+            <div class="card-icon-bubble bubble-cyan">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-stat-value" id="valGoroutines">--</div>
+          <div class="card-footer-info">
+            <span class="info-pill" id="valMemory">Heap: -- MB</span>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-title">Filtered (Pre-Dropped)</div>
-          <div class="card-value" id="cntFiltered" style="color: var(--text-secondary)">0</div>
-          <div class="card-subtitle">Dropped by rule engine</div>
+
+        <!-- Card 3: Database & WAL -->
+        <div class="glass-card stat-card">
+          <div class="card-header-row">
+            <span class="card-label">SQLite Storage</span>
+            <div class="card-icon-bubble bubble-emerald">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-stat-value" id="valDBSize">--</div>
+          <div class="card-footer-info">
+            <span class="info-pill" id="valWALSize">WAL: --</span>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-title">Delivery Failed</div>
-          <div class="card-value" id="cntFailed" style="color: var(--danger)">0</div>
-          <div class="card-subtitle">Network/server dispatch errors</div>
+
+        <!-- Card 4: Success Delivery Rate -->
+        <div class="glass-card stat-card">
+          <div class="card-header-row">
+            <span class="card-label">Delivery Success</span>
+            <div class="card-icon-bubble bubble-violet">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="card-stat-value text-gradient-emerald" id="valSuccessRate">--%</div>
+          <div class="card-footer-info">
+            <span class="info-subtext" id="valSuccessSubtitle">Forwarded / Ingested</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SMS Delivery Pipeline Visualizer -->
+      <div class="glass-card pipeline-card">
+        <div class="pipeline-header">
+          <div>
+            <h3 class="pipeline-title">SMS Gateway Pipeline</h3>
+            <p class="pipeline-desc">Real-time throughput metrics of ingested mobile SMS records and downstream webhook delivery.</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btnViewAllMessages">Browse Message Log &rarr;</button>
+        </div>
+
+        <!-- Multi-segment visual distribution bar -->
+        <div class="pipeline-progress-container">
+          <div class="pipeline-bar">
+            <div class="bar-segment bar-forwarded" id="barForwarded" style="width: 0%" title="Forwarded"></div>
+            <div class="bar-segment bar-filtered" id="barFiltered" style="width: 0%" title="Filtered"></div>
+            <div class="bar-segment bar-failed" id="barFailed" style="width: 0%" title="Failed"></div>
+          </div>
+        </div>
+
+        <!-- Detailed Breakdown Counters -->
+        <div class="pipeline-counters-grid">
+          <div class="counter-item counter-ingested">
+            <div class="counter-top">
+              <span class="status-marker marker-cyan"></span>
+              <span class="counter-name">Total Ingested</span>
+            </div>
+            <div class="counter-num" id="cntReceived">0</div>
+            <span class="counter-hint">All captured SMS records</span>
+          </div>
+
+          <div class="counter-item counter-forwarded">
+            <div class="counter-top">
+              <span class="status-marker marker-emerald"></span>
+              <span class="counter-name">Forwarded to Agents</span>
+            </div>
+            <div class="counter-num text-emerald" id="cntForwarded">0</div>
+            <span class="counter-hint" id="pctForwarded">0% delivery rate</span>
+          </div>
+
+          <div class="counter-item counter-filtered">
+            <div class="counter-top">
+              <span class="status-marker marker-amber"></span>
+              <span class="counter-name">Filtered (Pre-Dropped)</span>
+            </div>
+            <div class="counter-num text-amber" id="cntFiltered">0</div>
+            <span class="counter-hint" id="pctFiltered">Regex & sender rules</span>
+          </div>
+
+          <div class="counter-item counter-failed">
+            <div class="counter-top">
+              <span class="status-marker marker-rose"></span>
+              <span class="counter-name">Delivery Failed</span>
+            </div>
+            <div class="counter-num text-rose" id="cntFailed">0</div>
+            <span class="counter-hint" id="pctFailed">Dispatch & timeout errors</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Shortcuts Row -->
+      <div class="shortcuts-grid">
+        <div class="glass-card shortcut-card" id="shortcutLiveLogcat">
+          <div class="shortcut-icon icon-cyan">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+          </div>
+          <div class="shortcut-content">
+            <h4>Stream Real-Time Logs</h4>
+            <p>Inspect server events, Android sync hooks, and security telemetry in real-time.</p>
+          </div>
+          <span class="shortcut-arrow">&rarr;</span>
+        </div>
+
+        <div class="glass-card shortcut-card" id="shortcutBrowseDB">
+          <div class="shortcut-icon icon-indigo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+            </svg>
+          </div>
+          <div class="shortcut-content">
+            <h4>Explore SQLite Tables</h4>
+            <p>Full-text search across messages, registered devices, and schema migrations.</p>
+          </div>
+          <span class="shortcut-arrow">&rarr;</span>
+        </div>
+
+        <div class="glass-card shortcut-card" id="shortcutManageDevices">
+          <div class="shortcut-icon icon-emerald">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <div class="shortcut-content">
+            <h4>Device Authorization</h4>
+            <p>Provision cryptographic Bearer tokens for Android RelayX gateway clients.</p>
+          </div>
+          <span class="shortcut-arrow">&rarr;</span>
         </div>
       </div>
     </section>
 
     <!-- TAB 2: LIVE LOGCAT -->
-    <section id="tab-logcat" class="tab-pane">
-      <div class="logcat-container">
-        <div class="logcat-toolbar">
-          <div class="toolbar-left">
-            <select id="logLevelFilter">
-              <option value="ALL">All Levels</option>
-              <option value="DEBUG">DEBUG & Above</option>
-              <option value="INFO" selected>INFO & Above</option>
-              <option value="WARN">WARN & Above</option>
-              <option value="ERROR">ERROR Only</option>
-            </select>
-            <input type="text" id="logSearchInput" placeholder="Filter logs (e.g. sender, error)...">
+    <section id="tab-logcat" class="tab-pane" aria-labelledby="Live Logcat Console">
+      <div class="terminal-shell">
+        
+        <!-- Terminal Control Bar -->
+        <div class="terminal-toolbar">
+          <div class="toolbar-section toolbar-left">
+            <div class="terminal-title-group">
+              <span class="terminal-badge">LIVE SSE</span>
+              <span class="log-count-indicator" id="logStreamCounter">0 logs</span>
+            </div>
+
+            <!-- Level Filter -->
+            <div class="select-wrapper">
+              <select id="logLevelFilter" class="custom-select" title="Minimum Log Level">
+                <option value="ALL">ALL Levels</option>
+                <option value="DEBUG">DEBUG & Above</option>
+                <option value="INFO" selected>INFO & Above</option>
+                <option value="WARN">WARN & Above</option>
+                <option value="ERROR">ERROR Only</option>
+              </select>
+            </div>
+
+            <!-- Search Filter -->
+            <div class="search-input-wrapper">
+              <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="logSearchInput" class="custom-input" placeholder="Filter stream (press / to focus)...">
+            </div>
           </div>
-          <div class="toolbar-right">
-            <button class="btn" id="btnPauseScroll">Pause Auto-Scroll</button>
-            <button class="btn btn-danger" id="btnClearLogs">Clear</button>
+
+          <div class="toolbar-section toolbar-right">
+            <button class="btn btn-secondary btn-sm" id="btnPauseScroll">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="6" y="4" width="4" height="16"></rect>
+                <rect x="14" y="4" width="4" height="16"></rect>
+              </svg>
+              <span>Pause Auto-Scroll</span>
+            </button>
+            <button class="btn btn-danger-soft btn-sm" id="btnClearLogs">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Clear</span>
+            </button>
           </div>
         </div>
-        <div class="log-window" id="logWindow"></div>
+
+        <!-- Terminal Output Window -->
+        <div class="terminal-body" id="logWindow" role="log" aria-live="polite">
+          <div class="terminal-empty-state" id="logEmptyState">
+            <div class="terminal-prompt-line">
+              <span class="prompt-symbol">$</span>
+              <span class="prompt-text">relayx-server stream --listen-events</span>
+              <span class="prompt-cursor"></span>
+            </div>
+            <p class="empty-hint">Waiting for server and gateway events...</p>
+          </div>
+        </div>
+
+        <!-- Terminal Status Bar -->
+        <div class="terminal-statusbar">
+          <span class="status-indicator-live">
+            <span class="live-dot"></span>
+            <span>Realtime EventSource active</span>
+          </span>
+          <span class="status-meta" id="streamThroughputMeta">Buffer: 0 / 1000</span>
+        </div>
       </div>
     </section>
 
     <!-- TAB 3: DATABASE TABLE BROWSER -->
-    <section id="tab-database" class="tab-pane">
-      <div class="table-card">
-        <div class="table-toolbar">
-          <div class="toolbar-left">
-            <select id="dbTableSelect">
-              <option value="messages">messages</option>
-              <option value="devices">devices</option>
-              <option value="schema_migrations">schema_migrations</option>
-            </select>
-            <input type="text" id="dbSearchInput" placeholder="Search table...">
-            <select id="dbStatusFilter" style="display:none;">
+    <section id="tab-database" class="tab-pane" aria-labelledby="Database Browser">
+      <div class="glass-card data-browser-card">
+        
+        <!-- Table Browser Control Header -->
+        <div class="browser-toolbar">
+          <div class="toolbar-section toolbar-left">
+            <div class="table-switcher-group">
+              <label for="dbTableSelect" class="input-label">Table:</label>
+              <select id="dbTableSelect" class="custom-select table-select">
+                <option value="messages">messages</option>
+                <option value="devices">devices</option>
+                <option value="schema_migrations">schema_migrations</option>
+              </select>
+            </div>
+
+            <!-- Fast Search -->
+            <div class="search-input-wrapper">
+              <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="dbSearchInput" class="custom-input" placeholder="Search rows...">
+            </div>
+
+            <!-- Status Filter for Messages -->
+            <select id="dbStatusFilter" class="custom-select status-select" style="display:none;" title="Filter by Status">
               <option value="">All Statuses</option>
               <option value="RECEIVED">RECEIVED</option>
               <option value="FORWARDED">FORWARDED</option>
               <option value="FILTERED">FILTERED</option>
               <option value="FAILED">FAILED</option>
             </select>
+
+            <!-- Sorting Selectors -->
             <div class="sort-select-group">
-              <label for="dbSortBySelect" class="sort-label">Sort:</label>
-              <select id="dbSortBySelect" title="Sort by column"></select>
-              <select id="dbSortOrderSelect" title="Sort order">
+              <label for="dbSortBySelect" class="input-label">Sort:</label>
+              <select id="dbSortBySelect" class="custom-select" title="Sort column"></select>
+              <select id="dbSortOrderSelect" class="custom-select" title="Sort direction">
                 <option value="DESC">DESC &darr;</option>
                 <option value="ASC">ASC &uarr;</option>
               </select>
             </div>
           </div>
-          <div class="toolbar-right">
-            <span id="dbTotalCount">Total: 0</span>
-            <button class="btn" id="btnRefreshTable">Refresh</button>
+
+          <div class="toolbar-section toolbar-right">
+            <span class="counter-badge" id="dbTotalCount">Total: 0</span>
+            <button class="btn btn-secondary btn-sm" id="btnRefreshTable">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              <span>Refresh</span>
+            </button>
           </div>
         </div>
 
+        <!-- Table Responsive Grid -->
         <div class="table-responsive">
-          <table id="dbDataTable">
+          <table class="modern-table" id="dbDataTable">
             <thead id="dbTableHeader"></thead>
             <tbody id="dbTableBody"></tbody>
           </table>
         </div>
 
-        <div class="pagination-bar">
-          <div>
-            Page <span id="dbCurrentPage">1</span> of <span id="dbTotalPages">1</span>
+        <!-- Pagination Bar -->
+        <div class="browser-pagination">
+          <div class="pagination-info">
+            Showing Page <span class="page-current" id="dbCurrentPage">1</span> of <span class="page-total" id="dbTotalPages">1</span>
           </div>
-          <div>
-            <button class="btn" id="btnPrevPage">Previous</button>
-            <button class="btn" id="btnNextPage">Next</button>
+          <div class="pagination-buttons">
+            <button class="btn btn-secondary btn-sm" id="btnPrevPage">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Previous</span>
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btnNextPage">
+              <span>Next</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
     </section>
 
     <!-- TAB 4: DEVICES -->
-    <section id="tab-devices" class="tab-pane">
-      <div class="table-card">
-        <div class="table-toolbar">
-          <div class="toolbar-left">
-            <h3 style="font-size: 1rem; color: var(--text-primary)">Registered Gateway Devices</h3>
+    <section id="tab-devices" class="tab-pane" aria-labelledby="Registered Gateway Devices">
+      <div class="glass-card data-browser-card">
+        
+        <div class="browser-toolbar">
+          <div class="toolbar-section toolbar-left">
+            <div>
+              <h3 class="section-subtitle">Gateway Hardware & Emulators</h3>
+              <p class="section-subtext">Registered Android client devices authorized to ingest incoming SMS packets.</p>
+            </div>
           </div>
-          <div class="toolbar-right">
-            <button class="btn btn-primary" id="btnOpenRegisterDevice">+ Register New Device</button>
+          <div class="toolbar-section toolbar-right">
+            <button class="btn btn-primary" id="btnOpenRegisterDevice">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Register New Device</span>
+            </button>
           </div>
         </div>
 
         <div class="table-responsive">
-          <table>
+          <table class="modern-table">
             <thead>
               <tr>
                 <th>Device ID</th>
@@ -171,7 +476,7 @@
                 <th>Token Fingerprint</th>
                 <th>Registered At</th>
                 <th>Last Seen</th>
-                <th>Action</th>
+                <th style="text-align: right">Action</th>
               </tr>
             </thead>
             <tbody id="deviceTableBody"></tbody>
@@ -182,51 +487,92 @@
   </main>
 
   <!-- RECORD DETAIL MODAL -->
-  <div class="modal-backdrop" id="recordModal">
-    <div class="modal-box">
+  <div class="modal-backdrop" id="recordModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="glass-card modal-box">
       <div class="modal-header">
-        <h3 id="modalTitle">Record Inspection</h3>
-        <button class="btn" id="btnCloseModal">✕</button>
+        <div class="modal-title-group">
+          <div class="modal-badge">INSPECTION</div>
+          <h3 id="modalTitle">Database Record Inspector</h3>
+        </div>
+        <button class="modal-close-btn" id="btnCloseModal" title="Close (Esc)">&times;</button>
       </div>
       <div class="modal-body">
+        <div class="code-viewer-header">
+          <span>JSON PAYLOAD</span>
+          <button class="btn-copy-code" id="btnCopyRecordJson">Copy JSON</button>
+        </div>
         <pre class="json-view" id="modalJsonContent"></pre>
       </div>
       <div class="modal-footer">
-        <button class="btn" id="btnCloseModalBtn">Close</button>
+        <button class="btn btn-secondary" id="btnCloseModalBtn">Close</button>
       </div>
     </div>
   </div>
 
   <!-- REGISTER DEVICE MODAL -->
-  <div class="modal-backdrop" id="registerDeviceModal">
-    <div class="modal-box">
+  <div class="modal-backdrop" id="registerDeviceModal" role="dialog" aria-modal="true">
+    <div class="glass-card modal-box">
       <div class="modal-header">
-        <h3>Register New Gateway Device</h3>
-        <button class="btn" id="btnCloseRegisterModal">✕</button>
+        <div class="modal-title-group">
+          <div class="modal-badge badge-primary">PROVISIONING</div>
+          <h3>Register Gateway Device</h3>
+        </div>
+        <button class="modal-close-btn" id="btnCloseRegisterModal" title="Close (Esc)">&times;</button>
       </div>
       <div class="modal-body">
         <div id="registerForm">
-          <label style="display:block; margin-bottom: 0.5rem; color: var(--text-secondary)">Device Name:</label>
-          <input type="text" id="newDeviceName" placeholder="e.g. Pixel 4 XL Automation SIM" style="width: 100%; margin-bottom: 1rem;">
-          <p style="font-size: 0.8rem; color: var(--text-muted)">
-            A secret Bearer token will be generated. You must copy it immediately as it cannot be shown again.
+          <p class="modal-instruction">
+            Provide a descriptive device label for audit and identification (e.g. <code>Pixel 7 Pro - Office SIM</code>).
           </p>
+          <div class="form-group">
+            <label for="newDeviceName" class="form-label">Device Name</label>
+            <input type="text" id="newDeviceName" class="custom-input full-width" placeholder="e.g. Pixel 4 XL Automation SIM" autocomplete="off">
+          </div>
+          <div class="callout callout-warning">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <div>
+              <strong>Security Notice:</strong> A cryptographically secure Bearer token will be generated once. You must copy and save it into the Android client settings immediately.
+            </div>
+          </div>
         </div>
+
         <div id="registerResult" style="display: none;">
-          <p style="color: var(--success); font-weight: 600; margin-bottom: 0.5rem">Device registered successfully!</p>
-          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem">Bearer Authorization Token:</p>
-          <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem">
-            <input type="text" id="generatedTokenText" readonly style="flex:1; font-family: var(--font-mono); font-size: 0.8rem">
-            <button class="btn btn-primary" id="btnCopyToken">Copy</button>
+          <div class="callout callout-success">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <div>Device registered successfully! Configure this Bearer token on the Android gateway.</div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem;">
+            <label class="form-label">Bearer Authorization Token</label>
+            <div class="token-copy-box">
+              <input type="text" id="generatedTokenText" readonly class="custom-input mono-font token-input">
+              <button class="btn btn-primary" id="btnCopyToken">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span id="btnCopyTokenText">Copy</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" id="btnCancelRegister">Cancel</button>
+        <button class="btn btn-secondary" id="btnCancelRegister">Cancel</button>
         <button class="btn btn-primary" id="btnSubmitRegister">Generate Token</button>
       </div>
     </div>
   </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <script src="app.js"></script>
 </body>

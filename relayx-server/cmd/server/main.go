@@ -101,6 +101,12 @@ func main() {
 		os.Exit(1)
 	}
 	server.Mux().Handle("GET /dashboard/", http.StripPrefix("/dashboard/", http.FileServer(webAssets)))
+	server.Mux().HandleFunc("GET /dashboard", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/dashboard/", http.StatusTemporaryRedirect)
+	})
+	server.Mux().HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/dashboard/", http.StatusTemporaryRedirect)
+	})
 
 	dashService := service.NewDashboardService(db, deviceRepo, cfg.DBPath, ServerVersion)
 	dashHandler := api.NewDashboardHandler(dashService, logging.GlobalBroadcaster, cfg.AdminToken)
