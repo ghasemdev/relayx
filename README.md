@@ -69,12 +69,27 @@
 
 ---
 
+## Server Web Dashboard & Observability
+
+RelayX Server embeds a modern, responsive cyber-glass dashboard directly inside the standalone Go executable:
+
+![RelayX Web Dashboard](docs/images/dashboard-preview.png)
+
+- **System Observability**: Real-time server uptime, Go runtime telemetry (goroutines, heap memory), SQLite DB & WAL storage sizes, and delivery success rate.
+- **SMS Gateway Pipeline Visualizer**: Multi-segment progress bar tracking total messages ingested, forwarded to webhooks/agents, filtered by rules, and dispatch failures.
+- **Live Logcat Console**: Real-time Server-Sent Events (SSE) log stream with level filtering (`DEBUG`, `INFO`, `WARN`, `ERROR`), debounced search, throughput buffer indicators, and pause/resume auto-scroll.
+- **Database Table Browser**: Full-text searchable inspector for `messages`, `devices`, and `schema_migrations` tables with column sorting (ASC/DESC), sensitive body reveal toggles (`🔒`/`👁️`), and raw JSON record inspection.
+- **Device Management**: Inventory of registered Android gateway hardware and emulators, relative last-seen heartbeats, and Bearer token provisioning wizard.
+- **Tactile UX**: Glassmorphism dark aesthetic, toast notifications, and keyboard navigation shortcuts (`1`-`4`, `/`, `Esc`).
+
+---
+
 ## Roadmap & Implementation Status
 
 - [x] **Phase 1: Server Foundation (`relayx-server`)**: Standalone Go daemon, embedded SQLite WAL engine, embedded migrations, Bearer token authentication, idempotency deduplication, health monitoring, structured logging redaction, and ingestion hooks.
 - [x] **Phase 2: Android Gateway Foundation (`relayx-android`)**: Kotlin 2.4.20, Compose Material 3, Navigation 3, Koin 4.2 App Startup, Room durable offline outbox, WorkManager exponential backoff dispatch, multipart SMS receiver, boot persistence, and zero-sensitive logging.
 - [x] **Phase 3: Android Message Inspection & Detail Modal (`relayx-android`)**: Message list screen navigated from metric cards (Received, Forwarded, Filtered, Failed) with synchronized `HorizontalPager` tabs, real-time debounced search, animated chrome, and interactive bottom sheet for last message received with privacy masking.
-- [ ] **Phase 4: Server Web Dashboard & Live Observability (`relayx-server`)**: Embedded Web UI in Go binary, real-time logcat streaming over SSE/WebSockets, SQLite database table browser, message history, and token management.
+- [x] **Phase 4: Server Web Dashboard & Live Observability (`relayx-server`)**: Embedded Web UI in Go binary, real-time logcat streaming over SSE, SQLite database table browser, message pipeline throughput visualizer, device token provisioning, and modern glassmorphic interface.
 - [ ] **Phase 5: Local Pre-Filtering Engine & Security Rules (`relayx-android`)**: Rule editor UI, regex/substring matching, action policies (`ALLOW`, `DROP`, `TRANSFORM`), and test sandbox.
 - [ ] **Phase 6: Agent MCP Server (`relayx-server`)**: Full Model Context Protocol implementation (`get_latest_message`, `wait_for_message`, `get_otp`).
 - [ ] **Phase 7: Testing Infrastructure, Mock SMS & Emulator Relay**: Mock SMS injector, interactive sandbox, and automated E2E testing.

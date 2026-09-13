@@ -57,24 +57,25 @@ This document outlines the sequential 9-phase implementation plan, component del
   - [x] Privacy-preserving content view (masked preview `••••••••••••` with explicit user toggle to inspect).
   - [x] One-tap "Retry Delivery" action button to trigger immediate outbox worker dispatch for failed messages with UUID preservation.
 
-### Phase 4 — Server Web Dashboard & Live Observability (`relayx-server`) `[IN PROGRESS]`
-- [ ] Embed Web Dashboard directly inside standalone Go binary (`go:embed` HTML/JS/CSS assets).
-- [ ] Live Log Streaming ("Logcat"):
-  - Real-time log streaming over Server-Sent Events (SSE) or WebSockets from server structured logger (`slog`).
-  - Filter logs by level (`INFO`, `WARN`, `ERROR`), component, or free-text search query.
-  - Strict privacy enforcement: payload and OTP masking applied before streaming.
-- [ ] SQLite Database Table Browser:
-  - Interactive table browser for `messages`, `devices`, and `schema_migrations`.
-  - Pagination, column sorting, sender/status filters, and raw JSON record inspection.
-  - Connection pool diagnostics (WAL file size, active read/write transactions).
-- [ ] Message History & Throughput Metrics:
-  - Live timeline of ingested and dispatched SMS messages.
-  - Throughput charts and delivery success rate indicators.
-- [ ] Device Management & Security View:
-  - List registered device IDs and token fingerprints.
-  - Add or revoke device write credentials.
+### Phase 4 — Server Web Dashboard & Live Observability (`relayx-server`) `[COMPLETED - PR #4]`
+- [x] Embed Web Dashboard directly inside standalone Go binary (`go:embed` HTML/JS/CSS assets).
+- [x] Live Log Streaming ("Logcat"):
+  - [x] Real-time log streaming over Server-Sent Events (SSE) from server structured logger (`slog`).
+  - [x] Filter logs by level (`INFO`, `WARN`, `ERROR`), component, or free-text search query.
+  - [x] Strict privacy enforcement: payload and OTP masking applied before streaming.
+- [x] SQLite Database Table Browser:
+  - [x] Interactive table browser for `messages`, `devices`, and `schema_migrations`.
+  - [x] Pagination, column sorting (ASC/DESC), status filters, and raw JSON record inspection.
+  - [x] Connection pool diagnostics (WAL file size, active read/write transactions).
+- [x] Message History & Throughput Metrics:
+  - [x] Live timeline of ingested and dispatched SMS messages.
+  - [x] Multi-segment pipeline throughput visualizer and delivery success rate indicators.
+- [x] Device Management & Security View:
+  - [x] List registered device IDs and token fingerprints.
+  - [x] Add or revoke device write credentials.
+- [x] Modern Glassmorphic UI redesign with responsive cyber-dark aesthetic, keyboard shortcuts (`1`-`4`, `/`, `Esc`), and toast notifications.
 
-### Phase 5 — Rule & Filtering Engine (`relayx-android`)
+### Phase 5 — Rule & Filtering Engine (`relayx-android`) `[IN PROGRESS]`
 - [ ] Build client-side Rule Engine evaluated prior to network dispatch.
 - [ ] Support Rule Types:
   - **Sender Rules**: Exact match (`sender == "BANK"`), pattern match, allowlists.
