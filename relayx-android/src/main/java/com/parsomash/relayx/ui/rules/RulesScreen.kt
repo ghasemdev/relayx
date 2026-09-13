@@ -35,12 +35,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -69,34 +68,35 @@ fun RulesScreen(
     var ruleToEdit by remember { mutableStateOf<Rule?>(null) }
     var ruleToDelete by remember { mutableStateOf<Rule?>(null) }
 
-    // Track scroll direction to animate FAB
-    var isScrollingDown by remember { mutableStateOf(false) }
-    var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
-    var previousFirstVisibleItemScrollOffset by remember { mutableIntStateOf(0) }
+    // Track scroll direction and boundary to animate FAB visibility
+    var showFab by remember { mutableStateOf(true) }
 
-    LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
-        val currentItemIndex = listState.firstVisibleItemIndex
-        val currentScrollOffset = listState.firstVisibleItemScrollOffset
+    LaunchedEffect(listState) {
+        var prevIndex = listState.firstVisibleItemIndex
+        var prevOffset = listState.firstVisibleItemScrollOffset
 
-        if (currentItemIndex > previousFirstVisibleItemIndex) {
-            isScrollingDown = true
-        } else if (currentItemIndex < previousFirstVisibleItemIndex) {
-            isScrollingDown = false
-        } else {
-            if (currentScrollOffset > previousFirstVisibleItemScrollOffset + 8) {
-                isScrollingDown = true
-            } else if (currentScrollOffset < previousFirstVisibleItemScrollOffset - 8) {
-                isScrollingDown = false
+        snapshotFlow {
+            Triple(
+                listState.firstVisibleItemIndex,
+                listState.firstVisibleItemScrollOffset,
+                listState.canScrollForward to listState.canScrollBackward
+            )
+        }.collect { (currIndex, currOffset, scrollLimits) ->
+            val (canScrollForward, canScrollBackward) = scrollLimits
+            if (currIndex == 0 && currOffset == 0) {
+                showFab = true
+            } else if (!canScrollForward && canScrollBackward) {
+                // At the bottom of a scrollable list: hide FAB to prevent obstructing items
+                showFab = false
+            } else if (currIndex > prevIndex || (currIndex == prevIndex && currOffset > prevOffset + 4)) {
+                // Scrolling down: hide FAB
+                showFab = false
+            } else if (currIndex < prevIndex || (currIndex == prevIndex && currOffset < prevOffset - 4)) {
+                // Scrolling up: show FAB
+                showFab = true
             }
-        }
-
-        previousFirstVisibleItemIndex = currentItemIndex
-        previousFirstVisibleItemScrollOffset = currentScrollOffset
-    }
-
-    val showFab by remember {
-        derivedStateOf {
-            !isScrollingDown || !listState.isScrollInProgress || listState.firstVisibleItemIndex == 0
+            prevIndex = currIndex
+            prevOffset = currOffset
         }
     }
 
