@@ -13,6 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+*.jks
 
 # Ignore all dot-directories except .agents
 .*/
