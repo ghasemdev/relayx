@@ -1,5 +1,11 @@
 package com.parsomash.relayx.ui.rules
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,26 +19,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,7 +56,6 @@ import com.parsomash.relayx.ui.rules.components.RuleSandboxCard
 import com.parsomash.relayx.viewmodel.RulesUiEvent
 import com.parsomash.relayx.viewmodel.RulesViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RulesScreen(
     viewModel: RulesViewModel,
@@ -59,10 +63,42 @@ fun RulesScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val listState = rememberLazyListState()
 
     var showEditDialog by remember { mutableStateOf(false) }
     var ruleToEdit by remember { mutableStateOf<Rule?>(null) }
     var ruleToDelete by remember { mutableStateOf<Rule?>(null) }
+
+    // Track scroll direction to animate FAB
+    var isScrollingDown by remember { mutableStateOf(false) }
+    var previousFirstVisibleItemIndex by remember { mutableIntStateOf(0) }
+    var previousFirstVisibleItemScrollOffset by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
+        val currentItemIndex = listState.firstVisibleItemIndex
+        val currentScrollOffset = listState.firstVisibleItemScrollOffset
+
+        if (currentItemIndex > previousFirstVisibleItemIndex) {
+            isScrollingDown = true
+        } else if (currentItemIndex < previousFirstVisibleItemIndex) {
+            isScrollingDown = false
+        } else {
+            if (currentScrollOffset > previousFirstVisibleItemScrollOffset + 8) {
+                isScrollingDown = true
+            } else if (currentScrollOffset < previousFirstVisibleItemScrollOffset - 8) {
+                isScrollingDown = false
+            }
+        }
+
+        previousFirstVisibleItemIndex = currentItemIndex
+        previousFirstVisibleItemScrollOffset = currentScrollOffset
+    }
+
+    val showFab by remember {
+        derivedStateOf {
+            !isScrollingDown || !listState.isScrollInProgress || listState.firstVisibleItemIndex == 0
+        }
+    }
 
     LaunchedEffect(state.errorMessage) {
         state.errorMessage?.let { msg ->
@@ -71,65 +107,45 @@ fun RulesScreen(
         }
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.rules_screen_title),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.active_rules, state.activeCount),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    ruleToEdit = null
-                    showEditDialog = true
-                },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_rule)
-                )
-            }
-        }
-    ) { innerPadding ->
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Unified Screen Header (Matching Dashboard and Settings hierarchy)
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.rules_screen_title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.active_rules, state.activeCount),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+            }
+
             // Interactive Rule Sandbox Card
             item {
                 RuleSandboxCard(
@@ -153,18 +169,12 @@ fun RulesScreen(
 
             // Rules Header
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Configured Rules (${state.rules.size})",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+                Text(
+                    text = "Configured Rules (${state.rules.size})",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
 
             // Rules List or Empty State
@@ -222,6 +232,38 @@ fun RulesScreen(
                 }
             }
         }
+
+        // Floating Action Button with Animated Visibility on scroll
+        AnimatedVisibility(
+            visible = showFab,
+            enter = scaleIn(animationSpec = tween(180)) + fadeIn(animationSpec = tween(180)),
+            exit = scaleOut(animationSpec = tween(180)) + fadeOut(animationSpec = tween(180)),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    ruleToEdit = null
+                    showEditDialog = true
+                },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_rule)
+                )
+            }
+        }
+
+        // SnackbarHost anchored at bottom
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+        )
     }
 
     // Add / Edit Rule Dialog

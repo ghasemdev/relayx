@@ -130,15 +130,15 @@ fun RuleSandboxCard(
             // Results Container
             AnimatedVisibility(visible = result != null) {
                 result?.let { res ->
-                    Spacer(modifier = Modifier.height(16.dp))
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(top = 18.dp)
                             .background(
                                 color = MaterialTheme.colorScheme.surface,
                                 shape = RoundedCornerShape(12.dp)
                             )
-                            .padding(12.dp)
+                            .padding(16.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.sandbox_result_title),
