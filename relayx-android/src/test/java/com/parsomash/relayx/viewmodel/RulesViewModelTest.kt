@@ -58,7 +58,7 @@ class RulesViewModelTest {
             toggleRuleUseCase = ToggleRuleUseCase(repository),
             deleteRuleUseCase = DeleteRuleUseCase(repository),
             reorderRulesUseCase = ReorderRulesUseCase(repository),
-            testRulesUseCase = TestRulesUseCase(engine, repository)
+            testRulesUseCase = TestRulesUseCase(engine, repository, dispatchers)
         )
     }
 

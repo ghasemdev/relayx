@@ -44,10 +44,10 @@ class RuleEngineImpl : RuleEngine {
                         val extracted = if (pattern != null) {
                             RegexValidator.extract(pattern, body)
                         } else {
-                            body
+                            null // Disallow raw body leakage if transform pattern is missing
                         }
 
-                        if (extracted != null) {
+                        if (!extracted.isNullOrBlank()) {
                             return RuleEvaluationResult(
                                 matchedRule = rule,
                                 action = RuleAction.FORWARD_TRANSFORMED,

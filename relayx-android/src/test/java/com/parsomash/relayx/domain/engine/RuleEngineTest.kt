@@ -157,4 +157,22 @@ class RuleEngineTest {
         assertTrue(result.isDropped)
         assertNull(result.matchedRule)
     }
+
+    @Test
+    fun `forward transformed without pattern does not leak raw body`() {
+        val brokenTransformRule = Rule(
+            id = "r-broken",
+            name = "Broken Transform",
+            senderPattern = "BANK",
+            senderMatchType = SenderMatchType.EXACT,
+            action = RuleAction.FORWARD_TRANSFORMED,
+            transformPattern = null,
+            contentPattern = null,
+            priority = 10
+        )
+
+        val result = engine.evaluate("BANK", "Sensitive bank statement and personal info", listOf(brokenTransformRule))
+        assertTrue(result.isDropped)
+        assertNull(result.transformedBody)
+    }
 }

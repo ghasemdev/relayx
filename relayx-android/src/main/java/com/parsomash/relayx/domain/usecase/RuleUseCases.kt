@@ -4,7 +4,9 @@ import com.parsomash.relayx.domain.engine.RuleEngine
 import com.parsomash.relayx.domain.model.Rule
 import com.parsomash.relayx.domain.model.RuleEvaluationResult
 import com.parsomash.relayx.domain.repository.RuleRepository
+import com.parsomash.relayx.util.AppDispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Factory
 
 @Factory
@@ -72,10 +74,12 @@ class ReorderRulesUseCase(
 @Factory
 class TestRulesUseCase(
     private val ruleEngine: RuleEngine,
-    private val ruleRepository: RuleRepository
+    private val ruleRepository: RuleRepository,
+    private val dispatchers: AppDispatchers = AppDispatchers()
 ) {
-    suspend operator fun invoke(sender: String, body: String): RuleEvaluationResult {
-        val activeRules = ruleRepository.getActiveRulesDirect()
-        return ruleEngine.evaluate(sender, body, activeRules)
-    }
+    suspend operator fun invoke(sender: String, body: String): RuleEvaluationResult =
+        withContext(dispatchers.default) {
+            val activeRules = ruleRepository.getActiveRulesDirect()
+            ruleEngine.evaluate(sender, body, activeRules)
+        }
 }
