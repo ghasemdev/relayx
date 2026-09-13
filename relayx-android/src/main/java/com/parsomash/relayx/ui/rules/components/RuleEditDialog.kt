@@ -53,7 +53,7 @@ fun RuleEditDialog(
     onSave: (Rule) -> Unit
 ) {
     val isEditing = initialRule != null
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
     var name by remember { mutableStateOf(initialRule?.name ?: "") }
     var senderPattern by remember { mutableStateOf(initialRule?.senderPattern ?: "") }
