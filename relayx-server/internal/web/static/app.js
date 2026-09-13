@@ -158,6 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const dbTableSelect = document.getElementById('dbTableSelect');
   const dbSearchInput = document.getElementById('dbSearchInput');
   const dbStatusFilter = document.getElementById('dbStatusFilter');
+  const dbSortBySelect = document.getElementById('dbSortBySelect');
+  const dbSortOrderSelect = document.getElementById('dbSortOrderSelect');
   const dbTableHeader = document.getElementById('dbTableHeader');
   const dbTableBody = document.getElementById('dbTableBody');
 
@@ -165,12 +167,28 @@ document.addEventListener('DOMContentLoaded', () => {
     dbSelectedTable = dbTableSelect.value;
     dbStatusFilter.style.display = dbSelectedTable === 'messages' ? 'inline-block' : 'none';
     dbSortBy = dbSelectedTable === 'messages' ? 'created_at' : '';
+    dbSortOrder = 'DESC';
+    if (dbSortOrderSelect) dbSortOrderSelect.value = dbSortOrder;
     dbCurrentPage = 1;
     loadDatabaseTable(1);
   });
 
   dbStatusFilter.addEventListener('change', () => loadDatabaseTable(1));
   document.getElementById('btnRefreshTable').addEventListener('click', () => loadDatabaseTable(dbCurrentPage));
+
+  if (dbSortBySelect) {
+    dbSortBySelect.addEventListener('change', () => {
+      dbSortBy = dbSortBySelect.value;
+      loadDatabaseTable(1);
+    });
+  }
+
+  if (dbSortOrderSelect) {
+    dbSortOrderSelect.addEventListener('change', () => {
+      dbSortOrder = dbSortOrderSelect.value;
+      loadDatabaseTable(1);
+    });
+  }
 
   let dbSearchTimeout = null;
   dbSearchInput.addEventListener('input', () => {
@@ -185,6 +203,24 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnNextPage').addEventListener('click', () => {
     if (dbCurrentPage < dbTotalPages) loadDatabaseTable(dbCurrentPage + 1);
   });
+
+  function updateSortSelects(columns) {
+    if (!dbSortBySelect || !columns || columns.length === 0) return;
+    const existingOptions = Array.from(dbSortBySelect.options).map(o => o.value);
+    const same = existingOptions.length === columns.length && existingOptions.every((v, i) => v === columns[i]);
+    if (!same) {
+      dbSortBySelect.innerHTML = columns.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+    if (dbSortBy && columns.includes(dbSortBy)) {
+      dbSortBySelect.value = dbSortBy;
+    } else if (columns.length > 0) {
+      dbSortBy = columns[0];
+      dbSortBySelect.value = dbSortBy;
+    }
+    if (dbSortOrderSelect) {
+      dbSortOrderSelect.value = dbSortOrder;
+    }
+  }
 
   function loadDatabaseTable(page) {
     dbCurrentPage = page;
@@ -204,6 +240,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('dbTotalPages').textContent = dbTotalPages;
         document.getElementById('dbTotalCount').textContent = `Total: ${data.total_rows}`;
 
+        if (data.sort_by) dbSortBy = data.sort_by;
+        if (data.sort_order) dbSortOrder = data.sort_order;
+
+        updateSortSelects(data.columns);
         renderTable(data.columns, data.rows);
       })
       .catch(err => {
@@ -220,10 +260,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let headerHtml = '<tr>';
     columns.forEach(col => {
-      headerHtml += `<th>${col}</th>`;
+      const isSorted = dbSortBy === col;
+      const sortClass = isSorted ? `sortable sorted-${dbSortOrder.toLowerCase()}` : 'sortable';
+      let icon = '<span class="sort-icon sort-icon-idle">&#8645;</span>';
+      let title = `Click to sort by ${col} (descending)`;
+      if (isSorted) {
+        if (dbSortOrder === 'ASC') {
+          icon = '<span class="sort-icon">&uarr;</span>';
+          title = `Sorted ascending. Click to sort descending.`;
+        } else {
+          icon = '<span class="sort-icon">&darr;</span>';
+          title = `Sorted descending. Click to sort ascending.`;
+        }
+      }
+      headerHtml += `<th class="${sortClass}" data-col="${col}" title="${title}">${col} ${icon}</th>`;
     });
     headerHtml += '</tr>';
     dbTableHeader.innerHTML = headerHtml;
+
+    // Attach click listeners to sortable column headers
+    dbTableHeader.querySelectorAll('th.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (dbSortBy === col) {
+          dbSortOrder = dbSortOrder === 'DESC' ? 'ASC' : 'DESC';
+        } else {
+          dbSortBy = col;
+          dbSortOrder = 'DESC';
+        }
+        if (dbSortOrderSelect) dbSortOrderSelect.value = dbSortOrder;
+        if (dbSortBySelect) dbSortBySelect.value = dbSortBy;
+        loadDatabaseTable(1);
+      });
+    });
 
     if (!rows || rows.length === 0) {
       dbTableBody.innerHTML = `<tr><td colspan="${columns.length}" style="text-align:center; color:var(--text-muted)">No records found</td></tr>`;

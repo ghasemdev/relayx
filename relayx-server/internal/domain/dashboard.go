@@ -61,6 +61,8 @@ type TablePage struct {
 	PageSize   int              `json:"page_size"`
 	TotalRows  int64            `json:"total_rows"`
 	TotalPages int              `json:"total_pages"`
+	SortBy     string           `json:"sort_by,omitempty"`
+	SortOrder  string           `json:"sort_order,omitempty"`
 	Columns    []string         `json:"columns"`
 	Rows       []map[string]any `json:"rows"`
 }

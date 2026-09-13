@@ -279,6 +279,8 @@ func QueryTable(ctx context.Context, db *sql.DB, tableName string, page, pageSiz
 		PageSize:   pageSize,
 		TotalRows:  totalRows,
 		TotalPages: totalPages,
+		SortBy:     sortBy,
+		SortOrder:  sortOrder,
 		Columns:    colNames,
 		Rows:       rows,
 	}, nil

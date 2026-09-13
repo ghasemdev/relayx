@@ -116,6 +116,68 @@ func TestDashboard_HandleQueryTable_Messages(t *testing.T) {
 	}
 }
 
+func TestDashboard_HandleQueryTable_Sorting(t *testing.T) {
+	handler, _, _ := setupTestDashboard(t)
+
+	// 1. Register two devices with distinct names
+	for _, name := range []string{"Beta Device", "Alpha Device"} {
+		regBody := strings.NewReader(`{"name":"` + name + `"}`)
+		regReq := httptest.NewRequest("POST", "/api/v1/dashboard/devices", regBody)
+		regRec := httptest.NewRecorder()
+		handler.HandleRegisterDevice(regRec, regReq)
+		if regRec.Code != http.StatusCreated {
+			t.Fatalf("failed to register device: %s", regRec.Body.String())
+		}
+	}
+
+	// 2. Query devices sorted ASC by name
+	reqAsc := httptest.NewRequest("GET", "/api/v1/dashboard/database/tables/devices?sort_by=name&sort_order=ASC", nil)
+	reqAsc.SetPathValue("name", "devices")
+	recAsc := httptest.NewRecorder()
+	handler.HandleQueryTable(recAsc, reqAsc)
+
+	if recAsc.Code != http.StatusOK {
+		t.Fatalf("expected status 200 on ASC query, got %d: %s", recAsc.Code, recAsc.Body.String())
+	}
+
+	var pageAsc domain.TablePage
+	if err := json.NewDecoder(recAsc.Body).Decode(&pageAsc); err != nil {
+		t.Fatalf("failed to decode ASC page: %v", err)
+	}
+
+	if pageAsc.SortBy != "name" || pageAsc.SortOrder != "ASC" {
+		t.Errorf("expected SortBy=name, SortOrder=ASC, got SortBy=%s, SortOrder=%s", pageAsc.SortBy, pageAsc.SortOrder)
+	}
+	if len(pageAsc.Rows) < 2 {
+		t.Fatalf("expected at least 2 rows, got %d", len(pageAsc.Rows))
+	}
+	if pageAsc.Rows[0]["name"] != "Alpha Device" || pageAsc.Rows[1]["name"] != "Beta Device" {
+		t.Errorf("expected Alpha then Beta for ASC, got %v then %v", pageAsc.Rows[0]["name"], pageAsc.Rows[1]["name"])
+	}
+
+	// 3. Query devices sorted DESC by name
+	reqDesc := httptest.NewRequest("GET", "/api/v1/dashboard/database/tables/devices?sort_by=name&sort_order=DESC", nil)
+	reqDesc.SetPathValue("name", "devices")
+	recDesc := httptest.NewRecorder()
+	handler.HandleQueryTable(recDesc, reqDesc)
+
+	if recDesc.Code != http.StatusOK {
+		t.Fatalf("expected status 200 on DESC query, got %d: %s", recDesc.Code, recDesc.Body.String())
+	}
+
+	var pageDesc domain.TablePage
+	if err := json.NewDecoder(recDesc.Body).Decode(&pageDesc); err != nil {
+		t.Fatalf("failed to decode DESC page: %v", err)
+	}
+
+	if pageDesc.SortBy != "name" || pageDesc.SortOrder != "DESC" {
+		t.Errorf("expected SortBy=name, SortOrder=DESC, got SortBy=%s, SortOrder=%s", pageDesc.SortBy, pageDesc.SortOrder)
+	}
+	if pageDesc.Rows[0]["name"] != "Beta Device" || pageDesc.Rows[1]["name"] != "Alpha Device" {
+		t.Errorf("expected Beta then Alpha for DESC, got %v then %v", pageDesc.Rows[0]["name"], pageDesc.Rows[1]["name"])
+	}
+}
+
 func TestDashboard_HandleQueryTable_DisallowedTable(t *testing.T) {
 	handler, _, _ := setupTestDashboard(t)
 
