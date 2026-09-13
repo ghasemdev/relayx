@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.parsomash.relayx.domain.model.AppThemeMode
 import com.parsomash.relayx.domain.model.GatewayConfig
 import com.parsomash.relayx.util.AppDispatchers
 import kotlinx.coroutines.CoroutineScope
@@ -47,6 +48,7 @@ class PreferencesRepository(
         val DEVICE_ID = stringPreferencesKey("device_id")
         val BEARER_TOKEN = stringPreferencesKey("bearer_token")
         val FORWARDING_ENABLED = booleanPreferencesKey("forwarding_enabled")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
     }
 
     val configFlow: Flow<GatewayConfig> = dataStore.data
@@ -97,6 +99,34 @@ class PreferencesRepository(
     suspend fun setForwardingEnabled(enabled: Boolean) = withContext(dispatchers.io) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.FORWARDING_ENABLED] = enabled
+        }
+    }
+
+    val themeModeFlow: Flow<AppThemeMode> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            val modeString = preferences[PreferencesKeys.THEME_MODE] ?: AppThemeMode.SYSTEM.name
+            try {
+                AppThemeMode.valueOf(modeString)
+            } catch (_: IllegalArgumentException) {
+                AppThemeMode.SYSTEM
+            }
+        }
+        .flowOn(dispatchers.io)
+
+    suspend fun getThemeMode(): AppThemeMode = withContext(dispatchers.io) {
+        themeModeFlow.first()
+    }
+
+    suspend fun setThemeMode(mode: AppThemeMode) = withContext(dispatchers.io) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.THEME_MODE] = mode.name
         }
     }
 }

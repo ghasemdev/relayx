@@ -3,6 +3,7 @@ package com.parsomash.relayx.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.parsomash.relayx.data.local.PreferencesRepository
+import com.parsomash.relayx.domain.model.AppThemeMode
 import com.parsomash.relayx.domain.model.GatewayConfig
 import com.parsomash.relayx.domain.usecase.ConnectionTestResult
 import com.parsomash.relayx.domain.usecase.TestConnectionUseCase
@@ -19,6 +20,7 @@ data class SettingsUiState(
     val useHttps: Boolean = false,
     val deviceId: String = "",
     val bearerToken: String = "",
+    val themeMode: AppThemeMode = AppThemeMode.SYSTEM,
     val isTesting: Boolean = false,
     val testResult: ConnectionTestResult? = null,
     val saveMessage: String? = null
@@ -45,6 +47,19 @@ class SettingsViewModel(
                     bearerToken = config.bearerToken
                 )
             }
+        }
+
+        viewModelScope.launch {
+            preferencesRepository.themeModeFlow.collect { mode ->
+                uiState.update { it.copy(themeMode = mode) }
+            }
+        }
+    }
+
+    fun onThemeModeChanged(themeMode: AppThemeMode) {
+        uiState.update { it.copy(themeMode = themeMode) }
+        viewModelScope.launch {
+            preferencesRepository.setThemeMode(themeMode)
         }
     }
 

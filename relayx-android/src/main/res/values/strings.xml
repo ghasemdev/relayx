@@ -77,4 +77,61 @@
     <string name="navigate_back">Back</string>
     <string name="no_message_selected">No message available</string>
     <string name="attempts_format">%1$d / %2$d</string>
+
+    <!-- Rule Management & Filtering Engine -->
+    <string name="nav_rules">Rules</string>
+    <string name="rules_screen_title">Filter Rules</string>
+    <string name="add_rule">Add Rule</string>
+    <string name="edit_rule">Edit Rule</string>
+    <string name="delete_rule">Delete Rule</string>
+    <string name="delete_rule_confirm">Are you sure you want to delete rule \"%1$s\"?</string>
+    <string name="rule_name_label">Rule Name</string>
+    <string name="rule_name_placeholder">e.g. Bank OTP Allowlist</string>
+    <string name="sender_pattern_label">Sender Pattern</string>
+    <string name="sender_pattern_placeholder">e.g. BANK, +1555*, or .*OTP.*</string>
+    <string name="sender_match_type_label">Sender Match Type</string>
+    <string name="match_type_exact">Exact Match</string>
+    <string name="match_type_prefix">Prefix Match</string>
+    <string name="match_type_contains">Contains Match</string>
+    <string name="match_type_regex">Regex Pattern</string>
+    <string name="match_type_any">Any Sender</string>
+    <string name="content_pattern_label">Content Pattern Regex (Optional)</string>
+    <string name="content_pattern_placeholder">e.g. (?i).*code.*</string>
+    <string name="action_label">Action Policy</string>
+    <string name="action_forward_raw">Forward Raw Body</string>
+    <string name="action_forward_transformed">Forward Transformed (OTP only)</string>
+    <string name="action_drop">Drop Message (Local Only)</string>
+    <string name="transform_pattern_label">Transform Regex (Extraction)</string>
+    <string name="transform_pattern_placeholder">e.g. \\b(\\d{4,8})\\b</string>
+    <string name="priority_label">Priority (Lower runs first)</string>
+    <string name="priority_placeholder">100</string>
+    <string name="rule_enabled_label">Rule Enabled</string>
+    <string name="regex_valid">Valid regular expression</string>
+    <string name="regex_invalid">Invalid regex: %1$s</string>
+    <string name="empty_rules_title">No Rules Configured</string>
+    <string name="empty_rules_desc">All incoming messages are dropped by default for security. Tap \'+ Add Rule\' to create an allowlist or extraction rule.</string>
+    <string name="sandbox_title">Rule Sandbox</string>
+    <string name="sandbox_desc">Simulate an incoming SMS against your active rules to preview match behavior and regex extraction.</string>
+    <string name="sandbox_sender_label">Sample Sender</string>
+    <string name="sandbox_sender_placeholder">e.g. BANK-AUTH</string>
+    <string name="sandbox_body_label">Sample Message Body</string>
+    <string name="sandbox_body_placeholder">e.g. Your verification code is 789012.</string>
+    <string name="sandbox_test_btn">Test Rules</string>
+    <string name="sandbox_clear_btn">Clear</string>
+    <string name="sandbox_result_title">Simulation Result</string>
+    <string name="sandbox_matched_rule">Matched: %1$s (Priority %2$d)</string>
+    <string name="sandbox_no_rule_matched">No matching rule. Dropped by default security policy.</string>
+    <string name="sandbox_action">Action: %1$s</string>
+    <string name="sandbox_transformed_payload">Transformed Payload: %1$s</string>
+    <string name="sandbox_execution_log">Execution Trace</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+
+    <!-- Theme Settings -->
+    <string name="theme_setting_title">Theme Mode</string>
+    <string name="theme_setting_desc">Select your preferred app appearance</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
 </resources>

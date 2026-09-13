@@ -16,10 +16,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +32,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -36,9 +40,11 @@ import androidx.navigation3.ui.NavDisplay
 import com.parsomash.relayx.R
 import com.parsomash.relayx.ui.dashboard.DashboardScreen
 import com.parsomash.relayx.ui.message.MessageListScreen
+import com.parsomash.relayx.ui.rules.RulesScreen
 import com.parsomash.relayx.ui.settings.SettingsScreen
 import com.parsomash.relayx.viewmodel.DashboardViewModel
 import com.parsomash.relayx.viewmodel.MessageListViewModel
+import com.parsomash.relayx.viewmodel.RulesViewModel
 import com.parsomash.relayx.viewmodel.SettingsViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -61,6 +67,9 @@ sealed class AppRoute : NavKey {
     data object Dashboard : AppRoute()
 
     @Serializable
+    data object Rules : AppRoute()
+
+    @Serializable
     data object Settings : AppRoute()
 
     @Serializable
@@ -75,6 +84,7 @@ data class BottomNavItem(
 
 val bottomNavItems = listOf(
     BottomNavItem(AppRoute.Dashboard, R.string.nav_dashboard, Icons.Default.Dashboard),
+    BottomNavItem(AppRoute.Rules, R.string.nav_rules, Icons.Default.FilterAlt),
     BottomNavItem(AppRoute.Settings, R.string.nav_settings, Icons.Default.Settings)
 )
 
@@ -88,7 +98,16 @@ val navigationModule = module {
             onRequestPermissions = onRequestPermissions,
             onNavigateToMessageList = { filter ->
                 navActions.navigateTo(AppRoute.MessageList(filter))
+            },
+            onNavigateToRules = {
+                navActions.navigateTo(AppRoute.Rules)
             }
+        )
+    }
+    navigation<AppRoute.Rules> {
+        val rulesViewModel: RulesViewModel = koinViewModel()
+        RulesScreen(
+            viewModel = rulesViewModel
         )
     }
     navigation<AppRoute.Settings> {
@@ -135,6 +154,8 @@ fun MainAppScaffold(
     val showBottomBar = currentRoute !is AppRoute.MessageList
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         bottomBar = {
             AnimatedVisibility(
                 visible = showBottomBar,
@@ -147,10 +168,14 @@ fun MainAppScaffold(
                     animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing)
                 ) + fadeOut(animationSpec = tween(durationMillis = 200))
             ) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    tonalElevation = 3.dp
+                ) {
                     bottomNavItems.forEach { item ->
+                        val selected = currentRoute == item.route
                         NavigationBarItem(
-                            selected = currentRoute == item.route,
+                            selected = selected,
                             onClick = {
                                 if (currentRoute != item.route) {
                                     backStack.clear()
@@ -163,7 +188,19 @@ fun MainAppScaffold(
                                     contentDescription = stringResource(item.titleResId)
                                 )
                             },
-                            label = { Text(stringResource(item.titleResId)) }
+                            label = {
+                                Text(
+                                    text = stringResource(item.titleResId),
+                                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                                )
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         )
                     }
                 }

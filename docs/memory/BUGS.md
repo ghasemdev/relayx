@@ -1,6 +1,6 @@
 # Bugs & Regression Patterns
 
-Last reviewed: 2026-09-13
+Last reviewed: 2026-09-14
 
 This document tracks identified failure modes, architectural edge cases, and regression traps to prevent during development.
 
@@ -58,5 +58,12 @@ This document tracks identified failure modes, architectural edge cases, and reg
 - **Root Cause**: In SQLite with foreign keys active (`PRAGMA foreign_keys = ON;`), the `messages` table schema defines `device_id TEXT NOT NULL REFERENCES devices(id)` without `ON DELETE CASCADE`. Executing `DELETE FROM devices WHERE id = ?` fails immediately.
 - **Prevention**: Implement repository deletion inside an atomic transaction: first delete related dependent records (`DELETE FROM messages WHERE device_id = ?;`), then delete the parent entity (`DELETE FROM devices WHERE id = ?;`).
 
+### 11. ReDoS and Pattern Syntax Crashes in Local Android Rule Engine
+- **Symptom**: Malformed user-entered regex crashing `relayx-android` with unhandled `PatternSyntaxException` or causing ANRs (Application Not Responding) via catastrophic backtracking (ReDoS) during incoming SMS broadcast processing.
+- **Root Cause**: Compiling unvalidated user regex strings directly within the broadcast receiver or background thread without syntax validation or length constraints.
+- **Prevention**: Validate regex patterns at entry time in UI/UseCase with explicit `try { Pattern.compile(pattern) } catch (e: PatternSyntaxException)`. Fall back to safe matching if compilation fails, log no payload text, and isolate evaluation in the pure domain `RuleEngine` verified by automated test suites.
 
-
+### 12. Edge-to-Edge System Bar Desynchronization on Dynamic Theme Toggle
+- **Symptom**: Toggling between Light, Dark, or System theme dynamically in Settings leaves the status bar or navigation bar icons invisible (e.g. white icons against light backgrounds or dark icons against dark backgrounds) until app restart.
+- **Root Cause**: Window insets controller properties (`isAppearanceLightStatusBars`, `isAppearanceLightNavigationBars`) set statically during activity initialization rather than reactively responding to Compose theme state.
+- **Prevention**: Enforce a reactive `SideEffect` inside the root `RelayxTheme` composable that queries the active `darkTheme` boolean and explicitly synchronizes `WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme` and `isAppearanceLightNavigationBars = !darkTheme`.

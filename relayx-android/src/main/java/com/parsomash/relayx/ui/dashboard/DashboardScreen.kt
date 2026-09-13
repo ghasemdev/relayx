@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.parsomash.relayx.R
@@ -53,6 +54,7 @@ fun DashboardScreen(
     onRequestPermissions: () -> Unit,
     modifier: Modifier = Modifier,
     onNavigateToMessageList: (filter: String) -> Unit = {},
+    onNavigateToRules: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -66,7 +68,8 @@ fun DashboardScreen(
     ) {
         Text(
             text = stringResource(R.string.dashboard_title),
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
         )
 
         // Missing permission banner
@@ -170,6 +173,7 @@ fun DashboardScreen(
                 title = stringResource(R.string.rules_title),
                 value = stringResource(R.string.active_rules, state.activeRulesCount),
                 icon = Icons.Default.FilterAlt,
+                onClick = onNavigateToRules,
                 modifier = Modifier.weight(1f)
             )
         }

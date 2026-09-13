@@ -1,6 +1,7 @@
 package com.parsomash.relayx.data.local
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import com.parsomash.relayx.domain.model.AppThemeMode
 import com.parsomash.relayx.domain.model.GatewayConfig
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -88,5 +89,23 @@ class PreferencesRepositoryTest {
         assertEquals(7777, updated.serverPort)
         assertEquals("my-device", updated.deviceId)
         assertEquals("my-token", updated.bearerToken)
+    }
+
+    @Test
+    fun testDefaultThemeModeIsSystem() = runTest {
+        val repo = createRepository()
+        val themeMode = repo.getThemeMode()
+        assertEquals(AppThemeMode.SYSTEM, themeMode)
+    }
+
+    @Test
+    fun testSetThemeModeUpdatesAndPersists() = runTest {
+        val repo = createRepository()
+
+        repo.setThemeMode(AppThemeMode.DARK)
+        assertEquals(AppThemeMode.DARK, repo.getThemeMode())
+
+        repo.setThemeMode(AppThemeMode.LIGHT)
+        assertEquals(AppThemeMode.LIGHT, repo.getThemeMode())
     }
 }
