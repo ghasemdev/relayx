@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -36,9 +37,11 @@ import androidx.navigation3.ui.NavDisplay
 import com.parsomash.relayx.R
 import com.parsomash.relayx.ui.dashboard.DashboardScreen
 import com.parsomash.relayx.ui.message.MessageListScreen
+import com.parsomash.relayx.ui.rules.RulesScreen
 import com.parsomash.relayx.ui.settings.SettingsScreen
 import com.parsomash.relayx.viewmodel.DashboardViewModel
 import com.parsomash.relayx.viewmodel.MessageListViewModel
+import com.parsomash.relayx.viewmodel.RulesViewModel
 import com.parsomash.relayx.viewmodel.SettingsViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -61,6 +64,9 @@ sealed class AppRoute : NavKey {
     data object Dashboard : AppRoute()
 
     @Serializable
+    data object Rules : AppRoute()
+
+    @Serializable
     data object Settings : AppRoute()
 
     @Serializable
@@ -75,6 +81,7 @@ data class BottomNavItem(
 
 val bottomNavItems = listOf(
     BottomNavItem(AppRoute.Dashboard, R.string.nav_dashboard, Icons.Default.Dashboard),
+    BottomNavItem(AppRoute.Rules, R.string.nav_rules, Icons.Default.FilterAlt),
     BottomNavItem(AppRoute.Settings, R.string.nav_settings, Icons.Default.Settings)
 )
 
@@ -88,7 +95,16 @@ val navigationModule = module {
             onRequestPermissions = onRequestPermissions,
             onNavigateToMessageList = { filter ->
                 navActions.navigateTo(AppRoute.MessageList(filter))
+            },
+            onNavigateToRules = {
+                navActions.navigateTo(AppRoute.Rules)
             }
+        )
+    }
+    navigation<AppRoute.Rules> {
+        val rulesViewModel: RulesViewModel = koinViewModel()
+        RulesScreen(
+            viewModel = rulesViewModel
         )
     }
     navigation<AppRoute.Settings> {

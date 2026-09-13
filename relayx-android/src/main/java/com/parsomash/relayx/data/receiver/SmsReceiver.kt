@@ -6,7 +6,7 @@ import android.content.Intent
 import android.provider.Telephony
 import com.parsomash.relayx.RelayApplication
 import com.parsomash.relayx.data.worker.MessageDispatchWorker
-import com.parsomash.relayx.domain.usecase.IngestSmsUseCase
+import com.parsomash.relayx.domain.model.DeliveryStatus
 import com.parsomash.relayx.util.RelayLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ class SmsReceiver : BroadcastReceiver() {
 
         val pendingResult = goAsync()
         val app = context.applicationContext as RelayApplication
-        val ingestUseCase = IngestSmsUseCase(app.database.outboxMessageDao(), app.preferencesRepository)
+        val ingestUseCase = app.ingestSmsUseCase
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -40,9 +40,12 @@ class SmsReceiver : BroadcastReceiver() {
                         }
                     }
 
-                    RelayLogger.i("SmsReceiver", "Intercepted SMS from $sender (${fullBody.length} bytes, ${segments.size} segments)")
+                    RelayLogger.i(
+                        "SmsReceiver",
+                        "Intercepted SMS from $sender (${fullBody.length} bytes, ${segments.size} segments)"
+                    )
                     val ingested = ingestUseCase(sender, fullBody)
-                    if (ingested != null) {
+                    if (ingested != null && ingested.status == DeliveryStatus.PENDING) {
                         MessageDispatchWorker.enqueue(context)
                     }
                 }

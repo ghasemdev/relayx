@@ -53,3 +53,34 @@ fun deliveryStatusTextColor(status: String): Color {
         else -> StatusPendingText
     }
 }
+
+// Rule Action Colors
+val ActionForwardRaw = Color(0xFF10B981)
+val ActionForwardRawContainer = Color(0xFFD1FAE5)
+val ActionForwardRawText = Color(0xFF065F46)
+
+val ActionForwardTransformed = Color(0xFF0284C7)
+val ActionForwardTransformedContainer = Color(0xFFE0F2FE)
+val ActionForwardTransformedText = Color(0xFF0369A1)
+
+val ActionDrop = Color(0xFFEF4444)
+val ActionDropContainer = Color(0xFFFEE2E2)
+val ActionDropText = Color(0xFF991B1B)
+
+fun ruleActionContainerColor(action: String): Color {
+    return when (action.uppercase()) {
+        "FORWARD_RAW" -> ActionForwardRawContainer
+        "FORWARD_TRANSFORMED" -> ActionForwardTransformedContainer
+        "DROP" -> ActionDropContainer
+        else -> StatusPendingContainer
+    }
+}
+
+fun ruleActionTextColor(action: String): Color {
+    return when (action.uppercase()) {
+        "FORWARD_RAW" -> ActionForwardRawText
+        "FORWARD_TRANSFORMED" -> ActionForwardTransformedText
+        "DROP" -> ActionDropText
+        else -> StatusPendingText
+    }
+}

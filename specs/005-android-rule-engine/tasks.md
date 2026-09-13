@@ -11,10 +11,10 @@
 
 **Purpose**: Define the core domain entities, enums, and evaluation structures.
 
-- [ ] T001 [P] Define `RuleAction` and `SenderMatchType` enums in `relayx-android/src/main/java/com/parsomash/relayx/domain/model/Rule.kt`
-- [ ] T002 [P] Define `Rule` domain model in `relayx-android/src/main/java/com/parsomash/relayx/domain/model/Rule.kt`
-- [ ] T003 [P] Define `RuleEvaluationResult` in `relayx-android/src/main/java/com/parsomash/relayx/domain/model/RuleEvaluationResult.kt`
-- [ ] T004 Define `RegexValidator` utility with syntax validation and group extraction in `relayx-android/src/main/java/com/parsomash/relayx/domain/engine/RegexValidator.kt`
+- [x] T001 [P] Define `RuleAction` and `SenderMatchType` enums in `relayx-android/src/main/java/com/parsomash/relayx/domain/model/Rule.kt`
+- [x] T002 [P] Define `Rule` domain model in `relayx-android/src/main/java/com/parsomash/relayx/domain/model/Rule.kt`
+- [x] T003 [P] Define `RuleEvaluationResult` in `relayx-android/src/main/java/com/parsomash/relayx/domain/model/RuleEvaluationResult.kt`
+- [x] T004 Define `RegexValidator` utility with syntax validation and group extraction in `relayx-android/src/main/java/com/parsomash/relayx/domain/engine/RegexValidator.kt`
 
 ---
 
@@ -22,12 +22,12 @@
 
 **Purpose**: Establish database tables, DAO, repository, and migration before user stories execute.
 
-- [ ] T005 Create `RuleEntity` with composite index `[priority, enabled]` in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RuleEntity.kt`
-- [ ] T006 Create `RuleDao` with reactive flows and direct suspend queries in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RuleDao.kt`
-- [ ] T007 Define `RuleRepository` domain interface in `relayx-android/src/main/java/com/parsomash/relayx/domain/repository/RuleRepository.kt`
-- [ ] T008 Implement `RuleRepositoryImpl` with default starter rule seeding in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RuleRepositoryImpl.kt`
-- [ ] T009 Update `RelayDatabase.kt` to version 2, add `RuleEntity::class`, and implement `MIGRATION_1_2` in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RelayDatabase.kt`
-- [ ] T010 Update `AppModule.kt` to bind `RuleDao` and `RuleRepository` in `relayx-android/src/main/java/com/parsomash/relayx/di/AppModule.kt`
+- [x] T005 Create `RuleEntity` with composite index `[priority, enabled]` in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RuleEntity.kt`
+- [x] T006 Create `RuleDao` with reactive flows and direct suspend queries in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RuleDao.kt`
+- [x] T007 Define `RuleRepository` domain interface in `relayx-android/src/main/java/com/parsomash/relayx/domain/repository/RuleRepository.kt`
+- [x] T008 Implement `RuleRepositoryImpl` with default starter rule seeding in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RuleRepositoryImpl.kt`
+- [x] T009 Update `RelayDatabase.kt` to version 2, add `RuleEntity::class`, and implement `MIGRATION_1_2` in `relayx-android/src/main/java/com/parsomash/relayx/data/local/RelayDatabase.kt`
+- [x] T010 Update `AppModule.kt` to bind `RuleDao` and `RuleRepository` in `relayx-android/src/main/java/com/parsomash/relayx/di/AppModule.kt`
 
 ---
 
@@ -38,12 +38,12 @@
 **Independent Test**: Inject a test message from an unmatched sender and verify that it is saved in Room with `status = FILTERED` without triggering network dispatch.
 
 ### Tests for User Story 1
-- [ ] T011 [P] [US1] Unit test `RuleEngineTest` verifying exact, prefix, regex matching and default `DROP` fallback in `relayx-android/src/test/java/com/parsomash/relayx/domain/engine/RuleEngineTest.kt`
+- [x] T011 [P] [US1] Unit test `RuleEngineTest` verifying exact, prefix, regex matching and default `DROP` fallback in `relayx-android/src/test/java/com/parsomash/relayx/domain/engine/RuleEngineTest.kt`
 
 ### Implementation for User Story 1
-- [ ] T012 [US1] Implement `RuleEngine` interface and `RuleEngineImpl` matching logic in `relayx-android/src/main/java/com/parsomash/relayx/domain/engine/RuleEngine.kt`
-- [ ] T013 [US1] Integrate `RuleEngine` into `IngestSmsUseCase.kt` to evaluate rules, mark dropped messages as `FILTERED`, and prevent WorkManager dispatch in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/IngestSmsUseCase.kt`
-- [ ] T014 [US1] Unit test `IngestSmsUseCaseTest` verifying `FILTERED` status and outbox behavior in `relayx-android/src/test/java/com/parsomash/relayx/domain/usecase/IngestSmsUseCaseTest.kt`
+- [x] T012 [US1] Implement `RuleEngine` interface and `RuleEngineImpl` matching logic in `relayx-android/src/main/java/com/parsomash/relayx/domain/engine/RuleEngine.kt`
+- [x] T013 [US1] Integrate `RuleEngine` into `IngestSmsUseCase.kt` to evaluate rules, mark dropped messages as `FILTERED`, and prevent WorkManager dispatch in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/IngestSmsUseCase.kt`
+- [x] T014 [US1] Unit test `IngestSmsUseCaseTest` verifying `FILTERED` status and outbox behavior in `relayx-android/src/test/java/com/parsomash/relayx/domain/usecase/IngestSmsUseCaseTest.kt`
 
 **Checkpoint**: User Story 1 complete — on-device pre-filtering active with secure `DROP` default.
 
@@ -56,11 +56,11 @@
 **Independent Test**: Configure a regex rule `code is (\d{6})` with `FORWARD_TRANSFORMED`. Verify `transformedBody` contains the 6-digit code and the network dispatcher sends only the transformed text.
 
 ### Tests for User Story 2
-- [ ] T015 [P] [US2] Unit test regex extraction, capture group fallback, and transform policies in `relayx-android/src/test/java/com/parsomash/relayx/domain/engine/RegexTransformationTest.kt`
+- [x] T015 [P] [US2] Unit test regex extraction, capture group fallback, and transform policies in `relayx-android/src/test/java/com/parsomash/relayx/domain/engine/RegexTransformationTest.kt`
 
 ### Implementation for User Story 2
-- [ ] T016 [US2] Add regex transformation group extraction logic in `relayx-android/src/main/java/com/parsomash/relayx/domain/engine/RuleEngine.kt`
-- [ ] T017 [US2] Update `MessageDispatchWorker` to prefer `transformedBody` over `rawBody` when dispatching `POST /api/v1/messages` in `relayx-android/src/main/java/com/parsomash/relayx/data/worker/MessageDispatchWorker.kt`
+- [x] T016 [US2] Add regex transformation group extraction logic in `relayx-android/src/main/java/com/parsomash/relayx/domain/engine/RuleEngine.kt`
+- [x] T017 [US2] Update `MessageDispatchWorker` to prefer `transformedBody` over `rawBody` when dispatching `POST /api/v1/messages` in `relayx-android/src/main/java/com/parsomash/relayx/data/worker/MessageDispatchWorker.kt`
 
 **Checkpoint**: User Story 2 complete — data minimization via regex transformation active.
 
@@ -73,11 +73,11 @@
 **Independent Test**: Create two conflicting rules with different priorities and verify the higher-priority rule matches first.
 
 ### Tests for User Story 3
-- [ ] T018 [P] [US3] Unit test Room DAO queries, ordering, and default rule seeding in `relayx-android/src/test/java/com/parsomash/relayx/data/local/RuleDaoTest.kt`
+- [x] T018 [P] [US3] Unit test Room DAO queries, ordering, and default rule seeding in `relayx-android/src/test/java/com/parsomash/relayx/data/local/RuleDaoTest.kt`
 
 ### Implementation for User Story 3
-- [ ] T019 [US3] Implement `GetRulesUseCase`, `SaveRuleUseCase`, and `DeleteRuleUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/RuleUseCases.kt`
-- [ ] T020 [US3] Wire priority reordering logic in `RuleRepositoryImpl.kt`
+- [x] T019 [US3] Implement `GetRulesUseCase`, `SaveRuleUseCase`, and `DeleteRuleUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/RuleUseCases.kt`
+- [x] T020 [US3] Wire priority reordering logic in `RuleRepositoryImpl.kt`
 
 **Checkpoint**: User Story 3 complete — Room storage and priority execution validated.
 
@@ -90,12 +90,12 @@
 **Independent Test**: Open the Rules screen, tap "+ Add Rule", create a rule, toggle it off, and verify the Dashboard active rules count updates reactively.
 
 ### Implementation for User Story 4
-- [ ] T021 [P] [US4] Add `AppRoute.Rules` to `RelayNavGraph.kt` and integrate into bottom navigation items in `relayx-android/src/main/java/com/parsomash/relayx/ui/navigation/RelayNavGraph.kt`
-- [ ] T022 [P] [US4] Create `RuleItemCard` with priority pill, sender badge, action tag, and enable/disable switch in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/components/RuleItemCard.kt`
-- [ ] T023 [P] [US4] Create `RuleEditDialog` modal with live regex validation in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/components/RuleEditDialog.kt`
-- [ ] T024 [US4] Create `RulesViewModel` managing `RulesUiState` and `RulesUiEvent` in `relayx-android/src/main/java/com/parsomash/relayx/viewmodel/RulesViewModel.kt`
-- [ ] T025 [US4] Create `RulesScreen` composing rule list, empty states, and add rule action in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/RulesScreen.kt`
-- [ ] T026 [US4] Connect `activeRulesCount` in `DashboardViewModel` to `RuleRepository.getActiveRulesCount()` in `relayx-android/src/main/java/com/parsomash/relayx/viewmodel/DashboardViewModel.kt`
+- [x] T021 [P] [US4] Add `AppRoute.Rules` to `RelayNavGraph.kt` and integrate into bottom navigation items in `relayx-android/src/main/java/com/parsomash/relayx/ui/navigation/RelayNavGraph.kt`
+- [x] T022 [P] [US4] Create `RuleItemCard` with priority pill, sender badge, action tag, and enable/disable switch in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/components/RuleItemCard.kt`
+- [x] T023 [P] [US4] Create `RuleEditDialog` modal with live regex validation in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/components/RuleEditDialog.kt`
+- [x] T024 [US4] Create `RulesViewModel` managing `RulesUiState` and `RulesUiEvent` in `relayx-android/src/main/java/com/parsomash/relayx/viewmodel/RulesViewModel.kt`
+- [x] T025 [US4] Create `RulesScreen` composing rule list, empty states, and add rule action in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/RulesScreen.kt`
+- [x] T026 [US4] Connect `activeRulesCount` in `DashboardViewModel` to `RuleRepository.getActiveRulesCount()` in `relayx-android/src/main/java/com/parsomash/relayx/viewmodel/DashboardViewModel.kt`
 
 **Checkpoint**: User Story 4 complete — complete visual rule management interface live.
 
@@ -108,9 +108,9 @@
 **Independent Test**: Enter sample sender `"BANK"` and body `"OTP: 123456"`, tap "Test Rules", and verify the UI shows match details and extracted code.
 
 ### Implementation for User Story 5
-- [ ] T027 [P] [US5] Implement `TestRulesUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/TestRulesUseCase.kt`
-- [ ] T028 [US5] Create `RuleSandboxCard` with sample inputs and live match preview in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/components/RuleSandboxCard.kt`
-- [ ] T029 [US5] Integrate `RuleSandboxCard` into `RulesScreen.kt` and wire test events to `RulesViewModel` in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/RulesScreen.kt`
+- [x] T027 [P] [US5] Implement `TestRulesUseCase` in `relayx-android/src/main/java/com/parsomash/relayx/domain/usecase/TestRulesUseCase.kt`
+- [x] T028 [US5] Create `RuleSandboxCard` with sample inputs and live match preview in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/components/RuleSandboxCard.kt`
+- [x] T029 [US5] Integrate `RuleSandboxCard` into `RulesScreen.kt` and wire test events to `RulesViewModel` in `relayx-android/src/main/java/com/parsomash/relayx/ui/rules/RulesScreen.kt`
 
 **Checkpoint**: User Story 5 complete — interactive rule testing sandbox functional.
 
@@ -120,10 +120,10 @@
 
 **Purpose**: Cross-cutting verification, string resources, and regression testing.
 
-- [ ] T030 [P] Add string resources for Rules screen, actions, match types, and sandbox in `relayx-android/src/main/res/values/strings.xml`
-- [ ] T031 [P] Ensure zero sensitive logging in rule execution and regex extraction via `RelayLogger` in `relayx-android/src/main/java/com/parsomash/relayx/domain/engine/RuleEngine.kt`
-- [ ] T032 Run full test suite `./gradlew test` and verify zero regressions across all Android modules
-- [ ] T033 Validate quickstart scenarios via `./gradlew assembleDebug`
+- [x] T030 [P] Add string resources for Rules screen, actions, match types, and sandbox in `relayx-android/src/main/res/values/strings.xml`
+- [x] T031 [P] Ensure zero sensitive logging in rule execution and regex extraction via `RelayLogger` in `relayx-android/src/main/java/com/parsomash/relayx/domain/engine/RuleEngine.kt`
+- [x] T032 Run full test suite `./gradlew test` and verify zero regressions across all Android modules
+- [x] T033 Validate quickstart scenarios via `./gradlew assembleDebug`
 
 ---
 

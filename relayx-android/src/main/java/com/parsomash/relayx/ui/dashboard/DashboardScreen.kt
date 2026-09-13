@@ -53,6 +53,7 @@ fun DashboardScreen(
     onRequestPermissions: () -> Unit,
     modifier: Modifier = Modifier,
     onNavigateToMessageList: (filter: String) -> Unit = {},
+    onNavigateToRules: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -170,6 +171,7 @@ fun DashboardScreen(
                 title = stringResource(R.string.rules_title),
                 value = stringResource(R.string.active_rules, state.activeRulesCount),
                 icon = Icons.Default.FilterAlt,
+                onClick = onNavigateToRules,
                 modifier = Modifier.weight(1f)
             )
         }

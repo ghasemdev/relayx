@@ -5,7 +5,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.parsomash.relayx.data.local.OutboxMessageDao
 import com.parsomash.relayx.data.local.RelayDatabase
+import com.parsomash.relayx.data.local.RuleDao
+import com.parsomash.relayx.data.local.RuleRepositoryImpl
 import com.parsomash.relayx.data.local.provideDataStore
+import com.parsomash.relayx.domain.repository.RuleRepository
 import com.parsomash.relayx.util.AppDispatchers
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.KoinApplication
@@ -24,6 +27,12 @@ class AppModule {
 
     @Single
     fun provideOutboxDao(database: RelayDatabase): OutboxMessageDao = database.outboxMessageDao()
+
+    @Single
+    fun provideRuleDao(database: RelayDatabase): RuleDao = database.ruleDao()
+
+    @Single
+    fun provideRuleRepository(impl: RuleRepositoryImpl): RuleRepository = impl
 
     @Single
     fun provideDataStorePreferences(

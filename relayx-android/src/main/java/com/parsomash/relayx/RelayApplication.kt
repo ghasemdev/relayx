@@ -6,6 +6,9 @@ import android.app.Application
 import com.parsomash.relayx.data.local.PreferencesRepository
 import com.parsomash.relayx.data.local.RelayDatabase
 import com.parsomash.relayx.di.RelayApp
+import com.parsomash.relayx.domain.engine.RuleEngine
+import com.parsomash.relayx.domain.repository.RuleRepository
+import com.parsomash.relayx.domain.usecase.IngestSmsUseCase
 import com.parsomash.relayx.ui.navigation.navigationModule
 import com.parsomash.relayx.util.RelayLogger
 import org.koin.android.ext.android.inject
@@ -20,6 +23,9 @@ class RelayApplication : Application(), KoinStartup {
 
     val database: RelayDatabase by inject()
     val preferencesRepository: PreferencesRepository by inject()
+    val ruleRepository: RuleRepository by inject()
+    val ruleEngine: RuleEngine by inject()
+    val ingestSmsUseCase: IngestSmsUseCase by inject()
 
     override fun onKoinStartup(): KoinConfiguration = koinConfiguration<RelayApp> {
         androidLogger()

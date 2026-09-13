@@ -7,6 +7,7 @@ import com.parsomash.relayx.data.local.PreferencesRepository
 import com.parsomash.relayx.domain.model.GatewayStats
 import com.parsomash.relayx.domain.model.MessageDetail
 import com.parsomash.relayx.domain.model.toDetail
+import com.parsomash.relayx.domain.usecase.GetActiveRulesCountUseCase
 import com.parsomash.relayx.domain.usecase.GetGatewayStatsUseCase
 import com.parsomash.relayx.domain.usecase.ToggleForwardingUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,7 @@ data class DashboardUiState(
     val stats: GatewayStats = GatewayStats(),
     val serverHost: String = "10.0.2.2",
     val serverPort: Int = 8080,
-    val activeRulesCount: Int = 1, // Default passthrough rule in Phase 2
+    val activeRulesCount: Int = 0,
     val hasSmsPermission: Boolean = false,
     val latestMessage: MessageDetail? = null,
     val isShowingDetailSheet: Boolean = false,
@@ -34,6 +35,7 @@ class DashboardViewModel(
     private val toggleForwardingUseCase: ToggleForwardingUseCase,
     private val outboxMessageDao: OutboxMessageDao,
     getGatewayStatsUseCase: GetGatewayStatsUseCase,
+    getActiveRulesCountUseCase: GetActiveRulesCountUseCase,
     preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
 
@@ -56,6 +58,12 @@ class DashboardViewModel(
         getGatewayStatsUseCase()
             .onEach { stats ->
                 uiState.update { it.copy(stats = stats) }
+            }
+            .launchIn(viewModelScope)
+
+        getActiveRulesCountUseCase()
+            .onEach { count ->
+                uiState.update { it.copy(activeRulesCount = count) }
             }
             .launchIn(viewModelScope)
 

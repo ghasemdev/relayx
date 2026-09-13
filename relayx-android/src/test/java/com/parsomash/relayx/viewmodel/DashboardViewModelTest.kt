@@ -1,8 +1,10 @@
 package com.parsomash.relayx.viewmodel
 
 import com.parsomash.relayx.data.local.FakeOutboxMessageDao
+import com.parsomash.relayx.data.local.FakeRuleDao
 import com.parsomash.relayx.data.local.OutboxMessageEntity
 import com.parsomash.relayx.data.local.PreferencesRepository
+import com.parsomash.relayx.data.local.RuleRepositoryImpl
 import com.parsomash.relayx.domain.usecase.GetGatewayStatsUseCase
 import com.parsomash.relayx.domain.usecase.ToggleForwardingUseCase
 import kotlinx.coroutines.Dispatchers
@@ -47,9 +49,20 @@ class DashboardViewModelTest {
 
         val statsUseCase = GetGatewayStatsUseCase(dao)
         val toggleUseCase = ToggleForwardingUseCase(prefsRepo)
+        val ruleDao = FakeRuleDao()
+        val ruleRepo = RuleRepositoryImpl(
+            ruleDao,
+            com.parsomash.relayx.util.AppDispatchers(
+                main = testDispatcher,
+                io = testDispatcher,
+                default = testDispatcher
+            )
+        )
+        val activeRulesCountUseCase = com.parsomash.relayx.domain.usecase.GetActiveRulesCountUseCase(ruleRepo)
 
         viewModel = DashboardViewModel(
             getGatewayStatsUseCase = statsUseCase,
+            getActiveRulesCountUseCase = activeRulesCountUseCase,
             toggleForwardingUseCase = toggleUseCase,
             preferencesRepository = prefsRepo,
             outboxMessageDao = dao
