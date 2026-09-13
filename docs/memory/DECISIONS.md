@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-Last reviewed: 2026-09-13
+Last reviewed: 2026-09-14
 
 ## ADR Index
 
@@ -20,6 +20,7 @@ Last reviewed: 2026-09-13
 | [ADR-012](#adr-012-navigation-3-edge-to-edge-scaffolding-with-animated-global-chrome) | Navigation 3 Edge-to-Edge Scaffolding with Animated Global Chrome | Accepted | 2026-09-13 |
 | [ADR-013](#adr-013-reactive-state-synchronization-for-collapsible-headers-with-directional-scroll-reset) | Reactive State Synchronization for Collapsible Headers with Directional Scroll Reset | Accepted | 2026-09-13 |
 | [ADR-014](#adr-014-embedded-static-web-dashboard-with-downstream-log-redaction-and-non-blocking-sse-fan-out) | Embedded Static Web Dashboard with Downstream Log Redaction & Non-Blocking SSE Fan-Out | Accepted | 2026-09-13 |
+| [ADR-015](#adr-015-deterministic-client-side-rule-engine-with-fail-closed-default-drop-and-data-minimization) | Deterministic Client-Side Rule Engine with Fail-Closed Default-DROP and Data Minimization | Accepted | 2026-09-14 |
 
 ---
 
@@ -142,5 +143,14 @@ Last reviewed: 2026-09-13
   - Positive: Slow browser tabs or network hiccups cannot block ingestion throughput or cause unbounded memory growth.
   - Tradeoff: In-memory log buffer retains only the most recent 500 records across server restarts.
 
-
-
+### ADR-015: Deterministic Client-Side Rule Engine with Fail-Closed Default-DROP and Data Minimization
+- **Context**: Under Constitution Principle IV, incoming SMS messages on Android must be intercepted and evaluated locally before any network dispatch worker is scheduled. Unmatched personal SMS, spam, and unapproved bank notifications must never leak beyond the phone boundary. Furthermore, automation agents only require the OTP verification code rather than full sensitive message bodies.
+- **Decision**:
+  1. Implement a pure domain `RuleEngine` executing rules queried deterministically from Room with `ORDER BY priority ASC, id ASC`.
+  2. Enforce a fail-closed default `DROP` policy (`OutboxStatus.FILTERED`) when no active rule matches or rules table is empty. Filtered messages are stored locally in Room for auditability with zero WorkManager dispatch tasks scheduled.
+  3. Support `FORWARD_TRANSFORMED` using regex capture groups (`group(1)` or full match). When matched, the extracted token replaces the body in `transformedBody`, and only the transformed payload is queued for server transmission.
+  4. Integrate rule evaluation directly into `IngestSmsUseCase`, ensuring identical privacy and filtering semantics across physical SIM SMS broadcasts (`SmsReceiver`) and Developer Tools Mock SMS.
+- **Consequences**:
+  - Positive: Guarantees zero personal SMS data egress to server or AI agents by default.
+  - Positive: Data minimization prevents sensitive PII surrounding OTP codes from traversing the network.
+  - Tradeoff: Requires local Room database migrations (`RuleEntity`, version 1 -> 2) and device CPU overhead for local regex evaluation.

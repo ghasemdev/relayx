@@ -1,12 +1,23 @@
 # Worklog
 
-Last reviewed: 2026-09-13
+Last reviewed: 2026-09-14
 
 This log captures high-level milestones and systemic architectural transitions for RelayX.
 
 ---
 
 ## Milestones & Architectural History
+
+### 2026-09-14: Phase 5 Android Rule & Filtering Engine Implemented, Hardened & Verified
+- **Objective**: Deliver client-side rule filtering engine, deterministic priority evaluation, default `DROP` privacy safeguard, regex transformation, interactive sandbox, and full dark theme support.
+- **Key Actions**:
+  - Implemented `RuleEngine` domain evaluator with deterministic `priority ASC, id ASC` ordering, safe regex compilation, and `FORWARD_RAW` / `FORWARD_TRANSFORMED` / `DROP` action policies.
+  - Upgraded Room database schema from version 1 to 2 with auto-migration and seeded starter 2FA OTP rule.
+  - Integrated rule evaluation into `IngestSmsUseCase`, ensuring raw SMS from `SmsReceiver` and Dev Tools Mock SMS are filtered before network queueing.
+  - Built `RulesScreen` with interactive `RuleSandboxCard` for instant rule simulation and execution trace.
+  - Built modal bottom sheet for rule configuration with single-row scrollable chips and scroll-responsive FAB animations.
+  - Added comprehensive Light/Dark/System Theme Mode configuration in Settings and synchronized edge-to-edge system bars.
+  - Achieved 100% test pass rate across 53 unit tests and verified 11 live E2E scenarios on Android emulator.
 
 ### 2026-09-13: Phase 3 Android Message Inspection & Detail Modal Implemented, Hardened & Verified
 - **Objective**: Deliver real-time message inspection, multi-state filtering, payload privacy controls, and idempotent retry dispatch.
