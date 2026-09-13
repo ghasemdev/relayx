@@ -127,4 +127,11 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+
+    <!-- Theme Settings -->
+    <string name="theme_setting_title">Theme Mode</string>
+    <string name="theme_setting_desc">Select your preferred app appearance</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
 </resources>

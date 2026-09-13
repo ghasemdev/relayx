@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.parsomash.relayx.domain.model.Rule
 import com.parsomash.relayx.domain.model.SenderMatchType
+import com.parsomash.relayx.ui.theme.isDarkThemeActive
 import com.parsomash.relayx.ui.theme.ruleActionContainerColor
 import com.parsomash.relayx.ui.theme.ruleActionTextColor
 
@@ -114,7 +115,7 @@ fun RuleItemCard(
                 Box(
                     modifier = Modifier
                         .background(
-                            color = ruleActionContainerColor(rule.action.name),
+                            color = ruleActionContainerColor(rule.action.name, isDarkThemeActive),
                             shape = RoundedCornerShape(6.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 3.dp)
@@ -123,7 +124,7 @@ fun RuleItemCard(
                         text = rule.action.name,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = ruleActionTextColor(rule.action.name)
+                        color = ruleActionTextColor(rule.action.name, isDarkThemeActive)
                     )
                 }
 

@@ -30,6 +30,7 @@ import com.parsomash.relayx.R
 import com.parsomash.relayx.domain.model.MessageListItem
 import com.parsomash.relayx.ui.theme.deliveryStatusContainerColor
 import com.parsomash.relayx.ui.theme.deliveryStatusTextColor
+import com.parsomash.relayx.ui.theme.isDarkThemeActive
 
 @Composable
 fun MessageItemCard(
@@ -82,7 +83,7 @@ fun MessageItemCard(
                     Box(
                         modifier = Modifier
                             .background(
-                                color = deliveryStatusContainerColor(item.status.name),
+                                color = deliveryStatusContainerColor(item.status.name, isDarkThemeActive),
                                 shape = RoundedCornerShape(6.dp)
                             )
                             .padding(horizontal = 8.dp, vertical = 3.dp)
@@ -91,7 +92,7 @@ fun MessageItemCard(
                             text = item.status.name,
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
-                            color = deliveryStatusTextColor(item.status.name)
+                            color = deliveryStatusTextColor(item.status.name, isDarkThemeActive)
                         )
                     }
 

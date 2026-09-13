@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.parsomash.relayx.R
 import com.parsomash.relayx.domain.model.RuleEvaluationResult
+import com.parsomash.relayx.ui.theme.isDarkThemeActive
 import com.parsomash.relayx.ui.theme.ruleActionContainerColor
 import com.parsomash.relayx.ui.theme.ruleActionTextColor
 
@@ -157,7 +158,7 @@ fun RuleSandboxCard(
                             Box(
                                 modifier = Modifier
                                     .background(
-                                        color = ruleActionContainerColor(res.action.name),
+                                        color = ruleActionContainerColor(res.action.name, isDarkThemeActive),
                                         shape = RoundedCornerShape(6.dp)
                                     )
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -166,7 +167,7 @@ fun RuleSandboxCard(
                                     text = res.action.name,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = ruleActionTextColor(res.action.name)
+                                    color = ruleActionTextColor(res.action.name, isDarkThemeActive)
                                 )
                             }
 

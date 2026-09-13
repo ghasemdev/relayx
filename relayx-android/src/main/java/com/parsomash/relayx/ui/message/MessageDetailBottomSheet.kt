@@ -56,6 +56,7 @@ import com.parsomash.relayx.R
 import com.parsomash.relayx.domain.model.MessageDetail
 import com.parsomash.relayx.ui.theme.deliveryStatusContainerColor
 import com.parsomash.relayx.ui.theme.deliveryStatusTextColor
+import com.parsomash.relayx.ui.theme.isDarkThemeActive
 import kotlinx.coroutines.launch
 
 @Composable
@@ -101,7 +102,7 @@ fun MessageDetailBottomSheet(
                 Box(
                     modifier = Modifier
                         .background(
-                            color = deliveryStatusContainerColor(detail.status.name),
+                            color = deliveryStatusContainerColor(detail.status.name, isDarkThemeActive),
                             shape = RoundedCornerShape(8.dp)
                         )
                         .padding(horizontal = 10.dp, vertical = 5.dp)
@@ -110,7 +111,7 @@ fun MessageDetailBottomSheet(
                         text = detail.status.name,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = deliveryStatusTextColor(detail.status.name)
+                        color = deliveryStatusTextColor(detail.status.name, isDarkThemeActive)
                     )
                 }
             }
