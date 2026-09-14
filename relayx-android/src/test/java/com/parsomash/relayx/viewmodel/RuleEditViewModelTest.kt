@@ -118,7 +118,8 @@ class RuleEditViewModelTest {
     viewModel.loadRule(null)
     advanceUntilIdle()
 
-    assertEquals(listOf("982000123"), viewModel.uiState.value.availableSenders)
+    assertEquals(listOf("982000123"), viewModel.uiState.value.availableSenders.map { it.address })
+    assertEquals("Code: 1234", viewModel.uiState.value.availableSenders.first().snippet)
 
     viewModel.onSenderSelected("982000123")
     assertEquals("982000123", viewModel.uiState.value.senderPattern)
@@ -151,10 +152,14 @@ class RuleEditViewModelTest {
     assertEquals(2, viewModel.uiState.value.availableSenders.size)
 
     viewModel.onSenderSearchQueryChanged("bank")
-    assertEquals(listOf("BANK-XYZ"), viewModel.uiState.value.filteredSenders)
+    assertEquals(listOf("BANK-XYZ"), viewModel.uiState.value.filteredSenders.map { it.address })
 
     viewModel.onSenderSearchQueryChanged("goo")
-    assertEquals(listOf("GOOGLE"), viewModel.uiState.value.filteredSenders)
+    assertEquals(listOf("GOOGLE"), viewModel.uiState.value.filteredSenders.map { it.address })
+
+    // Also verify searching by message snippet
+    viewModel.onSenderSearchQueryChanged("Body 1")
+    assertEquals(listOf("BANK-XYZ"), viewModel.uiState.value.filteredSenders.map { it.address })
   }
 
   @Test

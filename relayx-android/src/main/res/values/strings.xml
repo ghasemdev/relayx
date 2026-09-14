@@ -103,7 +103,8 @@
     <string name="action_drop">Drop Message (Local Only)</string>
     <string name="transform_pattern_label">Transform Regex (Extraction)</string>
     <string name="transform_pattern_placeholder">e.g. \\b(\\d{4,8})\\b</string>
-    <string name="priority_label">Priority (Lower runs first)</string>
+    <string name="priority_label">Priority</string>
+    <string name="priority_helper">Lower runs first</string>
     <string name="priority_placeholder">100</string>
     <string name="rule_enabled_label">Rule Enabled</string>
     <string name="regex_valid">Valid regular expression</string>

@@ -10,18 +10,33 @@ import com.parsomash.relayx.util.AppDispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Factory
 
+data class SmsSenderInfo(
+    val address: String,
+    val snippet: String? = null,
+    val timestamp: Long = 0L
+)
+
 @Factory
 class GetSmsSendersUseCase(
     private val context: Context? = null,
     private val outboxDao: OutboxMessageDao,
     private val dispatchers: AppDispatchers = AppDispatchers()
 ) {
-    suspend operator fun invoke(): List<String> = withContext(dispatchers.io) {
-        val senders = linkedSetOf<String>()
+    suspend operator fun invoke(): List<SmsSenderInfo> = withContext(dispatchers.io) {
+        val sendersMap = linkedMapOf<String, SmsSenderInfo>()
 
-        // 1. Fetch distinct senders from local outbox table
+        // 1. Fetch distinct senders and latest snippet from local outbox table
         try {
-            senders.addAll(outboxDao.getDistinctSenders())
+            val outboxSummaries = outboxDao.getSenderSummaries()
+            for (summary in outboxSummaries) {
+                if (summary.sender.isNotBlank()) {
+                    sendersMap[summary.sender] = SmsSenderInfo(
+                        address = summary.sender,
+                        snippet = summary.snippet,
+                        timestamp = summary.receivedAt
+                    )
+                }
+            }
         } catch (_: Exception) {
         }
 
@@ -31,18 +46,27 @@ class GetSmsSendersUseCase(
             try {
                 val cursor = ctx.contentResolver.query(
                     Telephony.Sms.Inbox.CONTENT_URI,
-                    arrayOf(Telephony.Sms.ADDRESS),
+                    arrayOf(Telephony.Sms.ADDRESS, Telephony.Sms.BODY, Telephony.Sms.DATE),
                     null,
                     null,
                     "${Telephony.Sms.DATE} DESC"
                 )
                 cursor?.use {
                     val addressIndex = it.getColumnIndex(Telephony.Sms.ADDRESS)
-                    while (it.moveToNext() && senders.size < 200) {
+                    val bodyIndex = it.getColumnIndex(Telephony.Sms.BODY)
+                    val dateIndex = it.getColumnIndex(Telephony.Sms.DATE)
+
+                    while (it.moveToNext() && sendersMap.size < 200) {
                         if (addressIndex != -1) {
                             val addr = it.getString(addressIndex)?.trim()
-                            if (!addr.isNullOrBlank()) {
-                                senders.add(addr)
+                            if (!addr.isNullOrBlank() && !sendersMap.containsKey(addr)) {
+                                val body = if (bodyIndex != -1) it.getString(bodyIndex)?.trim() else null
+                                val date = if (dateIndex != -1) it.getLong(dateIndex) else 0L
+                                sendersMap[addr] = SmsSenderInfo(
+                                    address = addr,
+                                    snippet = body,
+                                    timestamp = date
+                                )
                             }
                         }
                     }
@@ -51,6 +75,6 @@ class GetSmsSendersUseCase(
             }
         }
 
-        senders.toList()
+        sendersMap.values.sortedByDescending { it.timestamp }
     }
 }

@@ -61,6 +61,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.parsomash.relayx.R
@@ -155,6 +156,7 @@ fun RuleEditScreen(
               viewModel.onPriorityChanged(num)
             },
             label = { Text(stringResource(R.string.priority_label)) },
+            supportingText = { Text(stringResource(R.string.priority_helper)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.weight(1f)
@@ -209,57 +211,28 @@ fun RuleEditScreen(
 
         // Sender Pattern (hidden if ANY)
         if (state.senderMatchType != SenderMatchType.ANY) {
-          Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(
-              value = state.senderPattern,
-              onValueChange = viewModel::onSenderPatternChanged,
-              label = { Text(stringResource(R.string.sender_pattern_label)) },
-              placeholder = { Text(stringResource(R.string.sender_pattern_placeholder)) },
-              singleLine = true,
-              trailingIcon = if (state.senderMatchType == SenderMatchType.EXACT) {
-                {
-                  IconButton(onClick = {
-                    viewModel.loadSenders()
-                    showSenderSheet = true
-                  }) {
-                    Icon(
-                      imageVector = Icons.Default.Contacts,
-                      contentDescription = stringResource(R.string.select_sender_from_sms),
-                      tint = MaterialTheme.colorScheme.primary
-                    )
-                  }
-                }
-              } else null,
-              modifier = Modifier.fillMaxWidth()
-            )
-
-            // When EXACT match, offer quick bottom-sheet picker button
-            if (state.senderMatchType == SenderMatchType.EXACT) {
-              Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-              ) {
-                OutlinedButton(
-                  onClick = {
-                    viewModel.loadSenders()
-                    showSenderSheet = true
-                  },
-                  contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                ) {
+          OutlinedTextField(
+            value = state.senderPattern,
+            onValueChange = viewModel::onSenderPatternChanged,
+            label = { Text(stringResource(R.string.sender_pattern_label)) },
+            placeholder = { Text(stringResource(R.string.sender_pattern_placeholder)) },
+            singleLine = true,
+            trailingIcon = if (state.senderMatchType == SenderMatchType.EXACT) {
+              {
+                IconButton(onClick = {
+                  viewModel.loadSenders()
+                  showSenderSheet = true
+                }) {
                   Icon(
                     imageVector = Icons.Default.Inbox,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
-                  )
-                  Spacer(Modifier.width(6.dp))
-                  Text(
-                    text = stringResource(R.string.select_sender_from_sms),
-                    style = MaterialTheme.typography.labelMedium
+                    contentDescription = stringResource(R.string.select_sender_from_sms),
+                    tint = MaterialTheme.colorScheme.primary
                   )
                 }
               }
-            }
-          }
+            } else null,
+            modifier = Modifier.fillMaxWidth()
+          )
         }
 
         HorizontalDivider()
@@ -345,17 +318,6 @@ fun RuleEditScreen(
           )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Bottom Save Button
-        Button(
-          onClick = { viewModel.saveRule(onNavigateBack) },
-          enabled = state.isFormValid && !state.isLoading,
-          modifier = Modifier.fillMaxWidth()
-        ) {
-          Text(stringResource(R.string.save))
-        }
-
         // Error message
         state.errorMessage?.let { error ->
           Text(
@@ -382,20 +344,11 @@ fun RuleEditScreen(
           .padding(bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
       ) {
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically
-        ) {
-          Text(
-            text = stringResource(R.string.select_sender_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-          )
-          IconButton(onClick = { showSenderSheet = false }) {
-            Icon(imageVector = Icons.Default.Clear, contentDescription = null)
-          }
-        }
+        Text(
+          text = stringResource(R.string.select_sender_title),
+          style = MaterialTheme.typography.titleLarge,
+          fontWeight = FontWeight.Bold
+        )
 
         // Search field
         OutlinedTextField(
@@ -449,14 +402,14 @@ fun RuleEditScreen(
               .heightIn(max = 360.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
           ) {
-            items(state.filteredSenders, key = { it }) { sender ->
-              val isSelected = state.senderPattern == sender
+            items(state.filteredSenders, key = { it.address }) { sender ->
+              val isSelected = state.senderPattern == sender.address
               Row(
                 modifier = Modifier
                   .fillMaxWidth()
                   .clip(RoundedCornerShape(8.dp))
                   .clickable {
-                    viewModel.onSenderSelected(sender)
+                    viewModel.onSenderSelected(sender.address)
                     showSenderSheet = false
                   }
                   .padding(horizontal = 12.dp, vertical = 12.dp),
@@ -482,12 +435,27 @@ fun RuleEditScreen(
                   )
                 }
 
-                Text(
-                  text = sender,
-                  style = MaterialTheme.typography.bodyLarge,
-                  fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                  modifier = Modifier.weight(1f)
-                )
+                Column(
+                  modifier = Modifier.weight(1f),
+                  verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                  Text(
+                    text = sender.address,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                  )
+                  if (!sender.snippet.isNullOrBlank()) {
+                    Text(
+                      text = sender.snippet,
+                      style = MaterialTheme.typography.bodySmall,
+                      color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis
+                    )
+                  }
+                }
 
                 if (isSelected) {
                   Icon(

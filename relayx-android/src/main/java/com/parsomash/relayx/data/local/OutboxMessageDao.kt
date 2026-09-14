@@ -1,5 +1,6 @@
 package com.parsomash.relayx.data.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -57,4 +58,13 @@ interface OutboxMessageDao {
 
     @Query("SELECT sender FROM outbox_messages GROUP BY sender ORDER BY MAX(received_at) DESC")
     suspend fun getDistinctSenders(): List<String>
+
+    @Query("SELECT sender, raw_body, MAX(received_at) as max_received_at FROM outbox_messages GROUP BY sender ORDER BY max_received_at DESC")
+    suspend fun getSenderSummaries(): List<OutboxSenderSummary>
 }
+
+data class OutboxSenderSummary(
+    val sender: String,
+    @ColumnInfo(name = "raw_body") val snippet: String = "",
+    @ColumnInfo(name = "max_received_at") val receivedAt: Long = 0L
+)

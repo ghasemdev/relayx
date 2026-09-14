@@ -9,6 +9,7 @@ import com.parsomash.relayx.domain.model.SenderMatchType
 import com.parsomash.relayx.domain.usecase.GetRuleByIdUseCase
 import com.parsomash.relayx.domain.usecase.GetSmsSendersUseCase
 import com.parsomash.relayx.domain.usecase.SaveRuleUseCase
+import com.parsomash.relayx.domain.usecase.SmsSenderInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -33,7 +34,7 @@ data class RuleEditUiState(
     val errorMessage: String? = null,
 
     // SMS Senders Bottom Sheet state
-    val availableSenders: List<String> = emptyList(),
+    val availableSenders: List<SmsSenderInfo> = emptyList(),
     val isLoadingSenders: Boolean = false,
     val senderSearchQuery: String = ""
 ) {
@@ -54,11 +55,14 @@ data class RuleEditUiState(
             (action != RuleAction.FORWARD_TRANSFORMED || transformPattern.isNotBlank()) &&
             (senderMatchType == SenderMatchType.ANY || senderPattern.isNotBlank())
 
-    val filteredSenders: List<String>
+    val filteredSenders: List<SmsSenderInfo>
         get() = if (senderSearchQuery.isBlank()) {
             availableSenders
         } else {
-            availableSenders.filter { it.contains(senderSearchQuery, ignoreCase = true) }
+            availableSenders.filter {
+                it.address.contains(senderSearchQuery, ignoreCase = true) ||
+                    (!it.snippet.isNullOrBlank() && it.snippet.contains(senderSearchQuery, ignoreCase = true))
+            }
         }
 }
 

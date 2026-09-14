@@ -89,4 +89,18 @@ class FakeOutboxMessageDao : OutboxMessageDao {
             .map { it.sender }
             .distinct()
     }
+
+    override suspend fun getSenderSummaries(): List<OutboxSenderSummary> {
+        return messages.value.values
+            .groupBy { it.sender }
+            .map { (sender, msgs) ->
+                val latest = msgs.maxByOrNull { it.receivedAt }!!
+                OutboxSenderSummary(
+                    sender = sender,
+                    snippet = latest.rawBody,
+                    receivedAt = latest.receivedAt
+                )
+            }
+            .sortedByDescending { it.receivedAt }
+    }
 }
