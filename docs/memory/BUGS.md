@@ -67,3 +67,8 @@ This document tracks identified failure modes, architectural edge cases, and reg
 - **Symptom**: Toggling between Light, Dark, or System theme dynamically in Settings leaves the status bar or navigation bar icons invisible (e.g. white icons against light backgrounds or dark icons against dark backgrounds) until app restart.
 - **Root Cause**: Window insets controller properties (`isAppearanceLightStatusBars`, `isAppearanceLightNavigationBars`) set statically during activity initialization rather than reactively responding to Compose theme state.
 - **Prevention**: Enforce a reactive `SideEffect` inside the root `RelayxTheme` composable that queries the active `darkTheme` boolean and explicitly synchronizes `WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme` and `isAppearanceLightNavigationBars = !darkTheme`.
+
+### 13. Context Cancellation of Asynchronous MCP Tool Goroutines Upon HTTP 202 Return
+- **Symptom**: Blocking MCP tool calls (`wait_for_message`, `get_otp`) executed over HTTP/SSE transport fail immediately or return context errors (`context canceled`) before the target message arrives.
+- **Root Cause**: Passing the incoming HTTP POST request's `r.Context()` to the background goroutine executing the tool. In Go's `net/http`, `r.Context()` is canceled as soon as the HTTP 202 Accepted response is written and the handler returns.
+- **Prevention**: In asynchronous HTTP/SSE protocols where request acknowledgment and response delivery are decoupled, long-running tool execution contexts must be derived from the persistent `SSESession` context (`session.ctx`) which remains active for the full duration of the client connection. Use `r.Context()` solely for JSON parsing of the incoming POST body.

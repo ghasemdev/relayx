@@ -1,0 +1,3 @@
+event: endpoint
+data: /mcp/messages?sessionId=87fd44ad-77a4-4356-a352-5ed6bc5584d1
+

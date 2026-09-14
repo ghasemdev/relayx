@@ -1,12 +1,21 @@
 # Worklog
 
-Last reviewed: 2026-09-14
+Last reviewed: 2026-09-15
 
 This log captures high-level milestones and systemic architectural transitions for RelayX.
 
 ---
 
 ## Milestones & Architectural History
+
+### 2026-09-15: Phase 6 Model Context Protocol (MCP) Server Implemented, Hardened & Verified
+- **Objective**: Deliver embedded Model Context Protocol (MCP) server supporting stdio and HTTP/SSE transports, event-driven message wait broker, OTP extraction, security hardening, and end-to-end verification.
+- **Key Actions**:
+  - Implemented JSON-RPC 2.0 MCP server with 5 tools: `wait_for_message`, `get_otp`, `get_latest_message`, `get_messages`, and `search_messages`.
+  - Built zero-polling in-memory `EventBroker` (`broker.go`) with subscriber channels, regex filtering, and thread-safe broadcast on message ingestion.
+  - Implemented stdio transport (`relayx-server mcp`) for local agent CLI execution and HTTP/SSE transport (`GET /mcp/sse`, `POST /mcp/message`) for remote/daemon agent workflows.
+  - Conducted branch security review and completed remediations: enforced strict Origin header validation (`TASK-SEC-013`), auto-generated default secure MCP token (`TASK-SEC-014`), and decoupled tool context from ephemeral POST handlers (`TASK-SEC-015`).
+  - Achieved 100% automated test pass rate (48 Go server tests, 26 Android unit tests) and verified all 12 QA test cases across stdio and SSE modes (`qa-2026-09-15.md`).
 
 ### 2026-09-14: Phase 5 Android Rule & Filtering Engine Implemented, Hardened & Verified
 - **Objective**: Deliver client-side rule filtering engine, deterministic priority evaluation, default `DROP` privacy safeguard, regex transformation, interactive sandbox, and full dark theme support.

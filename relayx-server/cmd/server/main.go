@@ -114,6 +114,16 @@ func main() {
 		}
 	}
 
+	// Handle MCP token setup (Principle II: independent agent authentication domain)
+	if cfg.MCPToken == "" && !cfg.MCPStdio {
+		cfg.MCPToken = "rx-mcp-" + uuid.NewString()
+		fmt.Println("==================================================================")
+		fmt.Println(" [RelayX] Generated Initial AI Agent MCP Token:")
+		fmt.Printf("   Bearer %s\n", cfg.MCPToken)
+		fmt.Println(" Configure your AI coding agent (Cursor, Claude, Antigravity) with this Bearer token.")
+		fmt.Println("==================================================================")
+	}
+
 	server := api.NewServer(cfg, db)
 	messageHandler := api.NewMessageHandler(messageService)
 	healthHandler := api.NewHealthHandler(db, ServerVersion)
@@ -129,8 +139,8 @@ func main() {
 
 	// MCP Protocol Routes (SSE Transport)
 	sseHandler := mcp.NewSSEHandler(mcpServer, cfg.MCPToken, logger)
-	server.Mux().HandleFunc("GET /mcp/sse", sseHandler.HandleSSE)
-	server.Mux().HandleFunc("POST /mcp/messages", sseHandler.HandleMessages)
+	server.Mux().HandleFunc("/mcp/sse", sseHandler.HandleSSE)
+	server.Mux().HandleFunc("/mcp/messages", sseHandler.HandleMessages)
 
 	// Dashboard & Observability Routes
 	webAssets, err := web.Assets()

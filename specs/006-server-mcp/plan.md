@@ -33,7 +33,7 @@ Embed an official-compliant Model Context Protocol (MCP) server directly inside 
 | Principle | Check | Status | Notes |
 |:---|:---|:---|:---|
 | **P-01 (Zero-Infrastructure Server)** | Single self-contained Go binary; no Docker/Node/Python dependencies | **PASS** | Native Go JSON-RPC implementation without third-party runtimes. |
-| **P-02 (Separate Security Domains)** | Android write token != MCP read token; default bind `127.0.0.1` | **PASS** | Independent `--mcp-token` flag; write tokens rejected from MCP. |
+| **P-02 (Separate Security Domains)** | Android write token != MCP read token; default bind `127.0.0.1` | **PASS** | Independent `--mcp-token` flag; default auto-generated token on startup (`TASK-SEC-014`); CORS restricted to localhost/allowed origins (`TASK-SEC-013`). |
 | **P-03 (Strict Data Minimization)** | Standard and debug logs never record SMS bodies or OTP values | **PASS** | Redacting logger applied to all MCP requests and responses. |
 | **P-04 (Device-Side Pre-Filtering)** | Client rules evaluated on Android before server transmission | **PASS** | Server only holds pre-filtered SMS. |
 | **P-05 (Durable Delivery)** | Deduplication and SQLite WAL transactions preserved | **PASS** | Ingestion pipeline unchanged; broker taps into committed events. |
@@ -94,3 +94,11 @@ relayx-server/
 ## Complexity Tracking
 
 *No violations. Clean standard-library implementation with zero external runtime dependencies.*
+
+---
+
+## Security Hardening (Post-Review Decisions)
+
+- **CORS & Origin Isolation (`TASK-SEC-013`)**: Remove `Access-Control-Allow-Origin: *` on `/mcp/sse`; validate that `Origin` originates from localhost or configured client origin.
+- **Default Authentication Enforcement (`TASK-SEC-014`)**: Automatically generate `rx-mcp-<uuid>` if `--mcp-token` is unspecified at startup to guarantee remote/LAN bindings are authenticated by default.
+- **Session-Scoped Async Tool Execution (`TASK-SEC-015`)**: Ensure tool execution context inside asynchronous POST `/mcp/messages` goroutines is tied to the long-lived SSE session lifecycle rather than ephemeral HTTP request context.

@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-Last reviewed: 2026-09-14
+Last reviewed: 2026-09-15
 
 ## ADR Index
 
@@ -21,6 +21,7 @@ Last reviewed: 2026-09-14
 | [ADR-013](#adr-013-reactive-state-synchronization-for-collapsible-headers-with-directional-scroll-reset) | Reactive State Synchronization for Collapsible Headers with Directional Scroll Reset | Accepted | 2026-09-13 |
 | [ADR-014](#adr-014-embedded-static-web-dashboard-with-downstream-log-redaction-and-non-blocking-sse-fan-out) | Embedded Static Web Dashboard with Downstream Log Redaction & Non-Blocking SSE Fan-Out | Accepted | 2026-09-13 |
 | [ADR-015](#adr-015-deterministic-client-side-rule-engine-with-fail-closed-default-drop-and-data-minimization) | Deterministic Client-Side Rule Engine with Fail-Closed Default-DROP and Data Minimization | Accepted | 2026-09-14 |
+| [ADR-016](#adr-016-embedded-dual-transport-model-context-protocol-mcp-server-with-zero-polling-broker-and-origin-isolated-sse) | Embedded Dual-Transport Model Context Protocol (MCP) Server with Zero-Polling Broker and Origin-Isolated SSE | Accepted | 2026-09-15 |
 
 ---
 
@@ -154,3 +155,18 @@ Last reviewed: 2026-09-14
   - Positive: Guarantees zero personal SMS data egress to server or AI agents by default.
   - Positive: Data minimization prevents sensitive PII surrounding OTP codes from traversing the network.
   - Tradeoff: Requires local Room database migrations (`RuleEntity`, version 1 -> 2) and device CPU overhead for local regex evaluation.
+
+### ADR-016: Embedded Dual-Transport Model Context Protocol (MCP) Server with Zero-Polling Broker and Origin-Isolated SSE
+- **Context**: AI agents (Claude, Cursor, Antigravity) require automated access to incoming SMS verification codes and messages. The MCP server must run within the single Go binary without requiring external runtimes, must support both local command-line invocation and networked SSE daemon setups, must not busy-poll SQLite, and must strictly protect against unauthorized reading or cross-origin browser attacks.
+- **Decision**:
+  1. Embed a JSON-RPC 2.0 MCP server natively within `relayx-server` supporting stdio transport (`relayx-server mcp`) and HTTP/SSE transport (`GET /mcp/sse`, `POST /mcp/message`).
+  2. Provide 5 standard tools: `wait_for_message` (blocking with timeout), `get_otp` (blocking with regex code extraction), `get_latest_message`, `get_messages`, and `search_messages`.
+  3. Implement an in-memory `EventBroker` (`broker.go`) using Go channels and `sync.RWMutex` to broadcast incoming messages immediately upon ingestion, enabling sub-millisecond wait response times with zero database polling overhead.
+  4. Mandate independent MCP token credentials (`--mcp-token` / `RELAYX_MCP_TOKEN`) distinct from device write tokens and dashboard admin tokens (Constitution Principle II).
+  5. Isolate HTTP/SSE endpoints against cross-origin browser abuse (`TASK-SEC-013`) by strictly validating `Origin` and `Host` headers and rejecting wildcard CORS.
+  6. Bind asynchronous tool execution context to the long-lived `SSESession` lifecycle rather than ephemeral HTTP POST request contexts (`TASK-SEC-015`).
+- **Consequences**:
+  - Positive: Zero-dependency integration with modern MCP AI developer tooling.
+  - Positive: Zero CPU/disk overhead during automated OTP waiting.
+  - Positive: Robust defense-in-depth against credential cross-use and browser drive-by attacks.
+  - Tradeoff: In-memory event subscriptions are transient and tied to active server process lifetime.

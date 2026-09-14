@@ -11,8 +11,8 @@ This is a compact routing map for durable project memory (`docs/memory/`). Keep 
 |:---|:---|:---|
 | [PROJECT_CONTEXT.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/PROJECT_CONTEXT.md) | Product & System | System actors, core constraints, domains, and priorities. |
 | [ARCHITECTURE.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/ARCHITECTURE.md) | Technical Design | Component layout, Go server package design, SQLite schema, REST API, and MCP tools. |
-| [DECISIONS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/DECISIONS.md) | ADRs | Architectural decision records (ADR-001 through ADR-015). |
-| [BUGS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/BUGS.md) | Quality & Security | Known regression traps (1-12), doze mode risks, sensitive data leaks, and race conditions. |
+| [DECISIONS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/DECISIONS.md) | ADRs | Architectural decision records (ADR-001 through ADR-016). |
+| [BUGS.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/BUGS.md) | Quality & Security | Known regression traps (1-13), doze mode risks, sensitive data leaks, and race conditions. |
 | [WORKLOG.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/memory/WORKLOG.md) | Milestones | Record of major technical migrations and roadmap checkpoints. |
 | [roadmap.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/roadmap.md) | Execution Plan | 9-phase implementation roadmap and Definition of Done. |
 
@@ -31,6 +31,8 @@ This is a compact routing map for durable project memory (`docs/memory/`). Keep 
 | [2026-09-13-feature-004-server-web-dashboard.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-13-feature-004-server-web-dashboard.md) | branch | 2026-09-13 | INFORMATIONAL | C:0 H:0 M:0 L:0 | |
 | [2026-09-14-feature-005-android-rule-engine.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-14-feature-005-android-rule-engine.md) | branch | 2026-09-14 | LOW | C:0 H:0 M:0 L:3 | A02,A04 |
 | [2026-09-14-feature-005-android-rule-engine-followup.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-14-feature-005-android-rule-engine-followup.md) | followup | 2026-09-14 | LOW | C:0 H:0 M:0 L:3 | A02,A04 |
+| [2026-09-15-feature-006-server-mcp.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-15-feature-006-server-mcp.md) | branch | 2026-09-15 | HIGH | C:0 H:2 M:1 L:2 | A01,A04,A07 |
+| [2026-09-15-feature-006-server-mcp-followup.md](file:///Volumes/ADATASD810/Projects/Android/relayx/docs/security-reviews/2026-09-15-feature-006-server-mcp-followup.md) | followup | 2026-09-15 | HIGH | C:0 H:2 M:1 L:2 | A01,A04,A07 |
 
 ## Workflow & Operating Rules
 - [Workflow Rules](file:///Volumes/ADATASD810/Projects/Android/relayx/.specify/memory/workflow.md): Authoritative SDD memory-first execution procedure.

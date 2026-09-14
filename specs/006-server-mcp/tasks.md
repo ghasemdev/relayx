@@ -86,6 +86,18 @@
 
 ---
 
+## Phase 8: Security Remediation & Hardening (from Security Follow-Up)
+
+**Purpose**: Remediate findings identified in `docs/security-reviews/2026-09-15-feature-006-server-mcp-followup.md`.
+
+- [x] TASK-SEC-013 [HIGH] [A01:2025 / CWE-346, CWE-942] Remove wildcard CORS (`*`) from SSE transport, restrict Origin to localhost or configured allowed origins in `relayx-server/internal/mcp/sse.go`, and add regression tests in `relayx-server/internal/mcp/sse_test.go`
+- [x] TASK-SEC-014 [HIGH] [A01:2025 / CWE-306] Auto-generate default MCP Agent Bearer token (`rx-mcp-...`) at startup if unset, print on console, and enforce token authentication on all network interfaces in `relayx-server/cmd/server/main.go` and `relayx-server/internal/mcp/sse.go`
+- [x] TASK-SEC-015 [MEDIUM] [A04:2025 / CWE-662, CWE-674] Bind asynchronous tool execution context in `HandleMessages` to long-lived SSE session context (`session.done`) in `relayx-server/internal/mcp/sse.go` so blocking calls (`wait_for_message`, `get_otp`) survive HTTP 202 handler return
+- [ ] TASK-SEC-016 [DEFERRED - Tech Debt] [LOW] [A07:2025 / CWE-598] Deprecate URL query parameter token authentication in favor of standard Bearer headers (Revisit trigger: Phase 8 TLS & Hardening)
+- [ ] TASK-SEC-017 [DEFERRED - Tech Debt] [LOW] [A04:2025 / CWE-400] Enforce maximum active SSE sessions and worker concurrency limits (Revisit trigger: Phase 8 multi-client stress testing)
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -96,6 +108,7 @@
 - **Phase 5 (US3)**: Depends on Phase 2 & 3 (extends `tools.go` with search/history).
 - **Phase 6 (US4)**: Depends on Phase 3 (adds HTTP/SSE transport and token enforcement).
 - **Phase 7 (Polish)**: Depends on all user stories completed.
+- **Phase 8 (Security Remediation)**: Depends on Phase 6 and 7 completion (TASK-SEC-013, TASK-SEC-014, TASK-SEC-015).
 
 ---
 
@@ -112,3 +125,4 @@
 2. Add User Story 3 (`get_latest_message`, `get_messages`, `search_messages`) -> Test historical search.
 3. Add User Story 4 (HTTP/SSE transport + `--mcp-token` dual-domain security).
 4. Run integration suite and update documentation.
+5. Execute Phase 8 security remediations (TASK-SEC-013, TASK-SEC-014, TASK-SEC-015) and verify with tests.
