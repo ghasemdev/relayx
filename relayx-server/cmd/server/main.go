@@ -21,7 +21,7 @@ import (
 	"relayx-server/internal/web"
 )
 
-const ServerVersion = "1.0.0"
+const ServerVersion = "1.1.0"
 
 func main() {
 	cfg, err := config.Load(os.Args[1:])

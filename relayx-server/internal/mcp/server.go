@@ -57,7 +57,7 @@ func (s *Server) HandleRequest(ctx context.Context, req *domain.RPCRequest) *dom
 			},
 			ServerInfo: domain.ServerInfo{
 				Name:    "relayx-server",
-				Version: "1.0.0",
+				Version: "1.1.0",
 			},
 		}
 		return NewSuccessResponse(req.ID, res)
