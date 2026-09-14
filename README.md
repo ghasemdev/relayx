@@ -89,8 +89,9 @@ RelayX Server embeds a modern, responsive cyber-glass dashboard directly inside 
 - [x] **Phase 1: Server Foundation (`relayx-server`)**: Standalone Go daemon, embedded SQLite WAL engine, embedded migrations, Bearer token authentication, idempotency deduplication, health monitoring, structured logging redaction, and ingestion hooks.
 - [x] **Phase 2: Android Gateway Foundation (`relayx-android`)**: Kotlin 2.4.20, Compose Material 3, Navigation 3, Koin 4.2 App Startup, Room durable offline outbox, WorkManager exponential backoff dispatch, multipart SMS receiver, boot persistence, and zero-sensitive logging.
 - [x] **Phase 3: Android Message Inspection & Detail Modal (`relayx-android`)**: Message list screen navigated from metric cards (Received, Forwarded, Filtered, Failed) with synchronized `HorizontalPager` tabs, real-time debounced search, animated chrome, and interactive bottom sheet for last message received with privacy masking.
+- [x] **Phase 4: Server Web Dashboard & Live Observability (`relayx-server`)**: Embedded Web UI in Go binary, real-time logcat streaming over SSE, SQLite database table browser, message pipeline throughput visualizer, device token provisioning, and modern glassmorphic interface.
 - [x] **Phase 5: Local Pre-Filtering Engine & Security Rules (`relayx-android`)**: Rule editor UI, regex/substring matching, action policies (`ALLOW`, `DROP`, `TRANSFORM`), SMS sender picker sheet, and test sandbox.
-- [ ] **Phase 6: Agent MCP Server (`relayx-server`)**: Full Model Context Protocol implementation (`get_latest_message`, `wait_for_message`, `get_otp`). *(In Progress)*
+- [x] **Phase 6: Agent MCP Server (`relayx-server`)**: Full Model Context Protocol implementation (`get_latest_message`, `wait_for_message`, `get_otp`, `get_messages`, `search_messages`) over `stdio` and HTTP/SSE with event-driven pub/sub and dual-domain security.
 - [ ] **Phase 7: Testing Infrastructure, Mock SMS & Emulator Relay**: Mock SMS injector, interactive sandbox, and automated E2E testing.
 - [ ] **Phase 8: Two-Phone & Virtual Device Testing Mode**: Encrypted WebSocket synchronization, QR pairing, and two-phone automation mode.
 - [ ] **Phase 9: Hardening, Packaging & Release**: Production signing, APK optimization, security audits, and cross-platform releases.
@@ -114,7 +115,10 @@ go build -o ../bin/relayx-server ./cmd/server
 ./bin/relayx-server
 
 # Start with emulator auto-relay hook enabled
-./bin/relayx-server --port 8080 --adb-port 5554 --token "secret-device-token"
+./bin/relayx-server --port 8080 --adb-port 5554 --token "secret-device-token" --mcp-token "secret-agent-token"
+
+# Or run directly in MCP stdio mode for local AI Agent pairing
+./bin/relayx-server --mcp-stdio --db ./data/sms.db
 ```
 
 On first launch, `./data/sms.db` is auto-created with embedded schema migrations applied.
@@ -169,6 +173,9 @@ Options:
   -port int           HTTP server listen port (default: 8080)
   -db string          SQLite database file path (default: "./data/sms.db")
   -token string       Authorized device Bearer token (enforces SHA-256 verification)
+  -mcp-token string   Authorized AI Agent token for MCP interface (enforces dual-auth domain)
+  -mcp-stdio          Run embedded MCP server in stdio mode (for AI IDEs & CLI tools)
+  -admin-token string Administrative token to access web dashboard
   -debug              Enable verbose diagnostic logging (body text remains redacted)
   -adb-port int       Android emulator port to relay SMS via adb emu sms send (e.g. 5554)
   -exec-hook string   Custom script hook to execute on message arrival

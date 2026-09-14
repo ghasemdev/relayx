@@ -17,6 +17,8 @@ type Config struct {
 	Debug       bool
 	ADBPort     int
 	ExecHook    string
+	MCPToken    string
+	MCPStdio    bool
 }
 
 // DefaultConfig returns configuration with sensible production/development defaults.
@@ -30,6 +32,8 @@ func DefaultConfig() *Config {
 		Debug:       false,
 		ADBPort:     0,
 		ExecHook:    "",
+		MCPToken:    "",
+		MCPStdio:    false,
 	}
 }
 
@@ -67,6 +71,18 @@ func Load(args []string) (*Config, error) {
 	if execHook := os.Getenv("RELAYX_EXEC_HOOK"); execHook != "" {
 		cfg.ExecHook = execHook
 	}
+	if mcpToken := os.Getenv("RELAYX_MCP_TOKEN"); mcpToken != "" {
+		cfg.MCPToken = mcpToken
+	}
+	if mcpStdioStr := os.Getenv("RELAYX_MCP_STDIO"); mcpStdioStr != "" {
+		cfg.MCPStdio = mcpStdioStr == "true" || mcpStdioStr == "1"
+	}
+
+	cleanArgs := args
+	if len(cleanArgs) > 0 && cleanArgs[0] == "mcp" {
+		cfg.MCPStdio = true
+		cleanArgs = cleanArgs[1:]
+	}
 
 	// Flag overrides
 	fs := flag.NewFlagSet("relayx-server", flag.ContinueOnError)
@@ -78,8 +94,10 @@ func Load(args []string) (*Config, error) {
 	fs.BoolVar(&cfg.Debug, "debug", cfg.Debug, "Enable debug logging")
 	fs.IntVar(&cfg.ADBPort, "adb-port", cfg.ADBPort, "Android emulator port to relay SMS via adb emu sms send (e.g. 5554)")
 	fs.StringVar(&cfg.ExecHook, "exec-hook", cfg.ExecHook, "Custom executable/script hook to run on message arrival")
+	fs.StringVar(&cfg.MCPToken, "mcp-token", cfg.MCPToken, "Authorized AI Agent token for MCP interface")
+	fs.BoolVar(&cfg.MCPStdio, "mcp-stdio", cfg.MCPStdio, "Run embedded MCP server in stdio mode")
 
-	if err := fs.Parse(args); err != nil {
+	if err := fs.Parse(cleanArgs); err != nil {
 		return nil, fmt.Errorf("parsing flags: %w", err)
 	}
 

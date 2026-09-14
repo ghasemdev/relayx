@@ -132,3 +132,48 @@ func TestInvalidPort(t *testing.T) {
 		t.Error("expected error for invalid port 999999, got nil")
 	}
 }
+
+func TestMCPConfig(t *testing.T) {
+	// Test CLI flags
+	cfg, err := config.Load([]string{"-mcp-token", "agent-sec-1", "-mcp-stdio"})
+	if err != nil {
+		t.Fatalf("unexpected error loading config: %v", err)
+	}
+	if cfg.MCPToken != "agent-sec-1" {
+		t.Errorf("expected MCPToken agent-sec-1, got %s", cfg.MCPToken)
+	}
+	if !cfg.MCPStdio {
+		t.Errorf("expected MCPStdio true, got false")
+	}
+
+	// Test subcommand "mcp"
+	cfgSub, err := config.Load([]string{"mcp", "-mcp-token", "agent-sec-2"})
+	if err != nil {
+		t.Fatalf("unexpected error loading config with subcommand: %v", err)
+	}
+	if cfgSub.MCPToken != "agent-sec-2" {
+		t.Errorf("expected MCPToken agent-sec-2, got %s", cfgSub.MCPToken)
+	}
+	if !cfgSub.MCPStdio {
+		t.Errorf("expected MCPStdio true for 'mcp' subcommand, got false")
+	}
+
+	// Test environment variables
+	os.Setenv("RELAYX_MCP_TOKEN", "env-mcp-token")
+	os.Setenv("RELAYX_MCP_STDIO", "1")
+	defer func() {
+		os.Unsetenv("RELAYX_MCP_TOKEN")
+		os.Unsetenv("RELAYX_MCP_STDIO")
+	}()
+
+	cfgEnv, err := config.Load([]string{})
+	if err != nil {
+		t.Fatalf("unexpected error loading config with env: %v", err)
+	}
+	if cfgEnv.MCPToken != "env-mcp-token" {
+		t.Errorf("expected MCPToken env-mcp-token, got %s", cfgEnv.MCPToken)
+	}
+	if !cfgEnv.MCPStdio {
+		t.Errorf("expected MCPStdio true from env, got false")
+	}
+}

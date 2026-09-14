@@ -24,9 +24,14 @@ type IngestInput struct {
 	Metadata   map[string]any `json:"metadata,omitempty"`
 }
 
+type EventPublisher interface {
+	Publish(msg *domain.Message)
+}
+
 type MessageService struct {
-	repo domain.MessageRepository
-	hook hook.Hook
+	repo   domain.MessageRepository
+	hook   hook.Hook
+	broker EventPublisher
 }
 
 func NewMessageService(repo domain.MessageRepository) *MessageService {
@@ -35,6 +40,10 @@ func NewMessageService(repo domain.MessageRepository) *MessageService {
 
 func (s *MessageService) SetHook(h hook.Hook) {
 	s.hook = h
+}
+
+func (s *MessageService) SetBroker(b EventPublisher) {
+	s.broker = b
 }
 
 // Ingest handles validation, server metadata assignment, and idempotent persistence.
@@ -75,8 +84,13 @@ func (s *MessageService) Ingest(ctx context.Context, authenticatedDeviceID strin
 		return nil, false, fmt.Errorf("persisting message: %w", err)
 	}
 
-	if isCreated && s.hook != nil {
-		s.hook.Trigger(ctx, persisted)
+	if isCreated {
+		if s.hook != nil {
+			s.hook.Trigger(ctx, persisted)
+		}
+		if s.broker != nil {
+			s.broker.Publish(persisted)
+		}
 	}
 
 	return persisted, isCreated, nil

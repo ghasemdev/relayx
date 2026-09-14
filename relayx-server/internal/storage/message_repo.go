@@ -121,9 +121,18 @@ func (r *SQLiteMessageRepository) List(ctx context.Context, filter domain.Messag
 		whereClauses = append(whereClauses, "sender = ?")
 		args = append(args, filter.Sender)
 	}
+	if filter.DeviceID != "" {
+		whereClauses = append(whereClauses, "device_id = ?")
+		args = append(args, filter.DeviceID)
+	}
 	if filter.Status != "" {
 		whereClauses = append(whereClauses, "status = ?")
 		args = append(args, string(filter.Status))
+	}
+	if filter.Query != "" {
+		whereClauses = append(whereClauses, "(body LIKE ? OR sender LIKE ?)")
+		searchTerm := "%" + filter.Query + "%"
+		args = append(args, searchTerm, searchTerm)
 	}
 
 	whereSQL := ""
