@@ -40,14 +40,10 @@ import androidx.navigation3.ui.NavDisplay
 import com.parsomash.relayx.R
 import com.parsomash.relayx.ui.dashboard.DashboardScreen
 import com.parsomash.relayx.ui.message.MessageListScreen
+import com.parsomash.relayx.ui.rules.RuleEditScreen
 import com.parsomash.relayx.ui.rules.RulesScreen
 import com.parsomash.relayx.ui.settings.SettingsScreen
-import com.parsomash.relayx.viewmodel.DashboardViewModel
-import com.parsomash.relayx.viewmodel.MessageListViewModel
-import com.parsomash.relayx.viewmodel.RulesViewModel
-import com.parsomash.relayx.viewmodel.SettingsViewModel
 import kotlinx.serialization.Serializable
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
@@ -74,6 +70,9 @@ sealed class AppRoute : NavKey {
 
     @Serializable
     data class MessageList(val initialFilter: String = "ALL") : AppRoute()
+
+    @Serializable
+    data class RuleEdit(val ruleId: String? = null) : AppRoute()
 }
 
 data class BottomNavItem(
@@ -90,11 +89,9 @@ val bottomNavItems = listOf(
 
 val navigationModule = module {
     navigation<AppRoute.Dashboard> {
-        val dashboardViewModel: DashboardViewModel = koinViewModel()
         val onRequestPermissions = LocalRequestPermissions.current
         val navActions = LocalNavigationActions.current
         DashboardScreen(
-            viewModel = dashboardViewModel,
             onRequestPermissions = onRequestPermissions,
             onNavigateToMessageList = { filter ->
                 navActions.navigateTo(AppRoute.MessageList(filter))
@@ -105,22 +102,31 @@ val navigationModule = module {
         )
     }
     navigation<AppRoute.Rules> {
-        val rulesViewModel: RulesViewModel = koinViewModel()
+        val navActions = LocalNavigationActions.current
         RulesScreen(
-            viewModel = rulesViewModel
+            onNavigateToCreateRule = {
+                navActions.navigateTo(AppRoute.RuleEdit(ruleId = null))
+            },
+            onNavigateToEditRule = { ruleId ->
+                navActions.navigateTo(AppRoute.RuleEdit(ruleId = ruleId))
+            }
+        )
+    }
+    navigation<AppRoute.RuleEdit> { route ->
+        val navActions = LocalNavigationActions.current
+        RuleEditScreen(
+            ruleId = route.ruleId,
+            onNavigateBack = {
+                navActions.goBack()
+            }
         )
     }
     navigation<AppRoute.Settings> {
-        val settingsViewModel: SettingsViewModel = koinViewModel()
-        SettingsScreen(
-            viewModel = settingsViewModel
-        )
+        SettingsScreen()
     }
     navigation<AppRoute.MessageList> { route ->
-        val messageListViewModel: MessageListViewModel = koinViewModel()
         val navActions = LocalNavigationActions.current
         MessageListScreen(
-            viewModel = messageListViewModel,
             initialFilter = route.initialFilter,
             onBackClick = {
                 navActions.goBack()
@@ -151,7 +157,7 @@ fun MainAppScaffold(
         backStack.removeLastOrNull()
     }
 
-    val showBottomBar = currentRoute !is AppRoute.MessageList
+    val showBottomBar = currentRoute !is AppRoute.MessageList && currentRoute !is AppRoute.RuleEdit
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

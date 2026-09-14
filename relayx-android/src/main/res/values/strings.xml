@@ -134,4 +134,8 @@
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="select_sender_from_sms">Select from SMS</string>
+    <string name="select_sender_title">Select Sender from SMS</string>
+    <string name="search_senders_placeholder">Search sender address…</string>
+    <string name="no_senders_found">No SMS senders found</string>
 </resources>

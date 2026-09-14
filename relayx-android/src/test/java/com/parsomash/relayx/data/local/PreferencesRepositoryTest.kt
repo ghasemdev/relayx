@@ -40,7 +40,7 @@ class PreferencesRepositoryTest {
         assertEquals("10.0.2.2", config.serverHost)
         assertEquals(8080, config.serverPort)
         assertFalse(config.useHttps)
-        assertTrue(config.deviceId.startsWith("pixel-"))
+        assertTrue(config.deviceId.matches(Regex(".+-\\d{4}")))
         assertEquals("", config.bearerToken)
         assertFalse(config.forwardingEnabled)
     }

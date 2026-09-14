@@ -54,4 +54,7 @@ interface OutboxMessageDao {
 
     @Query("UPDATE outbox_messages SET status = 'PENDING', error_message = null, last_attempt_at = :now WHERE id = :id")
     suspend fun resetForRetry(id: String, now: Long): Int
+
+    @Query("SELECT sender FROM outbox_messages GROUP BY sender ORDER BY MAX(received_at) DESC")
+    suspend fun getDistinctSenders(): List<String>
 }

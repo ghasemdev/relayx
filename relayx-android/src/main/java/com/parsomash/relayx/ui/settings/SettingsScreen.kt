@@ -1,11 +1,13 @@
 package com.parsomash.relayx.ui.settings
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -32,6 +34,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,18 +48,27 @@ import com.parsomash.relayx.R
 import com.parsomash.relayx.domain.model.AppThemeMode
 import com.parsomash.relayx.domain.usecase.ConnectionTestResult
 import com.parsomash.relayx.viewmodel.SettingsViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
+    val viewModel: SettingsViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(state.isTesting, state.testResult) {
+        if (state.isTesting || state.testResult != null) {
+            scrollState.animateScrollTo(scrollState.maxValue)
+        }
+    }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .verticalScroll(scrollState)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -88,7 +100,9 @@ fun SettingsScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     AppThemeMode.entries.forEach { mode ->
@@ -100,15 +114,14 @@ fun SettingsScreen(
                         FilterChip(
                             selected = state.themeMode == mode,
                             onClick = { viewModel.onThemeModeChanged(mode) },
-                            label = { Text(stringResource(labelRes)) },
+                            label = { Text(stringResource(labelRes), maxLines = 1) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = icon,
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp)
                                 )
-                            },
-                            modifier = Modifier.weight(1f)
+                            }
                         )
                     }
                 }

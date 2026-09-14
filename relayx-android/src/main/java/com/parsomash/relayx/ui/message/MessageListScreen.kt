@@ -63,14 +63,15 @@ import com.parsomash.relayx.domain.model.DeliveryStatus
 import com.parsomash.relayx.domain.model.MessageFilter
 import com.parsomash.relayx.viewmodel.MessageListViewModel
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MessageListScreen(
-    viewModel: MessageListViewModel,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    initialFilter: String = "ALL"
+    onBackClick: () -> Unit = {},
+    initialFilter: String = "ALL",
 ) {
+    val viewModel: MessageListViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()

@@ -1,5 +1,6 @@
 package com.parsomash.relayx.ui.dashboard
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,18 +45,19 @@ import com.parsomash.relayx.R
 import com.parsomash.relayx.data.worker.MessageDispatchWorker
 import com.parsomash.relayx.ui.message.MessageDetailBottomSheet
 import com.parsomash.relayx.viewmodel.DashboardViewModel
+import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel,
-    onRequestPermissions: () -> Unit,
     modifier: Modifier = Modifier,
+    onRequestPermissions: () -> Unit = {},
     onNavigateToMessageList: (filter: String) -> Unit = {},
     onNavigateToRules: () -> Unit = {},
 ) {
+    val viewModel: DashboardViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -280,9 +282,14 @@ fun StatusCard(
         ) {
             Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.size(10.dp))
-            Column {
+            Column(modifier = Modifier.weight(1f, fill = false)) {
                 Text(text = title, style = MaterialTheme.typography.labelSmall)
-                Text(text = value, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    modifier = Modifier.basicMarquee()
+                )
             }
         }
     }

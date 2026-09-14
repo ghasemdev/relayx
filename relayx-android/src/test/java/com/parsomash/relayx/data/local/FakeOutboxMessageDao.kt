@@ -82,4 +82,11 @@ class FakeOutboxMessageDao : OutboxMessageDao {
         ))
         return 1
     }
+
+    override suspend fun getDistinctSenders(): List<String> {
+        return messages.value.values
+            .sortedByDescending { it.receivedAt }
+            .map { it.sender }
+            .distinct()
+    }
 }

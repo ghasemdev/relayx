@@ -49,23 +49,23 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.parsomash.relayx.R
 import com.parsomash.relayx.domain.model.Rule
-import com.parsomash.relayx.ui.rules.components.RuleEditDialog
 import com.parsomash.relayx.ui.rules.components.RuleItemCard
 import com.parsomash.relayx.ui.rules.components.RuleSandboxCard
 import com.parsomash.relayx.viewmodel.RulesUiEvent
 import com.parsomash.relayx.viewmodel.RulesViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RulesScreen(
-    viewModel: RulesViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToCreateRule: () -> Unit = {},
+    onNavigateToEditRule: (String) -> Unit = {},
 ) {
+    val viewModel: RulesViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val listState = rememberLazyListState()
 
-    var showEditDialog by remember { mutableStateOf(false) }
-    var ruleToEdit by remember { mutableStateOf<Rule?>(null) }
     var ruleToDelete by remember { mutableStateOf<Rule?>(null) }
 
     // Track scroll direction and boundary to animate FAB visibility
@@ -222,8 +222,7 @@ fun RulesScreen(
                             viewModel.onEvent(RulesUiEvent.ToggleRule(rule.id, enabled))
                         },
                         onEdit = {
-                            ruleToEdit = rule
-                            showEditDialog = true
+                            onNavigateToEditRule(rule.id)
                         },
                         onDelete = {
                             ruleToDelete = rule
@@ -243,10 +242,7 @@ fun RulesScreen(
                 .padding(16.dp)
         ) {
             FloatingActionButton(
-                onClick = {
-                    ruleToEdit = null
-                    showEditDialog = true
-                },
+                onClick = onNavigateToCreateRule,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
@@ -263,22 +259,6 @@ fun RulesScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 16.dp)
-        )
-    }
-
-    // Add / Edit Rule Dialog
-    if (showEditDialog) {
-        RuleEditDialog(
-            initialRule = ruleToEdit,
-            onDismiss = {
-                showEditDialog = false
-                ruleToEdit = null
-            },
-            onSave = { updatedRule ->
-                viewModel.onEvent(RulesUiEvent.SaveRule(updatedRule))
-                showEditDialog = false
-                ruleToEdit = null
-            }
         )
     }
 

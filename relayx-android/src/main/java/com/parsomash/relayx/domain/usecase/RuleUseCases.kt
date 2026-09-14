@@ -83,3 +83,10 @@ class TestRulesUseCase(
             ruleEngine.evaluate(sender, body, activeRules)
         }
 }
+
+@Factory
+class GetRuleByIdUseCase(
+    private val ruleRepository: RuleRepository
+) {
+    suspend operator fun invoke(id: String): Rule? = ruleRepository.getRuleById(id)
+}

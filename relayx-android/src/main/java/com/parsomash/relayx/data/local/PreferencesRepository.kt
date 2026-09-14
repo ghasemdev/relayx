@@ -65,7 +65,7 @@ class PreferencesRepository(
             val useHttps = preferences[PreferencesKeys.USE_HTTPS] ?: false
             var deviceId = preferences[PreferencesKeys.DEVICE_ID] ?: ""
             if (deviceId.isBlank()) {
-                deviceId = "pixel-" + Uuid.random().toString().take(8)
+                deviceId = generateDefaultDeviceId()
             }
             val bearerToken = preferences[PreferencesKeys.BEARER_TOKEN] ?: ""
             val forwardingEnabled = preferences[PreferencesKeys.FORWARDING_ENABLED] ?: false
@@ -90,7 +90,7 @@ class PreferencesRepository(
             preferences[PreferencesKeys.SERVER_HOST] = config.serverHost
             preferences[PreferencesKeys.SERVER_PORT] = config.serverPort
             preferences[PreferencesKeys.USE_HTTPS] = config.useHttps
-            preferences[PreferencesKeys.DEVICE_ID] = config.deviceId.ifBlank { "pixel-" + Uuid.random().toString().take(8) }
+            preferences[PreferencesKeys.DEVICE_ID] = config.deviceId.ifBlank { generateDefaultDeviceId() }
             preferences[PreferencesKeys.BEARER_TOKEN] = config.bearerToken
             preferences[PreferencesKeys.FORWARDING_ENABLED] = config.forwardingEnabled
         }
@@ -129,4 +129,14 @@ class PreferencesRepository(
             preferences[PreferencesKeys.THEME_MODE] = mode.name
         }
     }
+}
+
+internal fun generateDefaultDeviceId(): String {
+    val model = try {
+        android.os.Build.MODEL?.takeIf { it.isNotBlank() }?.trim() ?: "Device"
+    } catch (_: Throwable) {
+        "Device"
+    }
+    val randomNum = kotlin.random.Random.nextInt(1000, 10000)
+    return "$model-$randomNum"
 }
