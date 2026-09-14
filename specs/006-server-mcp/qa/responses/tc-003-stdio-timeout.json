@@ -1,0 +1,2 @@
+{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{"listChanged":false}},"serverInfo":{"name":"relayx-server","version":"1.0.0"}}}
+{"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"{\"status\":\"timeout\",\"error\":\"no message received from 'TEST_TIMEOUT' within 1 seconds\"}"}]}}

@@ -1,0 +1,9 @@
+{"time":"2026-09-15T01:46:11.391433+03:30","level":"INFO","msg":"starting relayx server","version":"1.0.0","db":"./data/sms.db","addr":"127.0.0.1:9999"}
+==================================================================
+ [RelayX] Generated Initial AI Agent MCP Token:
+   Bearer rx-mcp-9be96ccb-35bf-4afc-99c5-2e2d67ecd629
+ Configure your AI coding agent (Cursor, Claude, Antigravity) with this Bearer token.
+==================================================================
+{"time":"2026-09-15T01:46:11.392864+03:30","level":"INFO","msg":"server listening","addr":"127.0.0.1:9999"}
+{"time":"2026-09-15T01:46:11.393038+03:30","level":"ERROR","msg":"server stopped unexpectedly","error":"http server failed: listen tcp 127.0.0.1:9999: bind: address already in use"}
+zsh:kill:1: kill 92919 failed: no such process

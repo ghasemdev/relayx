@@ -15,13 +15,14 @@ class GetGatewayStatsUseCase(
         return combine(
             dao.observeTotalCount(),
             dao.observeForwardedCount(),
+            dao.observeFilteredCount(),
             dao.observeFailedCount(),
             dao.observeLastMessageTimestamp()
-        ) { total, forwarded, failed, lastTime ->
+        ) { total, forwarded, filtered, failed, lastTime ->
             GatewayStats(
                 totalReceived = total,
                 totalForwarded = forwarded,
-                totalFiltered = 0,
+                totalFiltered = filtered,
                 totalFailed = failed,
                 lastMessageTimestamp = lastTime
             )

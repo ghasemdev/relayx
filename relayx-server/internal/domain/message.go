@@ -31,10 +31,12 @@ type Message struct {
 
 // MessageFilter defines criteria for querying stored SMS messages.
 type MessageFilter struct {
-	Sender string
-	Status MessageStatus
-	Limit  int
-	Offset int
+	Sender   string
+	Status   MessageStatus
+	DeviceID string
+	Query    string
+	Limit    int
+	Offset   int
 }
 
 // MessageRepository defines persistence operations for messages.

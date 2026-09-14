@@ -114,10 +114,15 @@ func (h *RedactingHandler) WithGroup(name string) slog.Handler {
 	return &RedactingHandler{next: h.next.WithGroup(name)}
 }
 
-// InitLogger initializes and sets the default global slog logger.
-func InitLogger(debug bool) *slog.Logger {
-	handler := NewRedactingHandler(os.Stdout, debug)
+// InitLoggerTo initializes the global logger writing to a specific destination.
+func InitLoggerTo(w io.Writer, debug bool) *slog.Logger {
+	handler := NewRedactingHandler(w, debug)
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 	return logger
+}
+
+// InitLogger initializes and sets the default global slog logger.
+func InitLogger(debug bool) *slog.Logger {
+	return InitLoggerTo(os.Stdout, debug)
 }

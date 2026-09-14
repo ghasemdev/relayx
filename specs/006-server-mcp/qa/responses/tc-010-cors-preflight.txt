@@ -1,0 +1,10 @@
+HTTP/1.1 204 No Content
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: Authorization, Content-Type
+Access-Control-Allow-Methods: GET, POST, OPTIONS
+Access-Control-Allow-Origin: http://localhost:3000
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+Date: Mon, 14 Sep 2026 22:17:26 GMT
+

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,6 +15,7 @@ import (
 	"relayx-server/internal/config"
 	"relayx-server/internal/hook"
 	"relayx-server/internal/logging"
+	"relayx-server/internal/mcp"
 	"relayx-server/internal/service"
 	"relayx-server/internal/storage"
 	"relayx-server/internal/web"
@@ -28,7 +30,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger := logging.InitLogger(cfg.Debug)
+	var logger *slog.Logger
+	if cfg.MCPStdio {
+		logger = logging.InitLoggerTo(os.Stderr, cfg.Debug)
+	} else {
+		logger = logging.InitLogger(cfg.Debug)
+	}
 	logger.Info("starting relayx server", "version", ServerVersion, "db", cfg.DBPath, "addr", cfg.ListenAddr())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -45,6 +52,32 @@ func main() {
 
 	deviceService := service.NewDeviceService(deviceRepo)
 	messageService := service.NewMessageService(messageRepo)
+
+	// Initialize MCP pub/sub broker and server
+	mcpBroker := mcp.NewMemoryBroker()
+	messageService.SetBroker(mcpBroker)
+
+	mcpServer := mcp.NewServer(logger)
+	mcp.RegisterAllTools(mcpServer, messageService, mcpBroker)
+
+	// If stdio mode requested, run MCP JSON-RPC over stdin/stdout
+	if cfg.MCPStdio {
+		logger.Info("running in mcp stdio mode")
+		stdioCtx, stdioCancel := context.WithCancel(context.Background())
+		defer stdioCancel()
+
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+		go func() {
+			<-sigChan
+			stdioCancel()
+		}()
+
+		if err := mcp.RunStdio(stdioCtx, mcpServer, os.Stdin, os.Stdout); err != nil && err != context.Canceled {
+			logger.Error("mcp stdio session terminated", "error", err)
+		}
+		return
+	}
 
 	hookRunner := hook.NewRunner(cfg.ADBPort, cfg.ExecHook)
 	messageService.SetHook(hookRunner)
@@ -81,6 +114,16 @@ func main() {
 		}
 	}
 
+	// Handle MCP token setup (Principle II: independent agent authentication domain)
+	if cfg.MCPToken == "" && !cfg.MCPStdio {
+		cfg.MCPToken = "rx-mcp-" + uuid.NewString()
+		fmt.Println("==================================================================")
+		fmt.Println(" [RelayX] Generated Initial AI Agent MCP Token:")
+		fmt.Printf("   Bearer %s\n", cfg.MCPToken)
+		fmt.Println(" Configure your AI coding agent (Cursor, Claude, Antigravity) with this Bearer token.")
+		fmt.Println("==================================================================")
+	}
+
 	server := api.NewServer(cfg, db)
 	messageHandler := api.NewMessageHandler(messageService)
 	healthHandler := api.NewHealthHandler(db, ServerVersion)
@@ -93,6 +136,11 @@ func main() {
 	server.Mux().HandleFunc("GET /api/v1/messages", messageHandler.ListMessages)
 	server.Mux().HandleFunc("GET /api/v1/messages/latest", messageHandler.GetLatestMessage)
 	server.Mux().HandleFunc("GET /api/v1/messages/{id}", messageHandler.GetMessageByID)
+
+	// MCP Protocol Routes (SSE Transport)
+	sseHandler := mcp.NewSSEHandler(mcpServer, cfg.MCPToken, logger)
+	server.Mux().HandleFunc("/mcp/sse", sseHandler.HandleSSE)
+	server.Mux().HandleFunc("/mcp/messages", sseHandler.HandleMessages)
 
 	// Dashboard & Observability Routes
 	webAssets, err := web.Assets()
