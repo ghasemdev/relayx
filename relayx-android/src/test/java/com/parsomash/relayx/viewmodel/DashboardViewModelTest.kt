@@ -110,4 +110,41 @@ class DashboardViewModelTest {
         viewModel.dismissDetailSheet()
         assertFalse(viewModel.uiState.value.isShowingDetailSheet)
     }
+
+    @Test
+    fun testObservesFilteredCountInGatewayStats() = runTest {
+        dao.insert(
+            OutboxMessageEntity(
+                id = "msg-filtered-1",
+                sender = "PROMO",
+                rawBody = "Discount 50%",
+                receivedAt = 1000L,
+                status = "FILTERED"
+            )
+        )
+        dao.insert(
+            OutboxMessageEntity(
+                id = "msg-delivered-1",
+                sender = "BANK",
+                rawBody = "Code 123456",
+                receivedAt = 2000L,
+                status = "DELIVERED"
+            )
+        )
+        dao.insert(
+            OutboxMessageEntity(
+                id = "msg-filtered-2",
+                sender = "SPAM",
+                rawBody = "Claim prize",
+                receivedAt = 3000L,
+                status = "FILTERED"
+            )
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals(3, state.stats.totalReceived)
+        assertEquals(1, state.stats.totalForwarded)
+        assertEquals(2, state.stats.totalFiltered)
+    }
 }

@@ -144,37 +144,45 @@ fun RuleEditScreen(
         )
 
         // Priority & Enabled Row
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.spacedBy(16.dp),
-          verticalAlignment = Alignment.CenterVertically
-        ) {
-          OutlinedTextField(
-            value = state.priority.toString(),
-            onValueChange = { input ->
-              val num = input.filter { it.isDigit() }.toIntOrNull() ?: 0
-              viewModel.onPriorityChanged(num)
-            },
-            label = { Text(stringResource(R.string.priority_label)) },
-            supportingText = { Text(stringResource(R.string.priority_helper)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-            modifier = Modifier.weight(1f)
-          )
-
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
           Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
           ) {
-            Text(
-              text = stringResource(R.string.rule_enabled_label),
-              style = MaterialTheme.typography.bodyMedium
+            OutlinedTextField(
+              value = state.priority.toString(),
+              onValueChange = { input ->
+                val num = input.filter { it.isDigit() }.toIntOrNull() ?: 0
+                viewModel.onPriorityChanged(num)
+              },
+              label = { Text(stringResource(R.string.priority_label)) },
+              keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+              singleLine = true,
+              modifier = Modifier.weight(1f)
             )
-            Switch(
-              checked = state.enabled,
-              onCheckedChange = viewModel::onEnabledChanged
-            )
+
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+              Text(
+                text = stringResource(R.string.rule_enabled_label),
+                style = MaterialTheme.typography.bodyMedium
+              )
+              Switch(
+                checked = state.enabled,
+                onCheckedChange = viewModel::onEnabledChanged
+              )
+            }
           }
+
+          Text(
+            text = stringResource(R.string.priority_helper),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 16.dp)
+          )
         }
 
         HorizontalDivider()

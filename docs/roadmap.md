@@ -75,20 +75,20 @@ This document outlines the sequential 9-phase implementation plan, component del
   - [x] Add or revoke device write credentials.
 - [x] Modern Glassmorphic UI redesign with responsive cyber-dark aesthetic, keyboard shortcuts (`1`-`4`, `/`, `Esc`), and toast notifications.
 
-### Phase 5 — Rule & Filtering Engine (`relayx-android`) `[IN PROGRESS]`
-- [ ] Build client-side Rule Engine evaluated prior to network dispatch.
-- [ ] Support Rule Types:
+### Phase 5 — Rule & Filtering Engine (`relayx-android`) `[COMPLETED - PR #5]`
+- [x] Build client-side Rule Engine evaluated prior to network dispatch.
+- [x] Support Rule Types:
   - **Sender Rules**: Exact match (`sender == "BANK"`), pattern match, allowlists.
   - **Content Rules**: Regex extraction (`\b\d{6}\b`, `verification code`).
-- [ ] Support Rule Actions:
+- [x] Support Rule Actions:
   - `FORWARD_RAW`: Forward original SMS text.
   - `FORWARD_TRANSFORMED`: Extract value (e.g. OTP) and optionally omit raw text.
   - `DROP`: Silently discard unapproved messages.
-- [ ] Implement deterministic rule priority ordering.
-- [ ] Build Rule Management UI in Android app to create, reorder, enable, and disable rules.
-- [ ] Comprehensive unit tests for regex extraction and priority evaluation.
+- [x] Implement deterministic rule priority ordering.
+- [x] Build Rule Management UI in Android app to create, reorder, enable, and disable rules.
+- [x] Comprehensive unit tests for regex extraction and priority evaluation.
 
-### Phase 6 — Model Context Protocol (MCP) Server (`relayx-server`)
+### Phase 6 — Model Context Protocol (MCP) Server (`relayx-server`) `[IN PROGRESS]`
 - [ ] Embed MCP Server within the Go standalone executable.
 - [ ] Implement MCP Tools:
   - `get_latest_message`: Fetch most recent eligible SMS.
